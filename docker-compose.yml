@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  scarlett-server:
+    container_name: scarlett-server
+    build: .
+    ports:
+      - 8765:8765
+    env_file:
+      - .env
+    depends_on:
+      - postgres-scarlett
+
+  postgres-scarlett:
+    container_name: postgres-scarlett
+    image: postgres:latest
+    env_file:
+      - .env
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./db/scarlett:/var/lib/postgresql/data/pgdata
+      - ./backup:/backup
+    ports:
+      - 5432:5432
+    restart: unless-stopped
