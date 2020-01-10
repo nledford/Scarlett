@@ -142,4 +142,4 @@ fabric.properties
 /db/
 /backup/
 /src/schema.rs
-/diesel.toml.bak
+/diesel.toml
