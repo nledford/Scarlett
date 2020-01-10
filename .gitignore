@@ -141,3 +141,5 @@ fabric.properties
 /.env
 /db/
 /backup/
+/src/schema.rs
+/diesel.toml.bak
