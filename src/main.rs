@@ -20,7 +20,7 @@ async fn all_photos(pool: &Pool) -> Result<Vec<PhotosAll>, PoolError> {
 
     let photos = rows
         .into_iter()
-        .map(|row| PhotosAll::from_row(row))
+        .map(PhotosAll::from_row)
         .collect::<Vec<PhotosAll>>();
 
     Ok(photos)
