@@ -41,7 +41,9 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .data(pool.clone())
             .wrap(middleware::Logger::default())
+            // DEFAULT ROUTE ***********************************************************************
             .service(handlers::index)
+            // PHOTOS ******************************************************************************
             .service(handlers::photos::get_photos)
     })
     .bind(&addr)?
