@@ -267,36 +267,6 @@ impl NewPhoto {
         }
 
         Ok(count)
-
-        //        let count = new_photos
-        //            .chunks(1_000)
-        //            .map(|chunk| {
-        //                let chunk = chunk.to_vec();
-        //                let count: usize = chunk
-        //                    .into_iter()
-        //                    .map(async |photo| {
-        //                        client
-        //                            .execute(
-        //                                stmt,
-        //                                &[
-        //                                    &photo.file_path,
-        //                                    &photo.file_name,
-        //                                    &photo.file_hash,
-        //                                    &photo.date_created,
-        //                                    &photo.original_width,
-        //                                    &photo.original_height,
-        //                                ],
-        //                            )
-        //                            .await
-        //                            .unwrap()
-        //                    }).await
-        //                    .sum();
-        //
-        //                count
-        //            })
-        //            .sum();
-        //
-        //        Ok(count)
     }
 }
 
