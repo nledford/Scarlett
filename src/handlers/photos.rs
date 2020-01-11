@@ -39,7 +39,7 @@ impl Default for ScanPhotosResult {
 }
 
 impl ScanPhotosResult {
-    pub fn new(new_photos: i32, updated_photos: i32, deleted_photos: i32) -> ScanPhotosResult {
+    pub fn new(new_photos: i32, updated_photos: i32, deleted_photos: i32) -> Self {
         ScanPhotosResult {
             new_photos_found: new_photos > 0,
             new_photos,

@@ -130,7 +130,7 @@ impl Photo {
 
 // `photos_all` view *******************************************************************************
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PhotosAll {
     pub id: i32,
     pub file_path: String,
