@@ -1,0 +1,13 @@
+.idea/
+.git/
+/backup
+/db
+/migrations
+/target
+.dockerignore
+Dockerfile
+docker-compose.dev.yml
+docker-compose.prod.yml
+docker-compose.yml
+Makefile
+README.md
