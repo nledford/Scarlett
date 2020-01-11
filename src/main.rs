@@ -30,8 +30,6 @@ async fn all_photos(pool: &Pool) -> Result<Vec<PhotosAll>, PoolError> {
 async fn get_photos(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
     let res = all_photos(&pool).await;
 
-    println!("{:?}", res);
-
     match res {
         Ok(photos) => Ok(HttpResponse::Ok().json(photos)),
         Err(_) => Ok(HttpResponse::InternalServerError().into()),
