@@ -15,3 +15,6 @@ run_dev:
 # back up db
 
 # restore db
+
+cargo_sort:
+	cargo-sort-ck -w
