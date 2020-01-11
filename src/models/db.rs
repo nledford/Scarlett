@@ -8,6 +8,7 @@ use deadpool_postgres::{Client, Pool, PoolError};
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Sha3_256};
 use tokio_postgres::Row;
+use rust_decimal::Decimal;
 
 // `photos` table ************************************************************************************
 
@@ -316,14 +317,14 @@ fn get_file_name(path: &str) -> String {
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct PhotosStats {
-    pub unrated: i32,
-    pub pending_delete: i32,
-    pub hidden: i32,
-    pub neutral: i32,
-    pub wallpaper_candidates: i32,
-    pub favorites: i32,
-    pub total_kept: i32,
-    pub total: i32,
+    pub unrated: i64,
+    pub pending_delete: i64,
+    pub hidden: i64,
+    pub neutral: i64,
+    pub wallpaper_candidates: i64,
+    pub favorites: i64,
+    pub total_kept: Decimal,
+    pub total: Decimal,
 }
 
 impl PhotosStats {
