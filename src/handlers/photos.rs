@@ -1,16 +1,15 @@
-//use crate::models::types::Pool;
+use actix_web::{get, web, HttpResponse};
+use deadpool_postgres::Pool;
 
-//pub async fn get_all_photos_full(db: web::Data<Pool>) -> Result<HttpResponse, Error> {
-//
-//}
+use crate::models::db::PhotosAll;
+use crate::models::errors;
 
-//pub async fn get_all_photos_full(db: web::Data<Pool>) -> Result<HttpResponse, Error> {
-//    // execute sync code in threadpool
-//    let res = web::block(move || {
-//        let mut conn = db.get().unwrap();
-//
-//        let query = "SELECT * FROM photos_all";
-//
-//        for row in &conn.query(query, &[]).unwrap()
-//    })
-//}
+#[get("/photos")]
+pub async fn get_photos(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+    let res = PhotosAll::all_photos(&pool).await;
+
+    match res {
+        Ok(photos) => Ok(HttpResponse::Ok().json(photos)),
+        Err(_) => Ok(HttpResponse::InternalServerError().into()),
+    }
+}

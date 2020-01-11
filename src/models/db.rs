@@ -1,4 +1,5 @@
 use chrono::NaiveDateTime;
+use deadpool_postgres::{Client, Pool, PoolError};
 use serde::{Deserialize, Serialize};
 use tokio_postgres::Row;
 
@@ -42,5 +43,18 @@ impl PhotosAll {
             tags: row.get(13),
             wallpapers: row.get(14),
         }
+    }
+
+    pub async fn all_photos(pool: &Pool) -> Result<Vec<PhotosAll>, PoolError> {
+        let client: Client = pool.get().await?;
+        let stmt = client.prepare("SELECT * FROM photos_all").await?;
+        let rows = client.query(&stmt, &[]).await?;
+
+        let photos = rows
+            .into_iter()
+            .map(PhotosAll::from_row)
+            .collect::<Vec<PhotosAll>>();
+
+        Ok(photos)
     }
 }

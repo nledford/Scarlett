@@ -1,39 +1,16 @@
 use std::env;
 
-use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder};
-use deadpool_postgres::{Client, Manager, Pool, PoolError};
-use scarlett_server::models::db::PhotosAll;
+use actix_web::{get, middleware, web, App, HttpServer, Responder};
+use deadpool_postgres::{Manager, Pool};
+
 use tokio_postgres::Config;
 
-use scarlett_server::models::errors;
+use scarlett_server::handlers::photos;
+
 
 #[get("/{id}/{name}/index.html")]
 async fn index(info: web::Path<(u32, String)>) -> impl Responder {
     format!("Hello {}! id:{}", info.1, info.0)
-}
-
-// test query and handler
-async fn all_photos(pool: &Pool) -> Result<Vec<PhotosAll>, PoolError> {
-    let client: Client = pool.get().await?;
-    let stmt = client.prepare("SELECT * FROM photos_all").await?;
-    let rows = client.query(&stmt, &[]).await?;
-
-    let photos = rows
-        .into_iter()
-        .map(PhotosAll::from_row)
-        .collect::<Vec<PhotosAll>>();
-
-    Ok(photos)
-}
-
-#[get("/photos")]
-async fn get_photos(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
-    let res = all_photos(&pool).await;
-
-    match res {
-        Ok(photos) => Ok(HttpResponse::Ok().json(photos)),
-        Err(_) => Ok(HttpResponse::InternalServerError().into()),
-    }
 }
 
 fn create_pool() -> Pool {
@@ -71,7 +48,7 @@ async fn main() -> std::io::Result<()> {
             .data(pool.clone())
             .wrap(middleware::Logger::default())
             .service(index)
-            .service(get_photos)
+            .service(photos::get_photos)
     })
     .bind(&addr)?
     .run()
