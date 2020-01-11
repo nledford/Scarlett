@@ -1,0 +1,1 @@
+drop view photos_stats;
