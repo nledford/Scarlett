@@ -1,6 +1,6 @@
 use std::fs;
 use std::fs::File;
-use std::io::{BufReader};
+use std::io::BufReader;
 use std::time::SystemTime;
 
 use deadpool_postgres::{Pool, PoolError};

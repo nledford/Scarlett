@@ -1,8 +1,9 @@
 use std::env;
 
+use actix_cors::Cors;
+use actix_web::http::header;
 use actix_web::{middleware, App, HttpServer};
 use deadpool_postgres::{Manager, Pool};
-
 use tokio_postgres::Config;
 
 use scarlett_server::handlers;
@@ -40,11 +41,29 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .data(pool.clone())
+            .wrap(
+                Cors::new()
+                    .send_wildcard()
+                    .allowed_methods(vec!["GET", "POST", "PUT"])
+                    .allowed_headers(vec![
+                        header::ACCESS_CONTROL_ALLOW_ORIGIN,
+                        header::ORIGIN,
+                        header::AUTHORIZATION,
+                        header::ACCEPT,
+                        header::CONTENT_TYPE,
+                    ])
+                    .max_age(3600)
+                    .finish(),
+            )
+            .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"))
+            .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             // DEFAULT ROUTE ***********************************************************************
             .service(handlers::index)
             // PHOTOS ******************************************************************************
             .service(handlers::photos::get_photos)
+            // SCAN PHOTOS *************************************************************************
+            .service(handlers::photos::scan_photos)
     })
     .bind(&addr)?
     .run()
