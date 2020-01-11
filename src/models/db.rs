@@ -3,14 +3,11 @@ use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::{fs, io};
 
-use actix_web::web;
 use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use deadpool_postgres::{Client, Pool, PoolError};
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Sha3_256};
 use tokio_postgres::Row;
-
-use crate::models::errors::Error;
 
 // `photos` table ************************************************************************************
 
@@ -70,7 +67,7 @@ impl Photo {
                                     WHERE id = $12",
             )
             .await?;
-        let result = client
+        let _result = client
             .execute(
                 &stmt,
                 &[
@@ -125,7 +122,7 @@ impl Photo {
 
         let client = pool.get().await?;
         let stmt = client.prepare("DELETE FROM photos WHERE id = $1").await?;
-        let result = client.execute(&stmt, &[&photo_id]).await?;
+        let _result = client.execute(&stmt, &[&photo_id]).await?;
 
         Ok("File deleted successfully!".to_string())
     }
@@ -252,19 +249,19 @@ impl NewPhoto {
 
         for photo in new_photos {
             let result = client
-                    .execute(
-                        stmt,
-                        &[
-                            &photo.file_path,
-                            &photo.file_name,
-                            &photo.file_hash,
-                            &photo.date_created,
-                            &photo.original_width,
-                            &photo.original_height,
-                        ],
-                    )
-                    .await
-                    .unwrap();
+                .execute(
+                    stmt,
+                    &[
+                        &photo.file_path,
+                        &photo.file_name,
+                        &photo.file_hash,
+                        &photo.date_created,
+                        &photo.original_width,
+                        &photo.original_height,
+                    ],
+                )
+                .await
+                .unwrap();
 
             count = count + result;
         }

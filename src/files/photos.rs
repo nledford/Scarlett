@@ -1,9 +1,8 @@
 use std::fs;
 use std::fs::File;
-use std::io::{BufReader, Read};
+use std::io::{BufReader};
 use std::time::SystemTime;
 
-use actix_web::web;
 use deadpool_postgres::{Pool, PoolError};
 use rayon::prelude::*;
 use walkdir::{DirEntry, WalkDir};
@@ -139,7 +138,7 @@ async fn collect_files_from_directory(dir: &str, pool: &Pool) -> Result<Vec<File
         let file = BufReader::new(File::open(&file_info.file_path).unwrap());
         let guess_result = image::guess_format(file.buffer());
         match guess_result {
-            Ok(format) => {}
+            Ok(_format) => {}
             Err(_) => continue,
         }
 

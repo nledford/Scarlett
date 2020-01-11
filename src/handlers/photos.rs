@@ -1,9 +1,9 @@
 use actix_web::{get, web, HttpResponse};
 use deadpool_postgres::Pool;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::files;
-use crate::models::db::{Photo, PhotosAll, NewPhoto};
+use crate::models::db::{NewPhoto, PhotosAll};
 use crate::models::errors;
 
 #[get("/photos")]
@@ -51,7 +51,7 @@ impl ScanPhotosResult {
 
 #[get("/scan")]
 pub async fn scan_photos(
-    info: web::Query<(Option<String>)>,
+    info: web::Query<Option<String>>,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse, errors::Error> {
     let folder = info.0;
