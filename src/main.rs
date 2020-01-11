@@ -44,7 +44,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(
                 Cors::new()
                     .send_wildcard()
-                    .allowed_methods(vec!["GET", "POST", "PUT"])
+                    .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
                     .allowed_headers(vec![
                         header::ACCESS_CONTROL_ALLOW_ORIGIN,
                         header::ORIGIN,
