@@ -1,17 +1,11 @@
 use std::env;
 
-use actix_web::{get, middleware, web, App, HttpServer, Responder};
+use actix_web::{middleware, App, HttpServer};
 use deadpool_postgres::{Manager, Pool};
 
 use tokio_postgres::Config;
 
-use scarlett_server::handlers::photos;
-
-
-#[get("/{id}/{name}/index.html")]
-async fn index(info: web::Path<(u32, String)>) -> impl Responder {
-    format!("Hello {}! id:{}", info.1, info.0)
-}
+use scarlett_server::handlers;
 
 fn create_pool() -> Pool {
     let mut cfg = Config::new();
@@ -47,8 +41,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .data(pool.clone())
             .wrap(middleware::Logger::default())
-            .service(index)
-            .service(photos::get_photos)
+            .service(handlers::index)
+            .service(handlers::photos::get_photos)
     })
     .bind(&addr)?
     .run()
