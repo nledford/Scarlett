@@ -311,3 +311,42 @@ fn get_file_name(path: &str) -> String {
         .unwrap()
         .to_string()
 }
+
+// PHOTO STATS *************************************************************************************
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct PhotosStats {
+    pub unrated: i32,
+    pub pending_delete: i32,
+    pub hidden: i32,
+    pub neutral: i32,
+    pub wallpaper_candidates: i32,
+    pub favorites: i32,
+    pub total_kept: i32,
+    pub total: i32,
+}
+
+impl PhotosStats {
+    pub fn from_row(row: Row) -> Self {
+        PhotosStats {
+            unrated: row.get(0),
+            pending_delete: row.get(1),
+            hidden: row.get(2),
+            neutral: row.get(3),
+            wallpaper_candidates: row.get(4),
+            favorites: row.get(5),
+            total_kept: row.get(6),
+            total: row.get(7),
+        }
+    }
+
+    pub async fn get_photos_stats(pool: &Pool) -> Result<PhotosStats, PoolError> {
+        let client = pool.get().await?;
+        let stmt = client.prepare("SELECT unrated, pending_delete, hidden, neutral, wallpaper_candidates, favorites, total_kept, total FROM photos_stats").await?;
+        let result = client.query_one(&stmt, &[]).await?;
+
+        let stats = PhotosStats::from_row(result);
+
+        Ok(stats)
+    }
+}

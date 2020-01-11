@@ -64,6 +64,8 @@ async fn main() -> std::io::Result<()> {
             .service(handlers::photos::get_photos)
             // SCAN PHOTOS *************************************************************************
             .service(handlers::photos::scan_photos)
+            // STATS *******************************************************************************
+            .service(handlers::stats::get_photos_stats)
     })
     .bind(&addr)?
     .run()
