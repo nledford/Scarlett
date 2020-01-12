@@ -320,8 +320,8 @@ pub struct PhotosStats {
     pub neutral: i64,
     pub wallpaper_candidates: i64,
     pub favorites: i64,
-    pub total_kept: Decimal,
-    pub total: Decimal,
+    pub total_kept: i64,
+    pub total: i64,
 }
 
 impl PhotosStats {
