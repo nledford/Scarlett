@@ -3,8 +3,7 @@
 cargo install diesel_cli --no-default-features --features postgres
 ```
 
-* Reset development database (non-Docker way)
+* Refresh materialized view
 ```postgresql
-dropdb scarlett
-createdb scarlett
+REFRESH MATERIALIZED VIEW photo_ordering;
 ```
