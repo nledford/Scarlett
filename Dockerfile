@@ -32,7 +32,7 @@ RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-li
 # Final Stage
 #------------------------------------------------------------------------------
 
-FROM alpine:latest
+FROM alpine:3
 
 # Create 'scarlett-server' user
 RUN addgroup -g 1000 scarlett-server
