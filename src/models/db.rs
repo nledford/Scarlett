@@ -1,14 +1,14 @@
+use std::{fs, io};
 use std::fs::File;
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
-use std::{fs, io};
 
 use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use deadpool_postgres::{Client, Pool, PoolError};
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Sha3_256};
 use tokio_postgres::Row;
-use rust_decimal::Decimal;
 
 // `photos` table ************************************************************************************
 
