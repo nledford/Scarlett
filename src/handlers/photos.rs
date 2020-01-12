@@ -49,16 +49,20 @@ impl ScanPhotosResult {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ScanPhotosRequest {
+    pub folder: Option<String>,
+}
+
 #[get("/scan")]
 pub async fn scan_photos(
-    info: web::Query<Option<String>>,
+    info: web::Query<ScanPhotosRequest>,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse, errors::Error> {
-    let folder = info.0;
     let pool = pool.get_ref();
 
-    let file_scan_result = if folder.is_some() {
-        files::photos::scan_all_photos_from_dir(&folder.unwrap(), pool).await?
+    let file_scan_result = if info.folder.is_some() {
+        files::photos::scan_all_photos_from_dir(info.folder.as_ref().unwrap(), pool).await?
     } else {
         files::photos::scan_all_photos(pool).await?
     };

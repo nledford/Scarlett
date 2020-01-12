@@ -199,22 +199,19 @@ pub struct NewPhoto {
 
 impl NewPhoto {
     pub fn new(path: String, dt_created: SystemTime) -> Self {
-        let mut width = 0;
-        let mut height = 0;
-
         let dt_created = system_time_to_date_time(dt_created).naive_utc();
 
         let dim = image::image_dimensions(&path).unwrap();
-        width = dim.0;
-        height = dim.1;
+        let width = dim.0 as i32;
+        let height = dim.1 as i32;
 
         NewPhoto {
             file_name: get_file_name(&path),
             file_hash: calculate_sha3_hash(&path),
             file_path: path,
             date_created: dt_created,
-            original_width: width as i32,
-            original_height: height as i32,
+            original_width: width,
+            original_height: height,
         }
     }
 
@@ -264,7 +261,7 @@ impl NewPhoto {
                 .await
                 .unwrap();
 
-            count = count + result;
+            count += result;
         }
 
         Ok(count)
