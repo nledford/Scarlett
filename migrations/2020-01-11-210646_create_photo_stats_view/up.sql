@@ -3,19 +3,19 @@
 
 CREATE VIEW photos_stats AS
 SELECT UNRATED,
-       (UNRATED / TOTAL_KEPT) * 100              UNRATED_PERCENT,
+       (UNRATED / TOTAL_KEPT::decimal) * 100              UNRATED_PERCENT,
        HIDDEN,
-       (HIDDEN / TOTAL_KEPT) * 100               HIDDEN_PERCENT,
+       (HIDDEN / TOTAL_KEPT::decimal) * 100               HIDDEN_PERCENT,
        NEUTRAL,
-       (NEUTRAL / TOTAL_KEPT) * 100              NEUTRAL_PERCENT,
+       (NEUTRAL / TOTAL_KEPT::decimal) * 100              NEUTRAL_PERCENT,
        WALLPAPER_CANDIDATES,
-       (WALLPAPER_CANDIDATES / TOTAL_KEPT) * 100 WC_PERCENT,
+       (WALLPAPER_CANDIDATES / TOTAL_KEPT::decimal) * 100 WC_PERCENT,
        FAVORITES,
-       (FAVORITES / TOTAL_KEPT) * 100            FAVORITES_PERCENT,
+       (FAVORITES / TOTAL_KEPT::decimal) * 100            FAVORITES_PERCENT,
        TOTAL_KEPT,
-       (TOTAL_KEPT / TOTAL) * 100                KEPT_PERCENT,
+       (TOTAL_KEPT / TOTAL::decimal) * 100                KEPT_PERCENT,
        PENDING_DELETE,
-       (PENDING_DELETE / TOTAL) * 100            DELETE_PERCENT,
+       (PENDING_DELETE / TOTAL::decimal) * 100            DELETE_PERCENT,
        TOTAL
 FROM (
          SELECT (SELECT COUNT(*)
@@ -36,12 +36,8 @@ FROM (
                 (SELECT COUNT(*)
                  from photos
                  where rating = 5)  FAVORITES,
-                (SELECT COUNT(*)::decimal
+                (SELECT COUNT(*)
                  from photos
                  where rating <> 1) TOTAL_KEPT,
-                (SELECT COUNT(*)::decimal
+                (SELECT COUNT(*)
                  from photos_all)   TOTAL) s;
-
-select *
-from photos
-where rating <> 1;
