@@ -54,14 +54,24 @@ pub struct ScanPhotosRequest {
     pub folder: Option<String>,
 }
 
+impl ScanPhotosRequest {
+    pub fn get_folder(&self) -> String {
+        self.folder
+            .to_owned()
+            .unwrap_or_else(|| String::from(""))
+            .replace('\"', "")
+    }
+}
+
 #[get("/scan")]
 pub async fn scan_photos(
     info: web::Query<ScanPhotosRequest>,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse, errors::Error> {
+    let folder = info.get_folder();
     let pool = pool.get_ref();
 
-    let file_scan_result = if info.folder.is_some() {
+    let file_scan_result = if !folder.is_empty() {
         files::photos::scan_all_photos_from_dir(info.folder.as_ref().unwrap(), pool).await?
     } else {
         files::photos::scan_all_photos(pool).await?

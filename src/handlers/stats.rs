@@ -9,7 +9,6 @@ pub async fn get_photos_stats(pool: web::Data<Pool>) -> Result<HttpResponse, err
 
     match res {
         Ok(stats) => Ok(HttpResponse::Ok().json(stats)),
-        Err(err) => Ok(HttpResponse::InternalServerError()
-            .json(err.to_string())),
+        Err(err) => Ok(HttpResponse::InternalServerError().json(err.to_string())),
     }
 }
