@@ -1,6 +1,5 @@
 use std::fs;
-use std::fs::File;
-use std::io::BufReader;
+use std::path::Path;
 use std::time::SystemTime;
 
 use deadpool_postgres::{Pool, PoolError};
@@ -8,7 +7,6 @@ use rayon::prelude::*;
 use walkdir::{DirEntry, WalkDir};
 
 use crate::models::db::{NewPhoto, Photo};
-use std::path::Path;
 
 // FILE SCAN RESULT ********************************************************************************
 
@@ -40,7 +38,7 @@ pub struct FileInfo {
 
 impl FileInfo {
     pub fn new_from_entry(entry: &DirEntry) -> Self {
-        let ext = get_file_extension(&entry);
+        let ext = get_file_extension(&entry).to_lowercase();
         let metadata = entry.path().metadata().unwrap();
         let dt_created = metadata.created().unwrap_or_else(|_| SystemTime::now());
 
@@ -122,6 +120,13 @@ pub async fn scan_all_photos_from_dir(dir: &str, pool: &Pool) -> Result<FileScan
 async fn collect_files_from_directory(dir: &str, pool: &Pool) -> Result<Vec<FileInfo>, PoolError> {
     let mut files = Vec::new();
 
+    let image_file_extensions = vec![
+        "jpg", "jpeg", "png", "gif", "bmp", "ico", "tiff", "webp", "pnm", "heic",
+    ]
+    .into_iter()
+    .map(|x| x.to_string())
+    .collect::<Vec<String>>();
+
     let walker = WalkDir::new(dir).into_iter();
     for entry in walker.filter_entry(|e| !is_hidden(e)) {
         let entry = entry.unwrap();
@@ -134,12 +139,9 @@ async fn collect_files_from_directory(dir: &str, pool: &Pool) -> Result<Vec<File
             continue;
         }
 
-        // We'll skip any file that is not an image
-        let file = BufReader::new(File::open(&file_info.file_path).unwrap());
-        let guess_result = image::guess_format(file.buffer());
-        match guess_result {
-            Ok(_format) => {}
-            Err(_) => continue,
+        // Skip the file if we don't consider it to be an image
+        if !image_file_extensions.contains(&file_info.file_extension) {
+            continue;
         }
 
         // Check if the file is currently in the database
