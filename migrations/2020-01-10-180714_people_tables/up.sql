@@ -1,9 +1,15 @@
 -- Add entity table
 create table entity
 (
-    id          serial       not null
+    id                 serial             not null
         constraint entity_pk primary key,
-    entity_name varchar(250) not null
+    entity_name        varchar(250)       not null,
+    alternate_names    text[],
+    instagram_username varchar(30),
+    twitter_username   varchar(30),
+    favorite           bool default false not null,
+    -- just in case...
+    profile_photo_id   int
 );
 
 -- add `photo_entity` junction table
