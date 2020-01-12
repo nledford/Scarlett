@@ -122,10 +122,7 @@ async fn collect_files_from_directory(dir: &str, pool: &Pool) -> Result<Vec<File
 
     let image_file_extensions = vec![
         "jpg", "jpeg", "png", "gif", "bmp", "ico", "tiff", "webp", "pnm", "heic",
-    ]
-    .into_iter()
-    .map(|x| x.to_string())
-    .collect::<Vec<String>>();
+    ];
 
     let walker = WalkDir::new(dir).into_iter();
     for entry in walker.filter_entry(|e| !is_hidden(e)) {
@@ -140,7 +137,7 @@ async fn collect_files_from_directory(dir: &str, pool: &Pool) -> Result<Vec<File
         }
 
         // Skip the file if we don't consider it to be an image
-        if !image_file_extensions.contains(&file_info.file_extension) {
+        if !image_file_extensions.contains(&file_info.file_extension.as_str()) {
             continue;
         }
 
