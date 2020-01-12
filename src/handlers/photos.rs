@@ -72,7 +72,7 @@ pub async fn scan_photos(
     let pool = pool.get_ref();
 
     let file_scan_result = if !folder.is_empty() {
-        files::photos::scan_all_photos_from_dir(info.folder.as_ref().unwrap(), pool).await?
+        files::photos::scan_all_photos_from_dir(&folder, pool).await?
     } else {
         files::photos::scan_all_photos(pool).await?
     };
