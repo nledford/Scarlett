@@ -1,10 +1,12 @@
-use actix_web::{get, web, HttpResponse};
+use actix_web::{get, web, HttpResponse, HttpRequest};
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
 use crate::files;
-use crate::models::db::{NewPhoto, PhotosAll};
+use crate::models::db::{NewPhoto, PhotosAll, Photo};
 use crate::models::errors;
+
+// ALL PHOTOS **************************************************************************************
 
 #[get("/photos")]
 pub async fn get_photos(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
@@ -15,6 +17,20 @@ pub async fn get_photos(pool: web::Data<Pool>) -> Result<HttpResponse, errors::E
         Err(_) => Ok(HttpResponse::InternalServerError().into()),
     }
 }
+
+// SINGLE PHOTO ************************************************************************************
+
+#[get("/photos/{photo_id}")]
+pub async fn get_photo(info: web::Path<i64>, pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+    let res = Photo::get_photo_by_id(info.into_inner(), &pool).await;
+
+    match res {
+        Ok(photo) => Ok(HttpResponse::Ok().json(photo)),
+        Err(err) => Ok(HttpResponse::InternalServerError().json(err.to_string())),
+    }
+}
+
+// UPDATE PHOTO ************************************************************************************
 
 // SCAN PHOTOS *************************************************************************************
 
