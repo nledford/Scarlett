@@ -1,7 +1,7 @@
-use chrono::NaiveDateTime;
+
 use chrono::prelude::*;
-use actix_web::http::StatusCode;
-use serde::{Serialize, Deserialize};
+use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 
 const APP_NAME: &'static str = env!("CARGO_PKG_NAME");
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");

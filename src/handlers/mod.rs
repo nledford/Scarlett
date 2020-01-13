@@ -1,5 +1,5 @@
-use actix_web::{get, HttpResponse, Responder};
-use serde::{Serialize, Deserialize};
+use actix_web::{get, HttpResponse};
+use serde::{Deserialize, Serialize};
 
 use crate::models::errors;
 use crate::models::responses::ApiResponse;
@@ -35,7 +35,7 @@ fn build_list_of_routes() -> Vec<Route> {
 // INDEX *******************************************************************************************
 
 #[get("/")]
-pub async fn index () -> Result<HttpResponse, errors::Error> {
+pub async fn index() -> Result<HttpResponse, errors::Error> {
     let routes = build_list_of_routes();
 
     let res = ApiResponse::new("success", 200, "OK", routes);
@@ -59,7 +59,6 @@ impl AppStatus {
         }
     }
 }
-
 
 #[get("/status")]
 pub async fn status() -> Result<HttpResponse, errors::Error> {

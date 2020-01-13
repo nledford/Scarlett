@@ -1,22 +1,22 @@
-use actix_web::{get, web, HttpResponse, HttpRequest};
+use actix_web::{get, web, HttpResponse};
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
 use crate::files;
-use crate::models::db::{NewPhoto, PhotosAll, Photo};
+use crate::models::db::{NewPhoto, Photo, PhotosAll};
 use crate::models::errors;
 
 // ALL PHOTOS **************************************************************************************
 
 /* Possible candidate for pagination query
- * SELECT *
-   FROM (SELECT row_number() over () AS position, p.*
-         FROM photos p
-                  INNER JOIN photo_ordering po ON p.id = po.photo_id
-         ORDER BY po.position) t
-   WHERE t.position > 0
-   LIMIT 100;
- */
+* SELECT *
+  FROM (SELECT row_number() over () AS position, p.*
+        FROM photos p
+                 INNER JOIN photo_ordering po ON p.id = po.photo_id
+        ORDER BY po.position) t
+  WHERE t.position > 0
+  LIMIT 100;
+*/
 
 #[get("/photos")]
 pub async fn get_photos(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
@@ -31,7 +31,10 @@ pub async fn get_photos(pool: web::Data<Pool>) -> Result<HttpResponse, errors::E
 // SINGLE PHOTO ************************************************************************************
 
 #[get("/photos/{photo_id}")]
-pub async fn get_photo(info: web::Path<i64>, pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+pub async fn get_photo(
+    info: web::Path<i64>,
+    pool: web::Data<Pool>,
+) -> Result<HttpResponse, errors::Error> {
     let res = Photo::get_photo_by_id(info.into_inner(), &pool).await;
 
     match res {
@@ -104,7 +107,7 @@ pub async fn scan_photos(
     };
 
     if let Err(err) = file_scan_result {
-        return Ok(HttpResponse::InternalServerError().json(err.to_string()))
+        return Ok(HttpResponse::InternalServerError().json(err.to_string()));
     }
     let file_scan_result = file_scan_result.unwrap();
 
