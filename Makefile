@@ -4,6 +4,9 @@ build:
 push:
 	docker push nledford/scarlett-server:latest
 
+# FOR PRODUCTION BUILD
+# run
+
 run_dev:
 	docker run -it -p 8765:8765 \
 		--env-file=.env \
@@ -11,7 +14,12 @@ run_dev:
 		--mount type=bind,source=/Users/nledford/Documents/Wallpaper,target=/wallpaper \
 		nledford/scarlett-server
 
-# run_dev
+run_win:
+	docker run -it -p 8765:8765 \
+		--env-file=.env \
+		--mount type=bind,source="C:\Users\nledford\Pictures\Vault",target=/photos \
+		--mount type=bind,source="C:\Users\nledford\Pictures\Wallpaper",target=/wallpaper \
+		nledford/scarlett-server
 
 # back up db
 
