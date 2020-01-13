@@ -58,8 +58,9 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"))
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            // DEFAULT ROUTE ***********************************************************************
+            // DEFAULT ROUTES **********************************************************************
             .service(handlers::index)
+            .service(handlers::status)
             // PHOTOS ******************************************************************************
             .service(handlers::photos::get_photos)
             // SCAN PHOTOS *************************************************************************
