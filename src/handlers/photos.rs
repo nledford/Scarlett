@@ -98,10 +98,15 @@ pub async fn scan_photos(
     let pool = pool.get_ref();
 
     let file_scan_result = if !folder.is_empty() {
-        files::photos::scan_all_photos_from_dir(&folder, pool).await?
+        files::photos::scan_all_photos_from_dir(&folder, pool).await
     } else {
-        files::photos::scan_all_photos(pool).await?
+        files::photos::scan_all_photos(pool).await
     };
+
+    if let Err(err) = file_scan_result {
+        return Ok(HttpResponse::InternalServerError().json(err.to_string()))
+    }
+    let file_scan_result = file_scan_result.unwrap();
 
     let files = file_scan_result.new_photos;
 
