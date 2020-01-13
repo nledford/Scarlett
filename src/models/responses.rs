@@ -1,3 +1,8 @@
+/*
+ * SEE:
+ *   - https://technick.net/guides/software/software_json_api_format/
+ *   - https://jsonapi.org/
+ */
 
 use chrono::prelude::*;
 use chrono::NaiveDateTime;
