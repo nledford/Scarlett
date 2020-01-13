@@ -19,8 +19,10 @@ services:
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ./db/scarlett:/var/lib/postgresql/data/pgdata
-      - ./backup:/backup
+      - scarlett-data:/var/lib/postgresql/data/pgdata
     ports:
       - 5432:5432
     restart: unless-stopped
+
+volumes:
+  scarlett-data:
