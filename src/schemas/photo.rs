@@ -1,13 +1,13 @@
-use std::{fs, io};
 use std::fs::File;
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
+use std::{fs, io};
 
 use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use deadpool_postgres::{Pool, PoolError};
 use serde::{Deserialize, Serialize};
-use tokio_postgres::Row;
 use sha3::{Digest, Sha3_256};
+use tokio_postgres::Row;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Photo {
@@ -125,7 +125,6 @@ impl Photo {
         Ok("File deleted successfully!".to_string())
     }
 }
-
 
 // NEW PHOTO ***************************************************************************************
 
