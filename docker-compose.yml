@@ -24,5 +24,7 @@ services:
       - 5432:5432
     restart: unless-stopped
 
+# remove all volumes attched:
+# docker-compose down -v
 volumes:
   scarlett-data:
