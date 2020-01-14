@@ -1,6 +1,6 @@
 use deadpool_postgres::{Pool, PoolError};
-use tokio_postgres::Row;
 use serde::{Deserialize, Serialize};
+use tokio_postgres::Row;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct PhotosStats {
