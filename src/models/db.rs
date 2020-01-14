@@ -134,8 +134,8 @@ impl Photo {
 pub struct PhotosAll {
     pub id: i32,
     pub file_path: String,
-    pub file_name: String,
     pub folder: String,
+    pub file_name: String,
     pub file_hash: String,
     pub rating: i32,
     pub date_created: NaiveDateTime,
@@ -155,8 +155,8 @@ impl PhotosAll {
         PhotosAll {
             id: row.get(0),
             file_path: row.get(1),
-            file_name: row.get(2),
-            folder: row.get(3),
+            folder: row.get(2),
+            file_name: row.get(3),
             file_hash: row.get(4),
             rating: row.get(5),
             date_created: row.get(6),
