@@ -217,5 +217,3 @@ pub struct Page<T> {
     pub links: Links,
     pub data: T,
 }
-
-pub type PaginatedPhotoResponse = ApiResponse<Page<PhotoFull>>;
