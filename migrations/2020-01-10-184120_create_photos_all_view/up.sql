@@ -6,6 +6,7 @@ create view photos_all as
 select id,
        file_path,
        file_name,
+       replace(file_path, file_name, '') folder,
        file_hash,
        rating,
        date_created,
