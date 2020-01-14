@@ -1,11 +1,11 @@
-use actix_web::{get, web, HttpResponse};
+use actix_web::{get, HttpResponse, web};
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
 use crate::files;
-use crate::models::db::{NewPhoto, PhotosAll};
+use crate::models::db::PhotosAll;
 use crate::models::errors;
-use crate::schemas::photo::Photo;
+use crate::schemas::photo::{NewPhoto, Photo};
 
 // ALL PHOTOS **************************************************************************************
 
