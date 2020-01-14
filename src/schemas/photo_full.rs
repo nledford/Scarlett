@@ -1,9 +1,4 @@
-
-
-
-
-
-use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
+use chrono::NaiveDateTime;
 use deadpool_postgres::{Client, Pool, PoolError};
 use serde::{Deserialize, Serialize};
 use tokio_postgres::Row;
@@ -11,7 +6,7 @@ use tokio_postgres::Row;
 // `photos_all` view *******************************************************************************
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct PhotosAll {
+pub struct PhotoFull {
     pub id: i32,
     pub file_path: String,
     pub folder: String,
@@ -30,9 +25,9 @@ pub struct PhotosAll {
     pub wallpapers: Option<Vec<String>>,
 }
 
-impl PhotosAll {
+impl PhotoFull {
     pub fn from_row(row: Row) -> Self {
-        PhotosAll {
+        PhotoFull {
             id: row.get(0),
             file_path: row.get(1),
             folder: row.get(2),
@@ -52,15 +47,15 @@ impl PhotosAll {
         }
     }
 
-    pub async fn all_photos(pool: &Pool) -> Result<Vec<PhotosAll>, PoolError> {
+    pub async fn all_photos(pool: &Pool) -> Result<Vec<PhotoFull>, PoolError> {
         let client: Client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM photos_all").await?;
         let rows = client.query(&stmt, &[]).await?;
 
         let photos = rows
             .into_iter()
-            .map(PhotosAll::from_row)
-            .collect::<Vec<PhotosAll>>();
+            .map(PhotoFull::from_row)
+            .collect::<Vec<PhotoFull>>();
 
         Ok(photos)
     }

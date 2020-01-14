@@ -3,9 +3,9 @@ use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
 use crate::files;
-use crate::models::db::PhotosAll;
 use crate::models::errors;
 use crate::schemas::photo::{NewPhoto, Photo};
+use crate::schemas::photo_full::PhotoFull;
 
 // ALL PHOTOS **************************************************************************************
 
@@ -21,7 +21,7 @@ use crate::schemas::photo::{NewPhoto, Photo};
 
 #[get("/photos")]
 pub async fn get_photos(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
-    let res = PhotosAll::all_photos(&pool).await;
+    let res = PhotoFull::all_photos(&pool).await;
 
     match res {
         Ok(photos) => Ok(HttpResponse::Ok().json(photos)),

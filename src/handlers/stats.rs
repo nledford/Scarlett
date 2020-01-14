@@ -1,5 +1,5 @@
-use crate::models::db::PhotosStats;
 use crate::models::errors;
+use crate::schemas::photo_full::PhotosStats;
 use actix_web::{get, web, HttpResponse};
 use deadpool_postgres::Pool;
 
