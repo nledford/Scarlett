@@ -6,7 +6,8 @@ use deadpool_postgres::{Pool, PoolError};
 use rayon::prelude::*;
 use walkdir::{DirEntry, WalkDir};
 
-use crate::models::db::{NewPhoto, Photo};
+use crate::models::db::NewPhoto;
+use crate::schemas::photo::Photo;
 
 // FILE SCAN RESULT ********************************************************************************
 

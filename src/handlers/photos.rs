@@ -3,8 +3,9 @@ use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
 use crate::files;
-use crate::models::db::{NewPhoto, Photo, PhotosAll};
+use crate::models::db::{NewPhoto, PhotosAll};
 use crate::models::errors;
+use crate::schemas::photo::Photo;
 
 // ALL PHOTOS **************************************************************************************
 
