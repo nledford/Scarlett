@@ -4,7 +4,9 @@ use serde::{Deserialize, Serialize};
 use tokio_postgres::types::ToSql;
 use tokio_postgres::Row;
 
-use crate::models::responses::{Links, Metadata, Page};
+use crate::pagination::links::Links;
+use crate::pagination::page::Page;
+use crate::pagination::page_metadata::PageMetadata;
 use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::types::PaginatedPhotos;
 
@@ -140,7 +142,7 @@ impl PhotoFull {
         let total = results.get(0).map(|x| x.1).unwrap_or(0);
         let photos = results.into_iter().map(|x| x.0).collect();
 
-        let metadata = Metadata::new(req.get_position(), req.get_page_size(), total);
+        let metadata = PageMetadata::new(req.get_position(), req.get_page_size(), total);
         let links = Links::default();
         let page = Page::new(metadata, links, photos);
 
