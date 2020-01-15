@@ -127,8 +127,8 @@ impl PhotoFull {
                   LIMIT $2";
 
         let page_size = &req.get_page_size();
-        let page = &req.get_position();
-        params.push(page);
+        let page = req.get_page() - 1 * req.get_page_size();
+        params.push(&page);
         params.push(page_size);
 
         let stmt = client.prepare(query.as_str()).await?;
@@ -141,7 +141,7 @@ impl PhotoFull {
         let total = results.get(0).map(|x| x.1).unwrap_or(0);
         let photos = results.into_iter().map(|x| x.0).collect();
 
-        let metadata = PageMetadata::new(req.get_position(), req.get_page_size(), total);
+        let metadata = PageMetadata::new(req.get_page(), req.get_page_size(), total);
         let links = Links::default();
         let page = Page::new(metadata, links, photos);
 
