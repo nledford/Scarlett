@@ -1,9 +1,6 @@
-
-
-
 use std::{fs};
 
-use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
+use chrono::{NaiveDateTime, Utc};
 use deadpool_postgres::{Pool, PoolError};
 use serde::{Deserialize, Serialize};
 
