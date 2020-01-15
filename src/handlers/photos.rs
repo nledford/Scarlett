@@ -1,8 +1,8 @@
-use actix_web::{get, web, HttpResponse};
+use actix_web::{get, HttpResponse, web};
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
-use crate::files;
+use crate::{files, schemas};
 use crate::models::errors;
 use crate::models::responses::ApiResponse;
 use crate::requests::get_photos_request::GetPhotosRequest;
@@ -63,6 +63,18 @@ pub async fn get_photo(
 }
 
 // UPDATE PHOTO ************************************************************************************
+
+// RESET RANDOM SEED *******************************************************************************
+
+#[get("/resetseed")]
+pub async fn reset_seed(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+    let res = schemas::reset_seed(&pool).await;
+
+    match res {
+        Ok(_) => Ok(HttpResponse::Ok().json(ApiResponse::new("success", 200, "ok", "`photo_ordering` materialized view was refreshed successfully"))),
+        Err(err) => Ok(HttpResponse::InternalServerError().json(ApiResponse::new("error", 500, "An error has occurred", err.to_string()))),
+    }
+}
 
 // SCAN PHOTOS *************************************************************************************
 
