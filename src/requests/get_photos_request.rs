@@ -1,26 +1,26 @@
-use serde::{Serialize, Deserialize};
+use serde::Deserialize;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct GetPhotosRequest {
-    page: Option<i32>,
-    page_size: Option<i32>,
+    position: Option<i64>,
+    page_size: Option<i64>,
 }
 
 impl GetPhotosRequest {
-    pub fn get_page(&self) -> i32 {
-        if self.page.is_some() {
-            let page = self.page.unwrap();
-            if page <= 0 {
-                1
+    pub fn get_position(&self) -> i64 {
+        if self.position.is_some() {
+            let position = self.position.unwrap();
+            if position < 0 {
+                0
             } else {
-                page
+                position
             }
         } else {
-            1
+            0
         }
     }
 
-    pub fn get_page_size(&self) -> i32 {
+    pub fn get_page_size(&self) -> i64 {
         if self.page_size.is_some() {
             let size = self.page_size.unwrap();
 

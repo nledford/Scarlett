@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::files;
 use crate::models::errors;
+use crate::models::responses::ApiResponse;
+use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::schemas::photo::{NewPhoto, Photo};
 use crate::schemas::photo_full::PhotoFull;
 
@@ -20,12 +22,28 @@ use crate::schemas::photo_full::PhotoFull;
 */
 
 #[get("/photos")]
-pub async fn get_photos(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
-    let res = PhotoFull::all_photos(&pool).await;
+//pub async fn get_photos(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+//    let res = PhotoFull::all_photos(&pool).await;
+//
+//    match res {
+//        Ok(photos) => Ok(HttpResponse::Ok().json(photos)),
+//        Err(err) => Ok(HttpResponse::InternalServerError().json(err.to_string())),
+//    }
+//}
+pub async fn get_photos(
+    info: web::Query<GetPhotosRequest>,
+    pool: web::Data<Pool>,
+) -> Result<HttpResponse, errors::Error> {
+    let res = PhotoFull::get_page(info.into_inner(), &pool).await;
 
     match res {
-        Ok(photos) => Ok(HttpResponse::Ok().json(photos)),
-        Err(err) => Ok(HttpResponse::InternalServerError().json(err.to_string())),
+        Ok(page) => Ok(HttpResponse::Ok().json(ApiResponse::new("success", 200, "ok", page))),
+        Err(err) => Ok(HttpResponse::InternalServerError().json(ApiResponse::new(
+            "error",
+            500,
+            "An error has occurred",
+            err.to_string(),
+        ))),
     }
 }
 
