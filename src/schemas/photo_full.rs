@@ -121,11 +121,10 @@ impl PhotoFull {
                                          FROM photos_all pa \
                                                    INNER JOIN photo_ordering po ON pa.id = po.photo_id".to_string();
 
-        query = query
-            + "       ORDER BY po.position) t \
-               WHERE t.position > $1 \
-               ORDER BY t.position \
-               LIMIT $2";
+        query += "       ORDER BY po.position) t \
+                  WHERE t.position > $1 \
+                  ORDER BY t.position \
+                  LIMIT $2";
 
         let page_size = &req.get_page_size();
         let page = &req.get_position();
@@ -137,7 +136,7 @@ impl PhotoFull {
 
         let results: Vec<(PhotoFull, i64)> = rows
             .into_iter()
-            .map(|row| PhotoFull::from_paginated_row(row))
+            .map(PhotoFull::from_paginated_row)
             .collect();
         let total = results.get(0).map(|x| x.1).unwrap_or(0);
         let photos = results.into_iter().map(|x| x.0).collect();

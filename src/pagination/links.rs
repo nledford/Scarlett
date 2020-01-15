@@ -136,7 +136,5 @@ fn build_link(page: i64, req: &GetPhotosRequest) -> String {
 fn build_host_url() -> Url {
     let host =
         env::var("SCARLETT_HOSTNAME").expect("SCARLETT_HOSTNAME environment variable not set");
-    let url = Url::parse(format!("http://{}", host).as_str()).unwrap();
-
-    url
+    Url::parse(format!("http://{}", host).as_str()).unwrap()
 }

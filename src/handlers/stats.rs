@@ -1,5 +1,3 @@
-
-
 use actix_web::{get, web, HttpResponse};
 use deadpool_postgres::Pool;
 
