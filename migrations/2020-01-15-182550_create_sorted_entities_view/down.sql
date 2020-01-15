@@ -1,0 +1,1 @@
+drop view if exists sorted_entity;
