@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::files;
 use crate::models::errors;
-use crate::schemas::photo::NewPhoto;
+use crate::schemas::new_photo::NewPhoto;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]

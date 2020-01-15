@@ -1,5 +1,6 @@
 use deadpool_postgres::{Pool, PoolError};
 
+pub mod new_photo;
 pub mod photo;
 pub mod photo_full;
 
