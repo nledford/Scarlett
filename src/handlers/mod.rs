@@ -5,6 +5,7 @@ use crate::models::errors;
 use crate::models::responses::ApiResponse;
 
 pub mod photos;
+pub mod scan_photos;
 pub mod stats;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

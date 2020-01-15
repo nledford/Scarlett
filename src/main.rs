@@ -64,7 +64,7 @@ async fn main() -> std::io::Result<()> {
             // PHOTOS ******************************************************************************
             .service(handlers::photos::get_photos)
             // SCAN PHOTOS *************************************************************************
-            .service(handlers::photos::scan_photos)
+            .service(handlers::scan_photos::run_scan)
             // STATS *******************************************************************************
             .service(handlers::stats::get_photos_stats)
             // RESET SEED **************************************************************************
