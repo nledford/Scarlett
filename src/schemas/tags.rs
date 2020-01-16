@@ -1,8 +1,8 @@
-use async_trait::async_trait;
-use serde::{Serialize, Deserialize};
 use crate::schemas::DbTable;
+use async_trait::async_trait;
+use deadpool_postgres::{Pool, PoolError};
+use serde::{Deserialize, Serialize};
 use tokio_postgres::Row;
-use deadpool_postgres::{PoolError, Pool};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Tag {
@@ -41,7 +41,9 @@ impl DbTable for Tag {
 impl Tag {
     pub async fn create(tag_name: &str, pool: &Pool) -> Result<Tag, PoolError> {
         let client = pool.get().await?;
-        let stmt = client.prepare("INSERT INTO tags (tag_name) VALUES($1)").await?;
+        let stmt = client
+            .prepare("INSERT INTO tags (tag_name) VALUES($1)")
+            .await?;
         let _ = client.execute(&stmt, &[&tag_name]).await?;
 
         let tag = Tag::get_by_name(tag_name, pool).await?;
@@ -51,7 +53,9 @@ impl Tag {
 
     pub async fn get_by_name(tag_name: &str, pool: &Pool) -> Result<Tag, PoolError> {
         let client = pool.get().await?;
-        let stmt = client.prepare("SELECT * FROM tags WHERE tag_name = $1").await?;
+        let stmt = client
+            .prepare("SELECT * FROM tags WHERE tag_name = $1")
+            .await?;
         let result = client.query_one(&stmt, &[&tag_name]).await?;
         let tag = Tag::from_row(result);
 
@@ -60,7 +64,9 @@ impl Tag {
 
     pub async fn update(tag: Tag, pool: &Pool) -> Result<Tag, PoolError> {
         let client = pool.get().await?;
-        let stmt = client.prepare("UPDATE tags SET tag_name = $1 WHERE id = $2").await?;
+        let stmt = client
+            .prepare("UPDATE tags SET tag_name = $1 WHERE id = $2")
+            .await?;
         let _ = client.execute(&stmt, &[&tag.tag_name, &tag.id]).await?;
 
         let updated_tag = Tag::get_by_id(tag.id as i64).await?;
