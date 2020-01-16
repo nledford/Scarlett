@@ -36,18 +36,22 @@ impl PhotosStats {
 
     pub async fn get_photos_stats(pool: &Pool) -> Result<PhotosStats, PoolError> {
         let client = pool.get().await?;
-        let stmt = client.prepare("SELECT unrated, \
-                                                           pending_delete, \
-                                                           hidden, \
-                                                           neutral, \
-                                                           wallpaper_candidates, \
-                                                           favorites, \
-                                                           with_entities, \
-                                                           with_tags, \
-                                                           with_wallpaper, \
-                                                           total_kept, \
-                                                           total \
-                                                    FROM photos_stats").await?;
+        let stmt = client
+            .prepare(
+                "SELECT unrated, \
+                 pending_delete, \
+                 hidden, \
+                 neutral, \
+                 wallpaper_candidates, \
+                 favorites, \
+                 with_entities, \
+                 with_tags, \
+                 with_wallpaper, \
+                 total_kept, \
+                 total \
+                 FROM photos_stats",
+            )
+            .await?;
         let result = client.query_one(&stmt, &[]).await?;
 
         let stats = PhotosStats::from_row(result);

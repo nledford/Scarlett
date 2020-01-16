@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use chrono::NaiveDateTime;
 use deadpool_postgres::{Client, Pool, PoolError};
 use serde::{Deserialize, Serialize};
@@ -8,6 +9,7 @@ use crate::pagination::links::Links;
 use crate::pagination::page::Page;
 use crate::pagination::page_metadata::PageMetadata;
 use crate::requests::get_photos_request::GetPhotosRequest;
+use crate::schemas::{DbView, Paginated};
 use crate::types::PaginatedPhotos;
 
 // `photos_all` view *******************************************************************************
@@ -32,8 +34,9 @@ pub struct PhotoFull {
     pub wallpapers: Option<Vec<String>>,
 }
 
-impl PhotoFull {
-    pub fn from_row(row: Row) -> Self {
+#[async_trait]
+impl DbView for PhotoFull {
+    fn from_row(row: Row) -> Self {
         PhotoFull {
             id: row.get(0),
             file_path: row.get(1),
@@ -54,7 +57,26 @@ impl PhotoFull {
         }
     }
 
-    pub fn from_paginated_row(row: Row) -> (Self, i64) {
+    async fn get_all(pool: &Pool) -> Result<Vec<PhotoFull>, PoolError> {
+        let client: Client = pool.get().await?;
+        let stmt = client.prepare("SELECT * FROM photos_all").await?;
+        let rows = client.query(&stmt, &[]).await?;
+
+        let photos = rows
+            .into_iter()
+            .map(PhotoFull::from_row)
+            .collect::<Vec<PhotoFull>>();
+
+        Ok(photos)
+    }
+
+    async fn get_by_id(id: i64, pool: &Pool) -> Result<Self, PoolError> {
+        unimplemented!()
+    }
+}
+
+impl Paginated for PhotoFull {
+    fn from_paginated_row(row: Row) -> (Self, i64) {
         let photo = PhotoFull {
             id: row.get(0),
             file_path: row.get(1),
@@ -78,20 +100,9 @@ impl PhotoFull {
 
         (photo, count)
     }
+}
 
-    pub async fn all_photos(pool: &Pool) -> Result<Vec<PhotoFull>, PoolError> {
-        let client: Client = pool.get().await?;
-        let stmt = client.prepare("SELECT * FROM photos_all").await?;
-        let rows = client.query(&stmt, &[]).await?;
-
-        let photos = rows
-            .into_iter()
-            .map(PhotoFull::from_row)
-            .collect::<Vec<PhotoFull>>();
-
-        Ok(photos)
-    }
-
+impl PhotoFull {
     pub async fn get_page(
         req: GetPhotosRequest,
         pool: &Pool,

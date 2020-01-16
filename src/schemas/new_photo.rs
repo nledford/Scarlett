@@ -5,10 +5,10 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use deadpool_postgres::{Pool, PoolError};
-
 use sha3::{Digest, Sha3_256};
 
 use crate::schemas::photo::Photo;
+use crate::schemas::DbTable;
 
 #[derive(Clone)]
 pub struct NewPhoto {
@@ -57,7 +57,7 @@ impl NewPhoto {
                 ],
             )
             .await?;
-        let result = Photo::get_photo_by_id(result.get(0), pool).await?;
+        let result = Photo::get_by_id(result.get(0), pool).await?;
 
         Ok(result)
     }

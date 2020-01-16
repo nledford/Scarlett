@@ -7,6 +7,7 @@ use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::schemas;
 use crate::schemas::photo::Photo;
 use crate::schemas::photo_full::PhotoFull;
+use crate::schemas::DbTable;
 
 // ALL PHOTOS **************************************************************************************
 
@@ -53,7 +54,7 @@ pub async fn get_photo(
     info: web::Path<i64>,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse, errors::Error> {
-    let res = Photo::get_photo_by_id(info.into_inner(), &pool).await;
+    let res = Photo::get_by_id(info.into_inner(), &pool).await;
 
     match res {
         Ok(photo) => Ok(HttpResponse::Ok().json(photo)),

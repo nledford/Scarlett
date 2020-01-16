@@ -1,10 +1,12 @@
-use std::{fs};
+use std::fs;
 
+use async_trait::async_trait;
 use chrono::{NaiveDateTime, Utc};
 use deadpool_postgres::{Pool, PoolError};
 use serde::{Deserialize, Serialize};
-
 use tokio_postgres::Row;
+
+use crate::schemas::DbTable;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Photo {
@@ -22,8 +24,9 @@ pub struct Photo {
     pub anonymous_entities: bool,
 }
 
-impl Photo {
-    pub fn from_row(row: Row) -> Self {
+#[async_trait]
+impl DbTable for Photo {
+    fn from_row(row: Row) -> Self {
         Photo {
             id: row.get(0),
             file_path: row.get(1),
@@ -40,6 +43,27 @@ impl Photo {
         }
     }
 
+    async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
+        let client = pool.get().await?;
+        let stmt = client.prepare("SELECT * FROM photos").await?;
+        let results = client.query(&stmt, &[]).await?;
+        let photos: Vec<Photo> = results.into_iter().map(Photo::from_row).collect();
+
+        Ok(photos)
+    }
+
+    async fn get_by_id(photo_id: i64, pool: &Pool) -> Result<Self, PoolError> {
+        let client = pool.get().await?;
+        let stmt = client.prepare("SELECT * FROM photos WHERE id = $1").await?;
+        let result = client.query_one(&stmt, &[&photo_id]).await?;
+
+        let photo = Photo::from_row(result);
+
+        Ok(photo)
+    }
+}
+
+impl Photo {
     pub async fn update_photo(updated_photo: Photo, pool: &Pool) -> Result<Self, PoolError> {
         let mut updated = updated_photo.clone();
         updated.date_updated = Utc::now().naive_utc();
@@ -82,19 +106,9 @@ impl Photo {
             )
             .await?;
 
-        let result = Photo::get_photo_by_id(updated.id as i64, pool).await?;
+        let result = Photo::get_by_id(updated.id as i64, pool).await?;
 
         Ok(result)
-    }
-
-    pub async fn get_photo_by_id(photo_id: i64, pool: &Pool) -> Result<Self, PoolError> {
-        let client = pool.get().await?;
-        let stmt = client.prepare("SELECT * FROM photos WHERE id = $1").await?;
-        let result = client.query_one(&stmt, &[&photo_id]).await?;
-
-        let photo = Photo::from_row(result);
-
-        Ok(photo)
     }
 
     pub async fn get_photo_by_name(name: &str, hash: &str, pool: &Pool) -> Result<Self, PoolError> {
@@ -110,7 +124,7 @@ impl Photo {
     }
 
     pub async fn delete_photo(photo_id: i64, pool: &Pool) -> Result<String, PoolError> {
-        let photo = Photo::get_photo_by_id(photo_id, &pool).await?;
+        let photo = Photo::get_by_id(photo_id, &pool).await?;
 
         // attempt to delete photo
         fs::remove_file(&photo.file_path).expect("Could not delete file");
