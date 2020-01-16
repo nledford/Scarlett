@@ -69,17 +69,17 @@ impl Tag {
             .await?;
         let _ = client.execute(&stmt, &[&tag.tag_name, &tag.id]).await?;
 
-        let updated_tag = Tag::get_by_id(tag.id as i64).await?;
+        let updated_tag = Tag::get_by_id(tag.id as i64, pool).await?;
 
-        Ok(tag)
+        Ok(updated_tag)
     }
 
     pub async fn delete(id: i64, pool: &Pool) -> Result<String, PoolError> {
-        let tag_to_delete = Tag::get_by_id(id).await?;
+        let tag_to_delete = Tag::get_by_id(id, pool).await?;
 
         let client = pool.get().await?;
         let stmt = client.prepare("DELETE FROM tags WHERE id = $1").await?;
-        let _ = client.execute(&stmt, &[&id]);
+        let _ = client.execute(&stmt, &[&tag_to_delete.id]);
 
         Ok("Tag deleted successfully".to_string())
     }

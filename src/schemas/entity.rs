@@ -70,7 +70,9 @@ impl Entity {
         // Assume entity does not exist
 
         let client = pool.get().await?;
-        let stmt = client.prepare("INSERT INTO entity (entity_name) VALUES ($1)");
+        let stmt = client
+            .prepare("INSERT INTO entity (entity_name) VALUES ($1)")
+            .await?;
         let _ = client.execute(&stmt, &[&entity_name]).await?;
 
         let entity = Entity::get_by_name(entity_name, pool).await?;
