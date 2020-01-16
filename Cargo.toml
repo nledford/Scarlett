@@ -14,8 +14,8 @@ actix-web = "2.0.0"
 anyhow = "1.0.26"
 async-trait = "0.1.22"
 chrono = { version = "0.4.10", features = ["serde"] }
-deadpool = "0.4.3"
-deadpool-postgres = "0.4.3"
+deadpool = "0.5.0"
+deadpool-postgres = "0.5.0"
 derive_more = "0.99.2"
 diesel =  { version = "1.4.3", features = ["postgres"] }
 dotenv = "0.15.0"
