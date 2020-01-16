@@ -27,35 +27,35 @@ FROM (
          SELECT (SELECT COUNT(*)
                  from photos
                  where rating = 0)  UNRATED,
-                (SELECT COUNT(*)
+                (SELECT NULLIF(COUNT(*), 0)
                  from photos
                  where rating = 1)  PENDING_DELETE,
-                (SELECT COUNT(*)
+                (SELECT NULLIF(COUNT(*), 0)
                  from photos
                  where rating = 2)  HIDDEN,
-                (SELECT COUNT(*)
+                (SELECT NULLIF(COUNT(*), 0)
                  from photos
                  where rating = 3)  NEUTRAL,
-                (SELECT COUNT(*)
+                (SELECT NULLIF(COUNT(*), 0)
                  from photos
                  where rating = 4)  WALLPAPER_CANDIDATES,
-                (SELECT COUNT(*)
+                (SELECT NULLIF(COUNT(*), 0)
                  from photos
                  where rating = 5)  FAVORITES,
-                (SELECT COUNT(DISTINCT pe.photo_id)
+                (SELECT NULLIF(COUNT(DISTINCT pe.photo_id), 0)
                  FROM photos p
                           INNER JOIN photo_entity pe on p.id = pe.photo_id
                  WHERE rating <> 1) WITH_ENTITIES,
-                (SELECT COUNT(DISTINCT pt.photo_id)
+                (SELECT NULLIF(COUNT(DISTINCT pt.photo_id), 0)
                  FROM photos p
                           inner join photo_tag pt on p.id = pt.photo_id
                  WHERE rating <> 1) WITH_TAGS,
-                (SELECT COUNT(DISTINCT pw.photo_id)
+                (SELECT NULLIF(COUNT(DISTINCT pw.photo_id), 0)
                  FROM photos p
                           INNER JOIN photo_wallpaper pw on p.id = pw.photo_id
                  WHERE rating <> 1) WITH_WALLPAPER,
-                (SELECT COUNT(*)
+                (SELECT NULLIF(COUNT(*), 0)
                  from photos
                  where rating <> 1) TOTAL_KEPT,
-                (SELECT COUNT(*)
+                (SELECT NULLIF(COUNT(*), 0)
                  from photos)       TOTAL) s;
