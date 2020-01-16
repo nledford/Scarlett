@@ -95,7 +95,7 @@ impl Entity {
     }
 
     pub async fn delete(id: i64, pool: &Pool) -> Result<String, PoolError> {
-        let entity = Entity::get_by_id(id, pool).await?;
+        let _entity = Entity::get_by_id(id, pool).await?;
 
         let client = pool.get().await?;
         let stmt = client.prepare("DELETE FROM entity WHERE id = $1").await?;

@@ -70,7 +70,7 @@ impl DbView for PhotoFull {
         Ok(photos)
     }
 
-    async fn get_by_id(id: i64, pool: &Pool) -> Result<Self, PoolError> {
+    async fn get_by_id(_id: i64, _pool: &Pool) -> Result<Self, PoolError> {
         unimplemented!()
     }
 }
