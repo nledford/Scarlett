@@ -11,25 +11,7 @@ use crate::schemas::DbTable;
 
 // ALL PHOTOS **************************************************************************************
 
-/* Possible candidate for pagination query
-* SELECT *
-  FROM (SELECT row_number() over () AS position, p.*
-        FROM photos p
-                 INNER JOIN photo_ordering po ON p.id = po.photo_id
-        ORDER BY po.position) t
-  WHERE t.position > 0
-  LIMIT 100;
-*/
-
 #[get("/photos")]
-//pub async fn get_photos(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
-//    let res = PhotoFull::all_photos(&pool).await;
-//
-//    match res {
-//        Ok(photos) => Ok(HttpResponse::Ok().json(photos)),
-//        Err(err) => Ok(HttpResponse::InternalServerError().json(err.to_string())),
-//    }
-//}
 pub async fn get_photos(
     info: web::Query<GetPhotosRequest>,
     pool: web::Data<Pool>,
