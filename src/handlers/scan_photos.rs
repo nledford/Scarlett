@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::files;
 use crate::models::errors;
+use crate::models::responses::ApiResponse;
 use crate::schemas::new_photo::NewPhoto;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -66,7 +67,7 @@ pub async fn run_scan(
     };
 
     if let Err(err) = file_scan_result {
-        return Ok(HttpResponse::InternalServerError().json(err.to_string()));
+        return Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())));
     }
     let file_scan_result = file_scan_result.unwrap();
 
@@ -80,5 +81,5 @@ pub async fn run_scan(
         file_scan_result.deleted_photos_count,
     );
 
-    Ok(HttpResponse::Ok().json(result))
+    Ok(HttpResponse::Ok().json(ApiResponse::success(result)))
 }

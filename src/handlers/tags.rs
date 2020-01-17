@@ -13,12 +13,9 @@ pub async fn get_tags(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Err
     let res = Tag::get_all(&pool).await;
 
     match res {
-        Ok(tags) => Ok(HttpResponse::Ok().json(ApiResponse::new("success", 200, "Ok", tags))),
-        Err(err) => Ok(HttpResponse::InternalServerError().json(ApiResponse::new(
-            "error",
-            500,
-            "An error has occurred",
-            err.to_string(),
-        ))),
+        Ok(tags) => Ok(HttpResponse::Ok().json(ApiResponse::success(tags))),
+        Err(err) => {
+            Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())))
+        }
     }
 }

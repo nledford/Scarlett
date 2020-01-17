@@ -19,13 +19,10 @@ pub async fn get_photos(
     let res = PhotoFull::get_page(info.into_inner(), &pool).await;
 
     match res {
-        Ok(page) => Ok(HttpResponse::Ok().json(ApiResponse::new("success", 200, "ok", page))),
-        Err(err) => Ok(HttpResponse::InternalServerError().json(ApiResponse::new(
-            "error",
-            500,
-            "An error has occurred",
-            err.to_string(),
-        ))),
+        Ok(page) => Ok(HttpResponse::Ok().json(ApiResponse::success(page))),
+        Err(err) => {
+            Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())))
+        }
     }
 }
 
@@ -39,8 +36,10 @@ pub async fn get_photo(
     let res = Photo::get_by_id(info.into_inner(), &pool).await;
 
     match res {
-        Ok(photo) => Ok(HttpResponse::Ok().json(photo)),
-        Err(err) => Ok(HttpResponse::InternalServerError().json(err.to_string())),
+        Ok(photo) => Ok(HttpResponse::Ok().json(ApiResponse::success(photo))),
+        Err(err) => {
+            Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())))
+        }
     }
 }
 
@@ -53,17 +52,11 @@ pub async fn reset_seed(pool: web::Data<Pool>) -> Result<HttpResponse, errors::E
     let res = schemas::reset_seed(&pool).await;
 
     match res {
-        Ok(_) => Ok(HttpResponse::Ok().json(ApiResponse::new(
-            "success",
-            200,
-            "ok",
+        Ok(_) => Ok(HttpResponse::Ok().json(ApiResponse::success(
             "`photo_ordering` materialized view was refreshed successfully",
         ))),
-        Err(err) => Ok(HttpResponse::InternalServerError().json(ApiResponse::new(
-            "error",
-            500,
-            "An error has occurred",
-            err.to_string(),
-        ))),
+        Err(err) => {
+            Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())))
+        }
     }
 }

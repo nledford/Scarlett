@@ -10,12 +10,9 @@ pub async fn get_photos_stats(pool: web::Data<Pool>) -> Result<HttpResponse, err
     let res = PhotosStats::get_photos_stats(pool.get_ref()).await;
 
     match res {
-        Ok(stats) => Ok(HttpResponse::Ok().json(ApiResponse::new("success", 200, "ok", stats))),
-        Err(err) => Ok(HttpResponse::InternalServerError().json(ApiResponse::new(
-            "failure",
-            500,
-            "An error has occurred",
-            err.to_string(),
-        ))),
+        Ok(stats) => Ok(HttpResponse::Ok().json(ApiResponse::success(stats))),
+        Err(err) => {
+            Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())))
+        }
     }
 }

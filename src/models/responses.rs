@@ -42,4 +42,12 @@ impl<T> ApiResponse<T> {
             data,
         }
     }
+
+    pub fn error(data: T) -> Self {
+        ApiResponse::new("Internal Server Error", 500, "An error has occurred", data)
+    }
+
+    pub fn success(data: T) -> Self {
+        ApiResponse::new("success", 200, "OK", data)
+    }
 }

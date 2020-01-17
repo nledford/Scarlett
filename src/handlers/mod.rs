@@ -40,7 +40,7 @@ fn build_list_of_routes() -> Vec<Route> {
 pub async fn index() -> Result<HttpResponse, errors::Error> {
     let routes = build_list_of_routes();
 
-    let res = ApiResponse::new("success", 200, "OK", routes);
+    let res = ApiResponse::success(routes);
 
     Ok(HttpResponse::Ok().json(res))
 }
@@ -67,7 +67,7 @@ pub async fn status() -> Result<HttpResponse, errors::Error> {
     // TODO figure out a way to get application uptime
     let status = AppStatus::new(0, "The service is healthy");
 
-    let res = ApiResponse::new("success", 200, "OK", status);
+    let res = ApiResponse::success(status);
 
     Ok(HttpResponse::Ok().json(res))
 }
