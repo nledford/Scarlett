@@ -7,6 +7,7 @@ use crate::models::responses::ApiResponse;
 pub mod photos;
 pub mod scan_photos;
 pub mod stats;
+pub mod tags;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Route {
