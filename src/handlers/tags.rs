@@ -37,7 +37,7 @@ pub async fn create_tag(
     let res = Tag::create(params.into_inner().tag_name.as_str(), &pool).await;
 
     match res {
-        Ok(new_tag) => Ok(HttpResponse::Ok().json(ApiResponse::success(tag))),
+        Ok(new_tag) => Ok(HttpResponse::Ok().json(ApiResponse::success(new_tag))),
         Err(err) => {
             Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())))
         }
