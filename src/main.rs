@@ -69,6 +69,7 @@ async fn main() -> std::io::Result<()> {
             .service(handlers::stats::get_photos_stats)
             // TAGS ********************************************************************************
             .service(handlers::tags::get_tags)
+            .service(handlers::tags::create_tag)
             // RESET SEED **************************************************************************
             .service(handlers::photos::reset_seed)
     })
