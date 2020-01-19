@@ -563,7 +563,7 @@ dependencies = [
 
 [[package]]
 name = "deadpool"
-version = "0.5.0"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "async-trait 0.1.22 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -576,12 +576,12 @@ dependencies = [
 
 [[package]]
 name = "deadpool-postgres"
-version = "0.5.1"
+version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "async-trait 0.1.22 (registry+https://github.com/rust-lang/crates.io-index)",
  "config 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "deadpool 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "deadpool 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1646,8 +1646,8 @@ dependencies = [
  "anyhow 1.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "async-trait 0.1.22 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
- "deadpool 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "deadpool-postgres 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "deadpool 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "deadpool-postgres 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.99.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "diesel 1.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "dotenv 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2219,8 +2219,8 @@ dependencies = [
 "checksum crossbeam-queue 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "c695eeca1e7173472a32221542ae469b3e9aac3a4fc81f7696bcad82029493db"
 "checksum crossbeam-utils 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ce446db02cdc3165b94ae73111e570793400d0794e46125cc4056c81cbb039f4"
 "checksum crypto-mac 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "4434400df11d95d556bac068ddfedd482915eb18fe8bea89bc80b6e4b1c179e5"
-"checksum deadpool 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3901486c20016264271efc80c7425ad380460cd0657aa3441f666dbc93519bf3"
-"checksum deadpool-postgres 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "0e2176a7ba75661c1978ff2745fbd585e102d1df54fa55d1bb4cf4d2d3e8b0a2"
+"checksum deadpool 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "38ce52b0b1ad88ed0b2be2bc3c65ad39dd1a5d9633b1a8a314fc017fbe0027d2"
+"checksum deadpool-postgres 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)" = "1e67600d98802f40e8f3d3a81f19a961d75b2fb2999317929f3194fe4a4a5883"
 "checksum deflate 0.7.20 (registry+https://github.com/rust-lang/crates.io-index)" = "707b6a7b384888a70c8d2e8650b3e60170dfc6a67bb4aa67b6dfca57af4bedb4"
 "checksum derive_more 0.99.2 (registry+https://github.com/rust-lang/crates.io-index)" = "2159be042979966de68315bce7034bb000c775f22e3e834e1c52ff78f041cae8"
 "checksum diesel 1.4.3 (registry+https://github.com/rust-lang/crates.io-index)" = "9d7cc03b910de9935007861dce440881f69102aaaedfd4bc5a6f40340ca5840c"
