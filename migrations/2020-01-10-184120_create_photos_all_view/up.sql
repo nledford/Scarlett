@@ -13,6 +13,11 @@ select id,
        date_updated,
        original_width,
        original_height,
+       case
+           when original_width::decimal / original_height::decimal < 1.0 then 'Portrait'
+           when original_width::decimal / original_height::decimal > 1.0 then 'Landscape'
+           else 'Square'
+           end                           orientation,
        rotation,
        ineligible_for_wallpaper,
        anonymous_entities,
