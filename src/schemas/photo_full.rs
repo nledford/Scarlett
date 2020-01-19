@@ -28,6 +28,7 @@ pub struct PhotoFull {
     pub date_updated: NaiveDateTime,
     pub original_width: i32,
     pub original_height: i32,
+    pub orientation: String,
     pub aspect_ratio: String,
     pub rotation: i32,
     pub ineligible_for_wallpaper: bool,
@@ -54,12 +55,13 @@ impl DbView for PhotoFull {
             date_updated: row.get(7),
             original_width: w,
             original_height: h,
-            rotation: row.get(10),
-            ineligible_for_wallpaper: row.get(11),
-            anonymous_entities: row.get(12),
-            entities: row.get(13),
-            tags: row.get(14),
-            wallpapers: row.get(15),
+            orientation: row.get(10),
+            rotation: row.get(11),
+            ineligible_for_wallpaper: row.get(12),
+            anonymous_entities: row.get(13),
+            entities: row.get(14),
+            tags: row.get(15),
+            wallpapers: row.get(16),
 
             aspect_ratio: images::extract_ratio(w, h).to_string(),
         }
@@ -99,17 +101,18 @@ impl Paginated for PhotoFull {
             date_updated: row.get(7),
             original_width: w,
             original_height: h,
-            rotation: row.get(10),
-            ineligible_for_wallpaper: row.get(11),
-            anonymous_entities: row.get(12),
-            entities: row.get(13),
-            tags: row.get(14),
-            wallpapers: row.get(15),
+            orientation: row.get(10),
+            rotation: row.get(11),
+            ineligible_for_wallpaper: row.get(12),
+            anonymous_entities: row.get(13),
+            entities: row.get(14),
+            tags: row.get(15),
+            wallpapers: row.get(16),
 
             aspect_ratio: images::extract_ratio(w, h).to_string(),
         };
 
-        let count = row.get(16);
+        let count = row.get(17);
 
         (photo, count)
     }
@@ -134,6 +137,7 @@ impl PhotoFull {
                                           date_updated,
                                           original_width,
                                           original_height,
+                                          orientation,
                                           rotation,
                                           ineligible_for_wallpaper,
                                           anonymous_entities,
