@@ -11,6 +11,8 @@ use crate::pagination::page_metadata::PageMetadata;
 use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::schemas::{DbView, Paginated};
 use crate::types::PaginatedPhotos;
+use crate::utils;
+use crate::utils::images;
 
 // `photos_all` view *******************************************************************************
 
@@ -26,6 +28,7 @@ pub struct PhotoFull {
     pub date_updated: NaiveDateTime,
     pub original_width: i32,
     pub original_height: i32,
+    pub aspect_ratio: String,
     pub rotation: i32,
     pub ineligible_for_wallpaper: bool,
     pub anonymous_entities: bool,
@@ -37,6 +40,9 @@ pub struct PhotoFull {
 #[async_trait]
 impl DbView for PhotoFull {
     fn from_row(row: Row) -> Self {
+        let w = row.get(8);
+        let h = row.get(9);
+
         PhotoFull {
             id: row.get(0),
             file_path: row.get(1),
@@ -46,14 +52,16 @@ impl DbView for PhotoFull {
             rating: row.get(5),
             date_created: row.get(6),
             date_updated: row.get(7),
-            original_width: row.get(8),
-            original_height: row.get(9),
+            original_width: w,
+            original_height: h,
             rotation: row.get(10),
             ineligible_for_wallpaper: row.get(11),
             anonymous_entities: row.get(12),
             entities: row.get(13),
             tags: row.get(14),
             wallpapers: row.get(15),
+
+            aspect_ratio: images::extract_ratio(w, h).to_string(),
         }
     }
 
@@ -77,6 +85,9 @@ impl DbView for PhotoFull {
 
 impl Paginated for PhotoFull {
     fn from_paginated_row(row: Row) -> (Self, i64) {
+        let w = row.get(8);
+        let h = row.get(9);
+
         let photo = PhotoFull {
             id: row.get(0),
             file_path: row.get(1),
@@ -86,14 +97,16 @@ impl Paginated for PhotoFull {
             rating: row.get(5),
             date_created: row.get(6),
             date_updated: row.get(7),
-            original_width: row.get(8),
-            original_height: row.get(9),
+            original_width: w,
+            original_height: h,
             rotation: row.get(10),
             ineligible_for_wallpaper: row.get(11),
             anonymous_entities: row.get(12),
             entities: row.get(13),
             tags: row.get(14),
             wallpapers: row.get(15),
+
+            aspect_ratio: images::extract_ratio(w, h).to_string(),
         };
 
         let count = row.get(16);
