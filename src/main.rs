@@ -21,6 +21,16 @@ fn create_pool() -> Pool {
     Pool::new(mgr, 16)
 }
 
+fn get_addr() -> String {
+    let addr = match env::var("SERVER_HOST") {
+        Ok(host) => host,
+        Err(_e) => "-2.0.0.0:8000".to_string(),
+    };
+    env::set_var("SERVER_HOST", addr.clone());
+
+    addr
+}
+
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     env::set_var("RUST_LOG", "actix_server=info,actix_web=info");
@@ -29,12 +39,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
     dotenv::dotenv().ok();
 
-    let addr = match env::var("SERVER_HOST") {
-        Ok(host) => host,
-        Err(_e) => "0.0.0.0:8000".to_string(),
-    };
-    env::set_var("SERVER_HOST", addr.clone());
-
+    let addr = get_addr();
     let pool = create_pool();
 
     println!("Server running at {}", &addr);
