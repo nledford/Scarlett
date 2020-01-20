@@ -24,7 +24,7 @@ fn create_pool() -> Pool {
 fn get_addr() -> String {
     let addr = match env::var("SERVER_HOST") {
         Ok(host) => host,
-        Err(_e) => "-2.0.0.0:8000".to_string(),
+        Err(_e) => "0.0.0.0:8000".to_string(),
     };
     env::set_var("SERVER_HOST", addr.clone());
 
