@@ -66,6 +66,7 @@ async fn main() -> std::io::Result<()> {
             // DEFAULT ROUTES **********************************************************************
             .service(handlers::index)
             .service(handlers::status)
+            // ENTITIES ****************************************************************************
             // PHOTOS ******************************************************************************
             .service(handlers::photos::get_photos)
             // SCAN PHOTOS *************************************************************************
@@ -77,6 +78,7 @@ async fn main() -> std::io::Result<()> {
             .service(handlers::tags::create_tag)
             .service(handlers::tags::update_tag)
             .service(handlers::tags::delete_tag)
+            // WALLPAPER ***************************************************************************
             // RESET SEED **************************************************************************
             .service(handlers::photos::reset_seed)
     })
