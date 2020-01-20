@@ -67,6 +67,7 @@ async fn main() -> std::io::Result<()> {
             .service(handlers::index)
             .service(handlers::status)
             // ENTITIES ****************************************************************************
+            .service(handlers::entity::get_entities)
             // PHOTOS ******************************************************************************
             .service(handlers::photos::get_photos)
             // SCAN PHOTOS *************************************************************************

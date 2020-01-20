@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::models::errors;
 use crate::models::responses::ApiResponse;
 
+pub mod entity;
 pub mod photos;
 pub mod scan_photos;
 pub mod stats;
