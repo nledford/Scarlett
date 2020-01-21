@@ -1,8 +1,9 @@
+use actix_web::{get, web, HttpResponse};
+use deadpool_postgres::Pool;
+
 use crate::models::errors;
 use crate::models::responses::ApiResponse;
 use crate::schemas::directory_tree::get_directory_tree;
-use actix_web::{get, web, HttpResponse};
-use deadpool_postgres::Pool;
 
 #[get("/directories")]
 pub async fn get_tree(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
