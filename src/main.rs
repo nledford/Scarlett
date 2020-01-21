@@ -66,6 +66,8 @@ async fn main() -> std::io::Result<()> {
             // DEFAULT ROUTES **********************************************************************
             .service(handlers::index)
             .service(handlers::status)
+            // DIRECTORY TREE **********************************************************************
+            .service(handlers::directory_tree::get_tree)
             // ENTITIES ****************************************************************************
             .service(handlers::entity::get_entities)
             // PHOTOS ******************************************************************************
