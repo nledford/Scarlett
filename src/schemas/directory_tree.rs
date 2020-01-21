@@ -1,7 +1,10 @@
 use deadpool_postgres::{Pool, PoolError};
 use tokio_postgres::Row;
 
+use serde_json::Value as JSON;
+
 #[derive(serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Node {
     pub id: String,
     pub parent_id: String,
@@ -10,15 +13,16 @@ pub struct Node {
 }
 
 #[derive(serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DirectoryTree {
     pub tree: Node,
 }
 
 impl DirectoryTree {
     fn from_row(row: Row) -> DirectoryTree {
-        let json: &str = row.get(0);
+        let json: JSON  = row.get(0);
 
-        let directory_tree: DirectoryTree = serde_json::from_str(&json).unwrap();
+        let directory_tree: DirectoryTree = serde_json::from_str(json.to_string().as_str()).unwrap();
 
         directory_tree
     }

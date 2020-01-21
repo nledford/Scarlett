@@ -1,17 +1,21 @@
 -- first create the get tree function using javascript rather than plsql
 create or replace function get_tree(paths json) returns json as
 $$
+    // declare the tree array which will hold all nodes
     let root = []
+
+    // this will be a randomly generated string, with the exception of the root directory
+    let currentId = 'root'
 
     paths.forEach((path) => {
         let pathParts = path.split('/')
         pathParts.pop()
+        pathParts.shift()
 
         // Initialize current level to root
         let currentLevel = root
 
         let currentPath = ''
-        let currentId = 'root';
         pathParts.forEach((part) => {
             currentPath = '${currentPath}/${part}'
 
@@ -45,7 +49,6 @@ $$ LANGUAGE plv8 immutable
                  strict;
 
 -- then create the tree view
-
 create or replace view directory_tree as
 with data as (
     select array_to_json(array_agg(folder)) as data
@@ -54,7 +57,7 @@ with data as (
           group by folder
           order by lower(folder)) s
 )
-select jsonb_pretty(get_tree(data)::jsonb) directory_tree
+select get_tree(data) directory_tree
 from data;
 
 select * from directory_tree;
