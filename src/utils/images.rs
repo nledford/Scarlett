@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-
 fn divide(a: i32, b: i32) -> f64 {
     let fa = f64::from(a);
     let fb = f64::from(b);
@@ -13,10 +12,10 @@ fn build_ratios() -> HashMap<String, f64> {
 
     // landscape
     ratios.insert("5:4".to_string(), divide(5, 4));
-    ratios.insert("4:3".to_string(), divide(4,3));
-    ratios.insert("3:2".to_string(), divide(3,2));
+    ratios.insert("4:3".to_string(), divide(4, 3));
+    ratios.insert("3:2".to_string(), divide(3, 2));
     ratios.insert("16:10".to_string(), divide(16, 10));
-    ratios.insert("5:3".to_string(), divide(5,3));
+    ratios.insert("5:3".to_string(), divide(5, 3));
     ratios.insert("16:9".to_string(), divide(16, 9));
     ratios.insert("21:9".to_string(), divide(21, 9));
     ratios.insert("21:10".to_string(), divide(21, 10));
@@ -24,7 +23,7 @@ fn build_ratios() -> HashMap<String, f64> {
     // portrait
     ratios.insert("4:5".to_string(), divide(4, 5));
     ratios.insert("3:4".to_string(), divide(3, 4));
-    ratios.insert("2:3".to_string(), divide(2,3));
+    ratios.insert("2:3".to_string(), divide(2, 3));
     ratios.insert("10:16".to_string(), divide(10, 16));
     ratios.insert("3:5".to_string(), divide(3, 5));
     ratios.insert("9:16".to_string(), divide(9, 16));
@@ -32,7 +31,7 @@ fn build_ratios() -> HashMap<String, f64> {
     ratios.insert("10:21".to_string(), divide(10, 21));
 
     // default
-    ratios.insert("1:1".to_string(), divide(1,1));
+    ratios.insert("1:1".to_string(), divide(1, 1));
 
     ratios
 }
@@ -60,4 +59,3 @@ pub fn extract_ratio(width: i32, height: i32) -> String {
     }
     find_closest_ratio(divided)
 }
-

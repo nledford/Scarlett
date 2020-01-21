@@ -1,9 +1,9 @@
-use actix_web::{get, web, HttpResponse};
-use deadpool_postgres::Pool;
 use crate::models::errors;
+use crate::models::responses::ApiResponse;
 use crate::schemas::entity::Entity;
 use crate::schemas::DbTable;
-use crate::models::responses::ApiResponse;
+use actix_web::{get, web, HttpResponse};
+use deadpool_postgres::Pool;
 
 // ALL ENTITIES ************************************************************************************
 

@@ -11,7 +11,7 @@ use crate::pagination::page_metadata::PageMetadata;
 use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::schemas::{DbView, Paginated};
 use crate::types::PaginatedPhotos;
-use crate::utils;
+
 use crate::utils::images;
 
 // `photos_all` view *******************************************************************************
