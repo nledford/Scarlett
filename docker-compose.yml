@@ -12,7 +12,8 @@ services:
 
   postgres-scarlett:
     container_name: postgres-scarlett
-    image: postgres:12
+#    image: postgres:12
+    image: clkao/postgres-plv8:12-2
     command: postgres -c listen_addresses='*'
     env_file:
       - .env
