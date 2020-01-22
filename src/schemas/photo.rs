@@ -6,9 +6,9 @@ use deadpool_postgres::{Pool, PoolError};
 use serde::{Deserialize, Serialize};
 use tokio_postgres::Row;
 
+use crate::schemas::entity::Entity;
 use crate::schemas::tags::Tag;
 use crate::schemas::DbTable;
-use crate::schemas::entity::Entity;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Photo {
@@ -138,24 +138,42 @@ impl Photo {
         Ok("File deleted successfully!".to_string())
     }
 
-    pub async fn add_entity_to_photo(photo_id: i32, entity_id: i32, pool: &Pool) -> Result<String, PoolError> {
+    pub async fn add_entity_to_photo(
+        photo_id: i32,
+        entity_id: i32,
+        pool: &Pool,
+    ) -> Result<String, PoolError> {
         let client = pool.get().await?;
-        let stmt = client.prepare("insert into photo_entity (photo_id, entity_id) values ($1, $2)").await?;
+        let stmt = client
+            .prepare("insert into photo_entity (photo_id, entity_id) values ($1, $2)")
+            .await?;
         let _ = client.execute(&stmt, &[&photo_id, &entity_id]).await?;
 
         let entity = Entity::get_by_id(entity_id, pool).await?;
 
-        Ok(format!("Entity `{}` added to photo successfully", entity.entity_name))
+        Ok(format!(
+            "Entity `{}` added to photo successfully",
+            entity.entity_name
+        ))
     }
 
-    pub async fn remove_entity_from_photo(photo_id: i32, entity_id: i32, pool: &Pool) -> Result<String, PoolError> {
+    pub async fn remove_entity_from_photo(
+        photo_id: i32,
+        entity_id: i32,
+        pool: &Pool,
+    ) -> Result<String, PoolError> {
         let client = pool.get().await?;
-        let stmt = client.prepare("delete from photo_entity where photo_id = $1 and entity_id = $2").await?;
+        let stmt = client
+            .prepare("delete from photo_entity where photo_id = $1 and entity_id = $2")
+            .await?;
         let _ = client.execute(&stmt, &[&photo_id, &entity_id]).await?;
 
         let entity = Entity::get_by_id(entity_id, pool).await?;
 
-        Ok(format!("Entity `{}` removed from photo successfully", entity.entity_name))
+        Ok(format!(
+            "Entity `{}` removed from photo successfully",
+            entity.entity_name
+        ))
     }
 
     pub async fn add_tag_to_photo(
