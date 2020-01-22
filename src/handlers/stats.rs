@@ -2,8 +2,8 @@ use actix_web::{get, web, HttpResponse};
 use deadpool_postgres::Pool;
 
 use crate::models::errors;
-use crate::models::stats::PhotosStats;
 use crate::responses::api_response::ApiResponse;
+use crate::stats::photos::PhotosStats;
 
 #[get("/stats/photos")]
 pub async fn get_photos_stats(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
