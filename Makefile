@@ -25,5 +25,8 @@ run_win:
 
 # restore db
 
+cargo_fix:
+	cargo fix --allow-dirty --allow-staged
+
 cargo_sort:
 	cargo-sort-ck -w
