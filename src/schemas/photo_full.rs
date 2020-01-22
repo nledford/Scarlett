@@ -13,8 +13,8 @@ use crate::schemas::{DbView, Paginated};
 use crate::types::PaginatedPhotos;
 
 use crate::utils::images;
+use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use std::env;
-use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
 
 // `photos_all` view *******************************************************************************
 
@@ -89,8 +89,6 @@ impl DbView for PhotoFull {
     async fn get_by_id(_id: i64, _pool: &Pool) -> Result<Self, PoolError> {
         unimplemented!()
     }
-
-
 }
 
 impl Paginated for PhotoFull {
@@ -189,9 +187,12 @@ impl PhotoFull {
     fn build_photo_url(image_path: String) -> String {
         let divider = "photos";
 
-        let hostname = env::var("SCARLETT_HOSTNAME").expect("SCARLETT_HOSTNAME environment variable not found.");
+        let hostname = env::var("SCARLETT_HOSTNAME")
+            .expect("SCARLETT_HOSTNAME environment variable not found.");
 
-        let divider_offset = &image_path.find(&divider).unwrap_or_else(|| image_path.len());
+        let divider_offset = &image_path
+            .find(&divider)
+            .unwrap_or_else(|| image_path.len());
         let divider_length = &divider.len();
         let index = divider_offset + divider_length + 1;
 
