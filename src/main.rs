@@ -84,7 +84,9 @@ async fn main() -> std::io::Result<()> {
             // SCAN PHOTOS *************************************************************************
             .service(handlers::scan_photos::run_scan)
             // STATS *******************************************************************************
+            .service(handlers::stats::get_entity_stats)
             .service(handlers::stats::get_photos_stats)
+            .service(handlers::stats::get_tag_stats)
             // TAGS ********************************************************************************
             .service(handlers::tags::get_tags)
             .service(handlers::tags::create_tag)
