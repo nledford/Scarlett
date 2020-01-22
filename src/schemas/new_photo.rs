@@ -117,14 +117,6 @@ fn calculate_sha3_hash(path: &str) -> String {
     hash
 }
 
-fn get_hashed_path(path: &Path) -> String {
-    let mut hasher = Sha3_256::new();
-    hasher.input(path.to_str().unwrap().to_string().as_bytes());
-    let hash = format!("{:x}", hasher.result());
-
-    hash
-}
-
 fn get_file_name(path: &str) -> String {
     Path::new(path)
         .file_name()
