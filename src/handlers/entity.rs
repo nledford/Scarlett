@@ -1,5 +1,5 @@
 use crate::models::errors;
-use crate::models::responses::ApiResponse;
+use crate::responses::api_response::ApiResponse;
 use crate::schemas::entity::Entity;
 use crate::schemas::DbTable;
 use actix_web::{get, web, HttpResponse};

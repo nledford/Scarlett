@@ -2,7 +2,7 @@ use actix_web::{get, HttpResponse};
 use serde::{Deserialize, Serialize};
 
 use crate::models::errors;
-use crate::models::responses::ApiResponse;
+use crate::responses::api_response::ApiResponse;
 
 pub mod directory_tree;
 pub mod entity;

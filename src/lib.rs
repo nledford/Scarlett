@@ -3,6 +3,7 @@ pub mod handlers;
 pub mod models;
 pub mod pagination;
 pub mod requests;
+pub mod responses;
 pub mod schemas;
 pub mod types;
 pub mod utils;

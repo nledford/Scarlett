@@ -2,7 +2,7 @@ use actix_web::{get, web, HttpResponse};
 use deadpool_postgres::Pool;
 
 use crate::models::errors;
-use crate::models::responses::ApiResponse;
+use crate::responses::api_response::ApiResponse;
 use crate::schemas::directory_tree::get_directory_tree;
 
 #[get("/directories")]

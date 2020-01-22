@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::files;
 use crate::models::errors;
-use crate::models::responses::ApiResponse;
+use crate::responses::api_response::ApiResponse;
 use crate::schemas::new_photo::NewPhoto;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

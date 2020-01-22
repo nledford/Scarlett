@@ -2,8 +2,8 @@ use actix_web::{get, web, HttpResponse};
 use deadpool_postgres::Pool;
 
 use crate::models::errors;
-use crate::models::responses::ApiResponse;
 use crate::requests::get_photos_request::GetPhotosRequest;
+use crate::responses::api_response::ApiResponse;
 use crate::schemas;
 use crate::schemas::photo::Photo;
 use crate::schemas::photo_full::PhotoFull;

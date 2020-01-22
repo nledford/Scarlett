@@ -3,7 +3,7 @@ use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
 use crate::models::errors;
-use crate::models::responses::ApiResponse;
+use crate::responses::api_response::ApiResponse;
 use crate::schemas::tags::Tag;
 use crate::schemas::DbTable;
 
