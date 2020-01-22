@@ -16,6 +16,7 @@ use crate::utils::images;
 use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use std::env;
 
+// TODO generate recommended wallpaper name
 // `photos_all` view *******************************************************************************
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
