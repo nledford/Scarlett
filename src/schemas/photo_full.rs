@@ -13,6 +13,8 @@ use crate::schemas::{DbView, Paginated};
 use crate::types::PaginatedPhotos;
 
 use crate::utils::images;
+use std::env;
+use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
 
 // `photos_all` view *******************************************************************************
 
@@ -36,6 +38,8 @@ pub struct PhotoFull {
     pub entities: Option<Vec<String>>,
     pub tags: Option<Vec<String>>,
     pub wallpapers: Option<Vec<String>>,
+
+    pub media_url: String,
 }
 
 #[async_trait]
@@ -43,10 +47,11 @@ impl DbView for PhotoFull {
     fn from_row(row: Row) -> Self {
         let w = row.get(8);
         let h = row.get(9);
+        let file_path: String = row.get(1);
 
         PhotoFull {
             id: row.get(0),
-            file_path: row.get(1),
+            file_path: file_path.clone(),
             folder: row.get(2),
             file_name: row.get(3),
             file_hash: row.get(4),
@@ -64,6 +69,7 @@ impl DbView for PhotoFull {
             wallpapers: row.get(16),
 
             aspect_ratio: images::extract_ratio(w, h).to_string(),
+            media_url: PhotoFull::build_photo_url(file_path),
         }
     }
 
@@ -83,12 +89,15 @@ impl DbView for PhotoFull {
     async fn get_by_id(_id: i64, _pool: &Pool) -> Result<Self, PoolError> {
         unimplemented!()
     }
+
+
 }
 
 impl Paginated for PhotoFull {
     fn from_paginated_row(row: Row) -> (Self, i64) {
         let w = row.get(8);
         let h = row.get(9);
+        let file_path: String = row.get(1);
 
         let photo = PhotoFull {
             id: row.get(0),
@@ -110,6 +119,7 @@ impl Paginated for PhotoFull {
             wallpapers: row.get(16),
 
             aspect_ratio: images::extract_ratio(w, h).to_string(),
+            media_url: PhotoFull::build_photo_url(file_path),
         };
 
         let count = row.get(17);
@@ -174,5 +184,24 @@ impl PhotoFull {
         let page = Page::new(metadata, links, photos);
 
         Ok(page)
+    }
+
+    fn build_photo_url(image_path: String) -> String {
+        let divider = "photos";
+
+        let hostname = env::var("SCARLETT_HOSTNAME").expect("SCARLETT_HOSTNAME environment variable not found.");
+
+        let divider_offset = &image_path.find(&divider).unwrap_or_else(|| image_path.len());
+        let divider_length = &divider.len();
+        let index = divider_offset + divider_length + 1;
+
+        let mut path = image_path;
+        path.replace_range(..index, "");
+
+        let url = format!("http://{}/media/{}", hostname, path);
+
+        const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'\'');
+        let encoded = percent_encode(url.as_ref(), FRAGMENT);
+        encoded.to_string()
     }
 }
