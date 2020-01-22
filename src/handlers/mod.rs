@@ -6,6 +6,7 @@ use crate::responses::api_response::ApiResponse;
 
 pub mod directory_tree;
 pub mod entity;
+pub mod media;
 pub mod photos;
 pub mod scan_photos;
 pub mod stats;
