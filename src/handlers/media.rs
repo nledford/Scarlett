@@ -6,6 +6,9 @@ use std::path::Path;
 use actix_files as fs;
 use actix_web::{get, http::header, web, Error, HttpRequest, HttpResponse, Result};
 
+use crate::errors::errors;
+use crate::responses::api_response::ApiResponse;
+
 #[get("/media/{tail:.*}")]
 pub async fn static_files(req: HttpRequest) -> Result<HttpResponse, Error> {
     let file_path_str = format!(".{}", req.path());
@@ -15,10 +18,10 @@ pub async fn static_files(req: HttpRequest) -> Result<HttpResponse, Error> {
     let file_mime = fs::file_extension_to_mime(&file_ext);
     let content_type = format!("{}/{}", file_mime.type_(), file_mime.subtype());
 
-    let res = web::block(move || -> Result<String, ()> {
-        let mut f = File::open(file_path_str).unwrap();
+    let res = web::block(move || -> Result<String, errors::Error> {
+        let mut f = File::open(file_path_str)?;
         let mut buffer = String::new();
-        f.read_to_string(&mut buffer).unwrap();
+        f.read_to_string(&mut buffer)?;
         Ok(buffer)
     })
     .await;
@@ -35,6 +38,6 @@ pub async fn static_files(req: HttpRequest) -> Result<HttpResponse, Error> {
             .content_type(content_type)
             .content_length(resp.len() as u64)
             .body(resp)),
-        Err(_) => Ok(HttpResponse::InternalServerError().into()),
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }
