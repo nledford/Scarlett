@@ -1,4 +1,4 @@
-use crate::models::errors;
+use crate::errors::errors;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::entity::Entity;
 use crate::schemas::DbTable;

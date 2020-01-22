@@ -2,7 +2,7 @@ use actix_web::{delete, get, patch, post, web, HttpResponse};
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
-use crate::models::errors;
+use crate::errors::errors;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::tags::Tag;
 use crate::schemas::DbTable;

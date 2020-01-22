@@ -3,7 +3,7 @@ use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
 use crate::files;
-use crate::models::errors;
+use crate::errors::errors;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::new_photo::NewPhoto;
 
