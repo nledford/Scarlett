@@ -1,11 +1,11 @@
-use actix_web::{get, web, HttpResponse};
+use actix_web::{get, HttpResponse, web};
 use deadpool_postgres::Pool;
 
 use crate::errors::errors;
 use crate::responses::api_response::ApiResponse;
-use crate::stats::entities::TagStats;
+use crate::stats::entities::EntityStats;
 use crate::stats::photos::PhotosStats;
-use crate::stats::tags::EntityStats;
+use crate::stats::tags::TagStats;
 
 #[get("/stats/entities")]
 pub async fn get_entity_stats(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
