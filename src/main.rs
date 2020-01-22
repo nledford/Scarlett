@@ -78,6 +78,8 @@ async fn main() -> std::io::Result<()> {
             .service(handlers::media::static_files)
             // PHOTOS ******************************************************************************
             .service(handlers::photos::get_photos)
+            .service(handlers::photos::add_tag_to_photo)
+            .service(handlers::photos::remove_tag_from_photo)
             // SCAN PHOTOS *************************************************************************
             .service(handlers::scan_photos::run_scan)
             // STATS *******************************************************************************

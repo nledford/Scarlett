@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use tokio_postgres::Row;
 
 use crate::schemas::DbTable;
+use crate::schemas::tags::Tag;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Photo {
@@ -134,5 +135,25 @@ impl Photo {
         let _result = client.execute(&stmt, &[&photo_id]).await?;
 
         Ok("File deleted successfully!".to_string())
+    }
+
+    pub async fn add_tag_to_photo(photo_id: i64, tag_id: i64, pool: &Pool) -> Result<String, PoolError> {
+        let client = pool.get().await?;
+        let stmt = client.prepare("insert into photo_tag (photo_id, tag_id) VALUES ($1, $2)").await?;
+        let result = client.execute(&stmt, &[&photo_id, &tag_id]).await?;
+
+        let tag = Tag::get_by_id(tag_id, pool).await?;
+
+        Ok(format!("Tag `{}` added to photo successfully", tag.tag_name))
+    }
+
+    pub async fn remove_tag_from_photo(photo_id: i64, tag_id: i64, pool: &Pool) -> Result<String, PoolError> {
+        let client = pool.get().await?;
+        let stmt = client.prepare("delete from photo_tag where photo_id = $1 and tag_id = $2").await?;
+        let result = client.execute(&stmt, &[&photo_id, &tag_id]).await?;
+
+        let tag = Tag::get_by_id(tag_id, pool).await?;
+
+        Ok(format!("Tag `{}` removed from photo successfully", tag.tag_name))
     }
 }
