@@ -55,6 +55,31 @@ pub async fn update_photo(_: web::Path<i32>, info: web::Json<Photo>, pool: web::
 
 // DELETE PHOTO ************************************************************************************
 
+// PHOTO ENTITIES **********************************************************************************
+
+#[post("/photos/{photo_id}/entities/{entity_id}")]
+pub async fn add_entity_to_photo(info: web::Path<(i32, i32)>, pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+    let (photo_id, entity_id) = info.into_inner();
+    let res = Photo::add_entity_to_photo(photo_id, entity_id, &pool).await;
+
+    match res {
+        Ok(message) => Ok(ApiResponse::success(message)),
+        Err(err) => Ok(ApiResponse::error(err.to_string()))
+    }
+}
+
+#[delete("/photos/{photo_id}/entities/{entity_id}")]
+pub async fn remove_entity_from_photo(info: web::Path<(i32, i32)>, pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+    let (photo_id, entity_id) = info.into_inner();
+
+    let res = Photo::remove_entity_from_photo(photo_id, entity_id, &pool).await;
+
+    match res {
+        Ok(message) => Ok(ApiResponse::success(message)),
+        Err(err) => Ok(ApiResponse::error(err.to_string()))
+    }
+}
+
 // PHOTO TAGS **************************************************************************************
 
 #[post("/photos/{photo_id}/tags/{tag_id}")]
