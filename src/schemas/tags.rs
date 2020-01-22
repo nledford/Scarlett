@@ -28,7 +28,7 @@ impl DbTable for Tag {
         Ok(tags)
     }
 
-    async fn get_by_id(id: i64, pool: &Pool) -> Result<Self, PoolError> {
+    async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM tags WHERE id = $1").await?;
         let result = client.query_one(&stmt, &[&id]).await?;
@@ -69,12 +69,12 @@ impl Tag {
             .await?;
         let _ = client.execute(&stmt, &[&tag.tag_name, &tag.id]).await?;
 
-        let updated_tag = Tag::get_by_id(tag.id as i64, pool).await?;
+        let updated_tag = Tag::get_by_id(tag.id, pool).await?;
 
         Ok(updated_tag)
     }
 
-    pub async fn delete(id: i64, pool: &Pool) -> Result<String, PoolError> {
+    pub async fn delete(id: i32, pool: &Pool) -> Result<String, PoolError> {
         let tag_to_delete = Tag::get_by_id(id, pool).await?;
 
         let client = pool.get().await?;

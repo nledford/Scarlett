@@ -44,7 +44,7 @@ pub async fn create_tag(
 
 #[patch("/tags/{id}")]
 pub async fn update_tag(
-    _: web::Path<i64>,
+    _: web::Path<i32>,
     params: web::Json<Tag>,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse, errors::Error> {
@@ -60,7 +60,7 @@ pub async fn update_tag(
 
 #[delete("/tags/{id}")]
 pub async fn delete_tag(
-    info: web::Path<i64>,
+    info: web::Path<i32>,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse, errors::Error> {
     let res = Tag::delete(info.into_inner(), &pool).await;

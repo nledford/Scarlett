@@ -53,7 +53,7 @@ impl DbTable for Photo {
         Ok(photos)
     }
 
-    async fn get_by_id(photo_id: i64, pool: &Pool) -> Result<Self, PoolError> {
+    async fn get_by_id(photo_id: i32, pool: &Pool) -> Result<Self, PoolError> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM photos WHERE id = $1").await?;
         let result = client.query_one(&stmt, &[&photo_id]).await?;
@@ -107,7 +107,7 @@ impl Photo {
             )
             .await?;
 
-        let result = Photo::get_by_id(updated.id as i64, pool).await?;
+        let result = Photo::get_by_id(updated.id, pool).await?;
 
         Ok(result)
     }
@@ -124,7 +124,7 @@ impl Photo {
         Ok(photo)
     }
 
-    pub async fn delete_photo(photo_id: i64, pool: &Pool) -> Result<String, PoolError> {
+    pub async fn delete_photo(photo_id: i32, pool: &Pool) -> Result<String, PoolError> {
         let photo = Photo::get_by_id(photo_id, &pool).await?;
 
         // attempt to delete photo
@@ -138,8 +138,8 @@ impl Photo {
     }
 
     pub async fn add_tag_to_photo(
-        photo_id: i64,
-        tag_id: i64,
+        photo_id: i32,
+        tag_id: i32,
         pool: &Pool,
     ) -> Result<String, PoolError> {
         let client = pool.get().await?;
@@ -157,8 +157,8 @@ impl Photo {
     }
 
     pub async fn remove_tag_from_photo(
-        photo_id: i64,
-        tag_id: i64,
+        photo_id: i32,
+        tag_id: i32,
         pool: &Pool,
     ) -> Result<String, PoolError> {
         let client = pool.get().await?;

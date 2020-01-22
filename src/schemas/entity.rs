@@ -40,7 +40,7 @@ impl DbTable for Entity {
         Ok(entities)
     }
 
-    async fn get_by_id(id: i64, pool: &Pool) -> Result<Self, PoolError> {
+    async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare(
@@ -122,12 +122,12 @@ impl Entity {
             )
             .await?;
 
-        let result = Entity::get_by_id(entity.id as i64, pool).await?;
+        let result = Entity::get_by_id(entity.id, pool).await?;
 
         Ok(result)
     }
 
-    pub async fn delete(id: i64, pool: &Pool) -> Result<String, PoolError> {
+    pub async fn delete(id: i32, pool: &Pool) -> Result<String, PoolError> {
         let _entity = Entity::get_by_id(id, pool).await?;
 
         let client = pool.get().await?;

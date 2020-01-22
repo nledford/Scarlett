@@ -86,8 +86,14 @@ impl DbView for PhotoFull {
         Ok(photos)
     }
 
-    async fn get_by_id(_id: i64, _pool: &Pool) -> Result<Self, PoolError> {
-        unimplemented!()
+    async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
+        let client = pool.get().await?;
+        let stmt = client.prepare("select * from photos_all where id = $1").await?;
+        let result = client.query_one(&stmt, &[&id]).await?;
+
+        let photo = PhotoFull::from_row(result);
+
+        Ok(photo)
     }
 }
 

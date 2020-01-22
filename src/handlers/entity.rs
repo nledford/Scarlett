@@ -43,7 +43,7 @@ pub async fn create_entity_simple(
 
 #[patch("/entities/{id}")]
 pub async fn update_entity(
-    _: web::Path<i64>,
+    _: web::Path<i32>,
     params: web::Json<Entity>,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse, errors::Error> {
@@ -59,7 +59,7 @@ pub async fn update_entity(
 
 #[delete("/entities/{id}")]
 pub async fn delete_entity(
-    info: web::Path<i64>,
+    info: web::Path<i32>,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse, errors::Error> {
     let res = Entity::delete(info.into_inner(), &pool).await;

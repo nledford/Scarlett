@@ -20,7 +20,7 @@ pub trait DbTable {
     where
         Self: std::marker::Sized;
 
-    async fn get_by_id(id: i64, pool: &Pool) -> Result<Self, PoolError>
+    async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError>
     where
         Self: std::marker::Sized;
 }
@@ -33,7 +33,7 @@ pub trait DbView {
     where
         Self: std::marker::Sized;
 
-    async fn get_by_id(id: i64, pool: &Pool) -> Result<Self, PoolError>
+    async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError>
     where
         Self: std::marker::Sized;
 }

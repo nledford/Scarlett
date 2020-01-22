@@ -7,7 +7,7 @@ use crate::responses::api_response::ApiResponse;
 use crate::schemas;
 use crate::schemas::photo::Photo;
 use crate::schemas::photo_full::PhotoFull;
-use crate::schemas::DbTable;
+use crate::schemas::{DbTable, DbView};
 
 // ALL PHOTOS **************************************************************************************
 
@@ -28,10 +28,12 @@ pub async fn get_photos(
 
 #[get("/photos/{photo_id}")]
 pub async fn get_photo(
-    info: web::Path<i64>,
+    info: web::Path<i32>,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse, errors::Error> {
-    let res = Photo::get_by_id(info.into_inner(), &pool).await;
+    let photo_id: i32 = info.into_inner();
+
+    let res = PhotoFull::get_by_id(photo_id, &pool).await;
 
     match res {
         Ok(photo) => Ok(ApiResponse::success(photo)),
@@ -47,7 +49,7 @@ pub async fn get_photo(
 
 #[post("/photos/{photo_id}/tags/{tag_id}")]
 pub async fn add_tag_to_photo(
-    info: web::Path<(i64, i64)>,
+    info: web::Path<(i32, i32)>,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse, errors::Error> {
     let (photo_id, tag_id) = info.into_inner();
@@ -62,7 +64,7 @@ pub async fn add_tag_to_photo(
 
 #[delete("/photos/{photo_id}/tags/{tag_id}")]
 pub async fn remove_tag_from_photo(
-    info: web::Path<(i64, i64)>,
+    info: web::Path<(i32, i32)>,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse, errors::Error> {
     let (photo_id, tag_id) = info.into_inner();
