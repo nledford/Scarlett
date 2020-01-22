@@ -44,7 +44,7 @@ pub async fn index() -> Result<HttpResponse, errors::Error> {
 
     let res = ApiResponse::success(routes);
 
-    Ok(HttpResponse::Ok().json(res))
+    Ok(res)
 }
 
 // STATUS ******************************************************************************************
@@ -71,5 +71,5 @@ pub async fn status() -> Result<HttpResponse, errors::Error> {
 
     let res = ApiResponse::success(status);
 
-    Ok(HttpResponse::Ok().json(res))
+    Ok(res)
 }

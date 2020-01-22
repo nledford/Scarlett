@@ -6,6 +6,7 @@
 
 use std::env;
 
+use actix_web::HttpResponse;
 use chrono::prelude::*;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
@@ -28,7 +29,7 @@ pub struct ApiResponse<T> {
     pub data: T,
 }
 
-impl<T> ApiResponse<T> {
+impl<T: Serialize> ApiResponse<T> {
     pub fn new(status: &str, code: i64, message: &str, data: T) -> Self {
         ApiResponse {
             program: APP_NAME.to_string(),
@@ -43,11 +44,16 @@ impl<T> ApiResponse<T> {
         }
     }
 
-    pub fn error(data: T) -> Self {
-        ApiResponse::new("Internal Server Error", 500, "An error has occurred", data)
+    pub fn error(data: T) -> HttpResponse {
+        HttpResponse::InternalServerError().json(ApiResponse::new(
+            "Internal Server Error",
+            500,
+            "An error has occurred",
+            data,
+        ))
     }
 
-    pub fn success(data: T) -> Self {
-        ApiResponse::new("success", 200, "OK", data)
+    pub fn success(data: T) -> HttpResponse {
+        HttpResponse::Ok().json(ApiResponse::new("success", 200, "OK", data))
     }
 }

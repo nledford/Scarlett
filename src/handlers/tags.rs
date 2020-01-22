@@ -14,10 +14,8 @@ pub async fn get_tags(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Err
     let res = Tag::get_all(&pool).await;
 
     match res {
-        Ok(tags) => Ok(HttpResponse::Ok().json(ApiResponse::success(tags))),
-        Err(err) => {
-            Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())))
-        }
+        Ok(tags) => Ok(ApiResponse::success(tags)),
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }
 
@@ -37,10 +35,8 @@ pub async fn create_tag(
     let res = Tag::create(params.into_inner().tag_name.as_str(), &pool).await;
 
     match res {
-        Ok(new_tag) => Ok(HttpResponse::Ok().json(ApiResponse::success(new_tag))),
-        Err(err) => {
-            Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())))
-        }
+        Ok(new_tag) => Ok(ApiResponse::success(new_tag)),
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }
 
@@ -55,10 +51,8 @@ pub async fn update_tag(
     let res = Tag::update(params.into_inner(), &pool).await;
 
     match res {
-        Ok(updated_tag) => Ok(HttpResponse::Ok().json(ApiResponse::success(updated_tag))),
-        Err(err) => {
-            Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())))
-        }
+        Ok(updated_tag) => Ok(ApiResponse::success(updated_tag)),
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }
 
@@ -72,9 +66,7 @@ pub async fn delete_tag(
     let res = Tag::delete(info.into_inner(), &pool).await;
 
     match res {
-        Ok(message) => Ok(HttpResponse::Ok().json(ApiResponse::success(message))),
-        Err(err) => {
-            Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())))
-        }
+        Ok(message) => Ok(ApiResponse::success(message)),
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }

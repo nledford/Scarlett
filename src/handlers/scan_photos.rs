@@ -67,7 +67,7 @@ pub async fn run_scan(
     };
 
     if let Err(err) = file_scan_result {
-        return Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())));
+        return Ok(ApiResponse::error(err.to_string()));
     }
     let file_scan_result = file_scan_result.unwrap();
 
@@ -81,5 +81,5 @@ pub async fn run_scan(
         file_scan_result.deleted_photos_count,
     );
 
-    Ok(HttpResponse::Ok().json(ApiResponse::success(result)))
+    Ok(ApiResponse::success(result))
 }

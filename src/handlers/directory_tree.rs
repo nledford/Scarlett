@@ -10,7 +10,7 @@ pub async fn get_tree(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Err
     let res = get_directory_tree(&pool).await;
 
     match res {
-        Ok(tree) => Ok(HttpResponse::Ok().json(ApiResponse::success(tree))),
-        Err(err) => Ok(HttpResponse::InternalServerError().json(err.to_string())),
+        Ok(tree) => Ok(ApiResponse::success(tree)),
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }

@@ -12,9 +12,7 @@ pub async fn get_entities(pool: web::Data<Pool>) -> Result<HttpResponse, errors:
     let res = Entity::get_all(&pool).await;
 
     match res {
-        Ok(entities) => Ok(HttpResponse::Ok().json(ApiResponse::success(entities))),
-        Err(err) => {
-            Ok(HttpResponse::InternalServerError().json(ApiResponse::error(err.to_string())))
-        }
+        Ok(entities) => Ok(ApiResponse::success(entities)),
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }
