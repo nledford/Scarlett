@@ -1,4 +1,4 @@
-use actix_web::{get, patch, delete, post, web, HttpResponse};
+use actix_web::{delete, get, post, web, HttpResponse};
 use deadpool_postgres::Pool;
 
 use crate::errors::errors;
@@ -46,26 +46,32 @@ pub async fn get_photo(
 // PHOTO TAGS **************************************************************************************
 
 #[post("/photos/{photo_id}/tags/{tag_id}")]
-pub async fn add_tag_to_photo(info: web::Path<(i64, i64)>, pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+pub async fn add_tag_to_photo(
+    info: web::Path<(i64, i64)>,
+    pool: web::Data<Pool>,
+) -> Result<HttpResponse, errors::Error> {
     let (photo_id, tag_id) = info.into_inner();
 
     let res = Photo::add_tag_to_photo(photo_id, tag_id, &pool).await;
 
     match res {
         Ok(message) => Ok(ApiResponse::success(message)),
-        Err(err) => Ok(ApiResponse::error(err.to_string()))
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }
 
 #[delete("/photos/{photo_id}/tags/{tag_id}")]
-pub async fn remove_tag_from_photo(info: web::Path<(i64, i64)>, pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+pub async fn remove_tag_from_photo(
+    info: web::Path<(i64, i64)>,
+    pool: web::Data<Pool>,
+) -> Result<HttpResponse, errors::Error> {
     let (photo_id, tag_id) = info.into_inner();
 
     let res = Photo::remove_tag_from_photo(photo_id, tag_id, &pool).await;
 
     match res {
         Ok(message) => Ok(ApiResponse::success(message)),
-        Err(err) => Ok(ApiResponse::error(err.to_string()))
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }
 
