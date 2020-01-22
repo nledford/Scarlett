@@ -1,4 +1,5 @@
 use deadpool_postgres::{Pool, PoolError};
+use rust_decimal::Decimal;
 use tokio_postgres::Row;
 
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -6,8 +7,8 @@ use tokio_postgres::Row;
 pub struct TagStats {
     pub tag_name: String,
     pub photos_with_tag: i64,
-    pub percentage_with_tag: f64,
-    pub percentage_total: f64,
+    pub percentage_with_tag: Decimal,
+    pub percentage_total: Decimal,
 }
 
 impl TagStats {

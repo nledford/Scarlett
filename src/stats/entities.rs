@@ -1,4 +1,5 @@
 use deadpool_postgres::{Pool, PoolError};
+use rust_decimal::Decimal;
 use tokio_postgres::Row;
 
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -6,8 +7,8 @@ use tokio_postgres::Row;
 pub struct EntityStats {
     pub entity_name: String,
     pub photos_with_entity: i64,
-    pub percentage_with_entity: f64,
-    pub percentage_total: f64,
+    pub percentage_with_entity: Decimal,
+    pub percentage_total: Decimal,
 }
 
 impl EntityStats {
