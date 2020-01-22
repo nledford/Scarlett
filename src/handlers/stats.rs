@@ -3,9 +3,9 @@ use deadpool_postgres::Pool;
 
 use crate::errors::errors;
 use crate::responses::api_response::ApiResponse;
+use crate::stats::entities::TagStats;
 use crate::stats::photos::PhotosStats;
 use crate::stats::tags::EntityStats;
-use crate::stats::entities::TagStats;
 
 #[get("/stats/entities")]
 pub async fn get_entity_stats(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
@@ -13,7 +13,7 @@ pub async fn get_entity_stats(pool: web::Data<Pool>) -> Result<HttpResponse, err
 
     match res {
         Ok(stats) => Ok(ApiResponse::success(stats)),
-        Err(err) => Ok(ApiResponse::error(err.to_string()))
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }
 
@@ -33,6 +33,6 @@ pub async fn get_tag_stats(pool: web::Data<Pool>) -> Result<HttpResponse, errors
 
     match res {
         Ok(stats) => Ok(ApiResponse::success(stats)),
-        Err(err) => Ok(ApiResponse::error(err.to_string()))
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }

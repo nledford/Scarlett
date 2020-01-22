@@ -1,6 +1,5 @@
-use tokio_postgres::Row;
 use deadpool_postgres::{Pool, PoolError};
-
+use tokio_postgres::Row;
 
 #[derive(serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
