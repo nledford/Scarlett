@@ -1,13 +1,13 @@
-use actix_web::{delete, get, post, web, HttpResponse};
+use actix_web::{delete, get, HttpResponse, patch, post, web};
 use deadpool_postgres::Pool;
 
 use crate::errors::errors;
 use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::responses::api_response::ApiResponse;
-use crate::schemas;
+use crate::schemas::DbView;
 use crate::schemas::photo::Photo;
 use crate::schemas::photo_full::PhotoFull;
-use crate::schemas::{DbTable, DbView};
+use crate::schemas;
 
 // ALL PHOTOS **************************************************************************************
 
@@ -42,6 +42,16 @@ pub async fn get_photo(
 }
 
 // UPDATE PHOTO ************************************************************************************
+
+#[patch("/photos/{photo_id}")]
+pub async fn update_photo(_: web::Path<i32>, info: web::Json<Photo>, pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+    let res = Photo::update_photo(info.into_inner(), &pool).await;
+
+    match res {
+        Ok(photo) => Ok(ApiResponse::success(photo)),
+        Err(err) => Ok(ApiResponse::error(err.to_string()))
+    }
+}
 
 // DELETE PHOTO ************************************************************************************
 
