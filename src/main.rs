@@ -42,6 +42,12 @@ async fn main() -> std::io::Result<()> {
             // DEFAULT ROUTES **********************************************************************
             .service(handlers::index)
             .service(handlers::status)
+            // COLLECTIONS *************************************************************************
+            .service(handlers::collections::get_collections)
+            .service(handlers::collections::get_collection)
+            .service(handlers::collections::create_collection)
+            .service(handlers::collections::update_collection)
+            .service(handlers::collections::delete_collection)
             // DIRECTORY TREE **********************************************************************
             .service(handlers::directory_tree::get_tree)
             // ENTITIES ****************************************************************************
