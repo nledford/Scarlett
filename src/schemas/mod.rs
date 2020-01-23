@@ -3,6 +3,7 @@ use tokio_postgres::Row;
 
 use async_trait::async_trait;
 
+pub mod collections;
 pub mod directory_tree;
 pub mod entity;
 pub mod new_photo;
