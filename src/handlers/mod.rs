@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::errors::errors;
 use crate::responses::api_response::ApiResponse;
 
+pub mod collections;
 pub mod directory_tree;
 pub mod entity;
 pub mod media;
