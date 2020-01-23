@@ -1,6 +1,6 @@
-use deadpool_postgres::{Poolerror, Pool};
-use deadpool_postgres::ClientWrapper;
-use tokio_postgres::{Error, Row};
+use deadpool_postgres::{Pool, PoolError};
+use serde::{Deserialize, Serialize};
+use tokio_postgres::Row;
 
 use async_trait::async_trait;
 
@@ -23,8 +23,7 @@ impl DbTable for Collection {
         }
     }
 
-    async fn get_all(pool: &Pool<ClientWrapper, Error>) -> Result<Vec<Self>, PoolError<Error>> where
-        Self: std::marker::Sized {
+    async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
         let client = pool.get().await?;
         let stmt = client.prepare("select * from collections order by name").await?;
         let results = client.query(&stmt, &[]).await?;
@@ -34,8 +33,7 @@ impl DbTable for Collection {
         Ok(collections)
     }
 
-    async fn get_by_id(id: i32, pool: &Pool<ClientWrapper, Error>) -> Result<Self, PoolError<Error>> where
-        Self: std::marker::Sized {
+    async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
         let client = pool.get().await?;
         let stmt = client.prepare("select * from collections where id = $1").await?;
         let result = client.query_one(&stmt, &[&id]).await?;
