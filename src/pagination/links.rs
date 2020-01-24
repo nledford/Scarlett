@@ -13,38 +13,32 @@ pub struct Links {
 }
 
 impl Links {
-    /*pub fn new(req: &GetPhotosRequest, total_pages: i64) -> Links {
-        let position = req.get_position();
+    pub fn new(req: &GetPhotosRequest, total_pages: i64) -> Self {
+        let current_page = req.get_page();
 
-        let position = if position <= 0 {
-            0
-        } else if page >= total_pages {
+        let current_page = if current_page <= 0 {
+            1
+        } else if current_page >= total_pages {
             total_pages
         } else {
-            position
+            current_page
         };
 
-        let next_page = if page >= total_pages {
-            total_pages
-        } else {
-            page + 1
-        };
+        let previous_page = if current_page <= 0 { 1 } else { current_page - 1 };
 
-        let previous_page = if page <= 0 { 1 } else { page - 1 };
-
-        let (first_link, previous_link) = if page == 1 {
+        let (first_link, previous_link) = if current_page == 1 {
             ("".to_string(), "".to_string())
         } else {
             (build_link(1, req), build_link(previous_page, req))
         };
 
-        let (next_link, last_link) = if page >= total_pages {
+        let (next_link, last_link) = if current_page >= total_pages {
             ("".to_string(), "".to_string())
         } else {
-            (build_link(next_page, req), build_link(total_pages, req))
+            (build_link(current_page + 1, req), build_link(total_pages, req))
         };
 
-        let current_link = build_link(page, req);
+        let current_link = build_link(current_page, req);
 
         Links {
             current: current_link,
@@ -53,7 +47,7 @@ impl Links {
             next: next_link,
             last: last_link,
         }
-    }*/
+    }
 
     pub fn default() -> Links {
         Links {
