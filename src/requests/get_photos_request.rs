@@ -1,5 +1,7 @@
 use serde::Deserialize;
 
+use crate::utils::strings;
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct GetPhotosRequest {
     // pagination
@@ -7,6 +9,7 @@ pub struct GetPhotosRequest {
     page_size: Option<i64>,
 
     // sorting
+    sort_by: Option<String>,
 
     // collections
     pub collection_id: Option<i32>,
@@ -39,6 +42,28 @@ impl GetPhotosRequest {
             }
         } else {
             100
+        }
+    }
+
+    pub fn get_sort_by(&self) -> Option<Vec<String>> {
+        let valid_sort_options = vec!["id", "date_created", "date_updated", "file_name", "folder"];
+
+        if self.sort_by.is_some() {
+            let temp = self.sort_by.clone()
+                .unwrap()
+                .split(',')
+                .into_iter()
+                .filter(|item| valid_sort_options.contains(&strings::get_category_from_sort(&item.to_string()).as_str()))
+                .map(String::from)
+                .collect::<Vec<String>>();
+
+            if temp.len() > 0 {
+                return Some(temp)
+            } else {
+                None
+            }
+        } else {
+            None
         }
     }
 

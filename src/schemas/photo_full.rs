@@ -12,7 +12,7 @@ use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::schemas::{DbView, Paginated, DbTable};
 use crate::types::PaginatedPhotos;
 
-use crate::utils::images;
+use crate::utils::{images, strings};
 use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use std::env;
 use crate::schemas::collections::Collection;
@@ -164,8 +164,8 @@ impl PhotoFull {
                                           wallpapers, \
                                           COUNT(*) OVER () \
                                    \nFROM (SELECT row_number() OVER () as position, pa.* \
-                                         \nFROM photos_all pa \
-                                                   \nINNER JOIN photo_ordering po ON pa.id = po.photo_id".to_string();
+                                         \t\nFROM photos_all pa \
+                                                   \t\t\nINNER JOIN photo_ordering po ON pa.id = po.photo_id".to_string();
         if req.has_collection_or_filters() {
             query += " \nWHERE ";
 
@@ -176,17 +176,39 @@ impl PhotoFull {
                 let collection = Collection::get_by_id(collection_id.to_owned(), pool).await?;
 
                 query += format!(" ({}) ", collection.query).as_str();
-            }  else {
+            } else {
                 // TODO add custom filter logic
             }
         }
 
-        query += "       \nORDER BY po.position) t \
-                  \nWHERE t.position > $1 \
-                  \nORDER BY t.position \
-                  \nLIMIT $2";
+        query += " ORDER BY po.position) t
+                  WHERE t.position > $1";
 
-        println!("{}", &query);
+        // sorting
+        query += " ORDER BY ";
+
+        if req.get_sort_by().is_some() {
+            let sortings = PhotoFull::determine_sorting(req.clone().get_sort_by().unwrap());
+
+            let mut index = 0;
+            let length = sortings.len();
+            for (category, direction) in sortings {
+                query += format!("{} {}", category, direction).as_str();
+
+                index += 1;
+
+                if index < length {
+                    query += ", "
+                }
+            }
+        } else {
+            // aka random sorting
+            query += " t.position "
+        }
+
+        query += " LIMIT $2";
+
+        println!("\n{}\n", &query);
 
         let page_size = &req.get_page_size();
         let page = req.get_page() - 1 * req.get_page_size();
@@ -230,5 +252,30 @@ impl PhotoFull {
         const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'\'');
         let encoded = percent_encode(url.as_ref(), FRAGMENT);
         encoded.to_string()
+    }
+
+    fn determine_sorting(sorting: Vec<String>) -> Vec<(String, String)> {
+        sorting
+            .into_iter()
+            .map(|item| {
+                let contains_sort_order = strings::contains_sort_order(&item);
+
+                let direction = if contains_sort_order {
+                    let first_char = item.clone().chars().next().unwrap();
+
+                    if first_char == '-' {
+                        "DESC"
+                    } else {
+                        "ASC"
+                    }
+                } else {
+                    "ASC"
+                };
+
+                let sort_by = strings::get_category_from_sort(&item);
+
+                (sort_by.to_string(), direction.to_string())
+            })
+            .collect::<Vec<(String, String)>>()
     }
 }
