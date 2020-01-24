@@ -138,11 +138,19 @@ impl Photo {
         Ok("File deleted successfully!".to_string())
     }
 
-    async fn check_if_photo_has_entity(photo_id: i32, entity_id: i32, pool: &Pool) -> Result<bool, PoolError> {
+    async fn check_if_photo_has_entity(
+        photo_id: i32,
+        entity_id: i32,
+        pool: &Pool,
+    ) -> Result<bool, PoolError> {
         let client = pool.get().await?;
-        let stmt = client.prepare("select count(*) \
-                                                    from photo_entity \
-                                                    where photo_id = $1 and entity_id = $2").await?;
+        let stmt = client
+            .prepare(
+                "select count(*) \
+                 from photo_entity \
+                 where photo_id = $1 and entity_id = $2",
+            )
+            .await?;
         let result = client.query_one(&stmt, &[&photo_id, &entity_id]).await?;
         let count: i64 = result.get(0);
 
@@ -158,7 +166,7 @@ impl Photo {
         let exists = Photo::check_if_photo_has_entity(photo_id, entity_id, pool).await?;
 
         if exists {
-            return Ok("Entity is already associated with photo".to_string())
+            return Ok("Entity is already associated with photo".to_string());
         }
 
         let client = pool.get().await?;
@@ -183,7 +191,7 @@ impl Photo {
         // check if photo has entity to prevent redundant removal
         let exists = Photo::check_if_photo_has_entity(photo_id, entity_id, pool).await?;
         if !exists {
-            return Ok("Entity is not associated with photo".to_string())
+            return Ok("Entity is not associated with photo".to_string());
         }
 
         let client = pool.get().await?;
@@ -200,11 +208,19 @@ impl Photo {
         ))
     }
 
-    async fn check_if_photo_has_tag(photo_id: i32, tag_id: i32, pool: &Pool) -> Result<bool, PoolError> {
+    async fn check_if_photo_has_tag(
+        photo_id: i32,
+        tag_id: i32,
+        pool: &Pool,
+    ) -> Result<bool, PoolError> {
         let client = pool.get().await?;
-        let stmt = client.prepare("select count(*) \
-                                                    from photo_tag \
-                                                    where photo_id = $1 and tag_id = $2").await?;
+        let stmt = client
+            .prepare(
+                "select count(*) \
+                 from photo_tag \
+                 where photo_id = $1 and tag_id = $2",
+            )
+            .await?;
         let result = client.query_one(&stmt, &[&photo_id, &tag_id]).await?;
         let count: i64 = result.get(0);
 
@@ -219,7 +235,7 @@ impl Photo {
         // check for existing tag to prevent duplicates
         let exists = Photo::check_if_photo_has_tag(photo_id, tag_id, pool).await?;
         if exists {
-            return Ok("Photo is already associated with tag".to_string())
+            return Ok("Photo is already associated with tag".to_string());
         }
 
         let client = pool.get().await?;
@@ -244,7 +260,7 @@ impl Photo {
         // check if photo has tag to prevent redundant removal
         let exists = Photo::check_if_photo_has_tag(photo_id, tag_id, pool).await?;
         if !exists {
-            return Ok("Tag is not associated with photo".to_string())
+            return Ok("Tag is not associated with photo".to_string());
         }
 
         let client = pool.get().await?;
