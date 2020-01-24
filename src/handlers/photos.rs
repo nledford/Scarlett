@@ -60,12 +60,15 @@ pub async fn update_photo(
 // DELETE PHOTO ************************************************************************************
 
 #[delete("/photos/{id}")]
-pub async fn delete_photo(info: web::Path<i32>, pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+pub async fn delete_photo(
+    info: web::Path<i32>,
+    pool: web::Data<Pool>,
+) -> Result<HttpResponse, errors::Error> {
     let res = Photo::delete_photo(info.into_inner(), &pool).await;
 
     match res {
         Ok(message) => Ok(ApiResponse::success(message)),
-        Err(err) => Ok(ApiResponse::error(err.to_string()))
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }
 
