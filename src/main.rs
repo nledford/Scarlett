@@ -62,7 +62,7 @@ async fn main() -> std::io::Result<()> {
             .service(handlers::photos::get_photos)
             .service(handlers::photos::get_photo)
             .service(handlers::photos::update_photo)
-            // TODO delete photo
+            .service(handlers::photos::delete_photo)
             .service(handlers::photos::add_entity_to_photo)
             .service(handlers::photos::remove_entity_from_photo)
             .service(handlers::photos::add_tag_to_photo)
