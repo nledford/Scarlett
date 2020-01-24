@@ -5,9 +5,9 @@ use url::Url;
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct Links {
-    pub current: String,
     pub first: String,
     pub next: String,
+    pub current: String,
     pub previous: String,
     pub last: String,
 }
