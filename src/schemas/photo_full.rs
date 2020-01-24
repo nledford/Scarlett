@@ -187,7 +187,7 @@ impl PhotoFull {
         let photos = results.into_iter().map(|x| x.0).collect();
 
         let metadata = PageMetadata::new(req.get_page(), req.get_page_size(), total);
-        let links = Links::default();
+        let links = Links::new(&req, total);
         let page = Page::new(metadata, links, photos);
 
         Ok(page)
