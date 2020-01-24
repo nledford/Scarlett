@@ -24,7 +24,11 @@ impl Links {
             current_page
         };
 
-        let previous_page = if current_page <= 0 { 1 } else { current_page - 1 };
+        let previous_page = if current_page <= 0 {
+            1
+        } else {
+            current_page - 1
+        };
 
         let (first_link, previous_link) = if current_page == 1 {
             ("".to_string(), "".to_string())
@@ -35,7 +39,10 @@ impl Links {
         let (next_link, last_link) = if current_page >= total_pages {
             ("".to_string(), "".to_string())
         } else {
-            (build_link(current_page + 1, req), build_link(total_pages, req))
+            (
+                build_link(current_page + 1, req),
+                build_link(total_pages, req),
+            )
         };
 
         let current_link = build_link(current_page, req);

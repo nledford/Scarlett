@@ -13,7 +13,6 @@ pub struct GetPhotosRequest {
 
     // collections
     pub collection_id: Option<i32>,
-
     // filters
 }
 
@@ -49,16 +48,21 @@ impl GetPhotosRequest {
         let valid_sort_options = vec!["id", "date_created", "date_updated", "file_name", "folder"];
 
         if self.sort_by.is_some() {
-            let temp = self.sort_by.clone()
+            let temp = self
+                .sort_by
+                .clone()
                 .unwrap()
                 .split(',')
                 .into_iter()
-                .filter(|item| valid_sort_options.contains(&strings::get_category_from_sort(&item.to_string()).as_str()))
+                .filter(|item| {
+                    valid_sort_options
+                        .contains(&strings::get_category_from_sort(&item.to_string()).as_str())
+                })
                 .map(String::from)
                 .collect::<Vec<String>>();
 
             if temp.len() > 0 {
-                return Some(temp)
+                return Some(temp);
             } else {
                 None
             }
@@ -69,7 +73,7 @@ impl GetPhotosRequest {
 
     pub fn has_collection_or_filters(&self) -> bool {
         if self.collection_id.is_some() {
-            return true
+            return true;
         }
 
         false

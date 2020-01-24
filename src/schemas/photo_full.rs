@@ -9,13 +9,13 @@ use crate::pagination::links::Links;
 use crate::pagination::page::Page;
 use crate::pagination::page_metadata::PageMetadata;
 use crate::requests::get_photos_request::GetPhotosRequest;
-use crate::schemas::{DbView, Paginated, DbTable};
+use crate::schemas::{DbTable, DbView, Paginated};
 use crate::types::PaginatedPhotos;
 
+use crate::schemas::collections::Collection;
 use crate::utils::{images, strings};
 use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use std::env;
-use crate::schemas::collections::Collection;
 
 // TODO generate recommended wallpaper name
 // `photos_all` view *******************************************************************************
