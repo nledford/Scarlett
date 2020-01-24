@@ -9,12 +9,13 @@ use crate::pagination::links::Links;
 use crate::pagination::page::Page;
 use crate::pagination::page_metadata::PageMetadata;
 use crate::requests::get_photos_request::GetPhotosRequest;
-use crate::schemas::{DbView, Paginated};
+use crate::schemas::{DbView, Paginated, DbTable};
 use crate::types::PaginatedPhotos;
 
 use crate::utils::images;
 use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use std::env;
+use crate::schemas::collections::Collection;
 
 // TODO generate recommended wallpaper name
 // `photos_all` view *******************************************************************************
@@ -162,14 +163,30 @@ impl PhotoFull {
                                           tags,
                                           wallpapers, \
                                           COUNT(*) OVER () \
-                                   FROM (SELECT row_number() OVER () as position, pa.* \
+                                   \nFROM (SELECT row_number() OVER () as position, pa.* \
                                          FROM photos_all pa \
                                                    INNER JOIN photo_ordering po ON pa.id = po.photo_id".to_string();
 
-        query += "       ORDER BY po.position) t \
+        // todo add flag that determines whether filters/collection has been provided
+        query += " \nWHERE ";
+
+
+        // if a collection is specified, will that override other filters?
+        // TODO test this
+        if req.collection_id.is_some() {
+            let collection_id = &req.collection_id.unwrap();
+
+            let collection = Collection::get_by_id(collection_id.to_owned(), pool).await?;
+
+            query += format!(" ({}) ", collection.query).as_str();
+        }
+
+        query += "       \nORDER BY po.position) t \
                   WHERE t.position > $1 \
                   ORDER BY t.position \
                   LIMIT $2";
+
+        println!("{}", &query);
 
         let page_size = &req.get_page_size();
         let page = req.get_page() - 1 * req.get_page_size();

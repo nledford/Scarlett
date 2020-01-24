@@ -2,8 +2,16 @@ use serde::Deserialize;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct GetPhotosRequest {
+    // pagination
     page: Option<i64>,
     page_size: Option<i64>,
+
+    // sorting
+
+    // collections
+    pub collection_id: Option<i32>,
+
+    // filters
 }
 
 impl GetPhotosRequest {

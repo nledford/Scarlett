@@ -7,7 +7,7 @@
 
 create table collections
 (
-    id    bigserial     not null
+    id    serial     not null
         constraint collections_pk
             primary key,
     name  varchar(50)   not null,
