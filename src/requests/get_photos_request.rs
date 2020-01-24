@@ -41,4 +41,12 @@ impl GetPhotosRequest {
             100
         }
     }
+
+    pub fn has_collection_or_filters(&self) -> bool {
+        if self.collection_id.is_some() {
+            return true
+        }
+
+        false
+    }
 }

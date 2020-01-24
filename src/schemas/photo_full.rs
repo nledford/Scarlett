@@ -164,27 +164,27 @@ impl PhotoFull {
                                           wallpapers, \
                                           COUNT(*) OVER () \
                                    \nFROM (SELECT row_number() OVER () as position, pa.* \
-                                         FROM photos_all pa \
-                                                   INNER JOIN photo_ordering po ON pa.id = po.photo_id".to_string();
+                                         \nFROM photos_all pa \
+                                                   \nINNER JOIN photo_ordering po ON pa.id = po.photo_id".to_string();
+        if req.has_collection_or_filters() {
+            query += " \nWHERE ";
 
-        // todo add flag that determines whether filters/collection has been provided
-        query += " \nWHERE ";
+            // collections override custom filters since a collection should already have necessary filtering logic
+            if req.collection_id.is_some() {
+                let collection_id = &req.collection_id.unwrap();
 
+                let collection = Collection::get_by_id(collection_id.to_owned(), pool).await?;
 
-        // if a collection is specified, will that override other filters?
-        // TODO test this
-        if req.collection_id.is_some() {
-            let collection_id = &req.collection_id.unwrap();
-
-            let collection = Collection::get_by_id(collection_id.to_owned(), pool).await?;
-
-            query += format!(" ({}) ", collection.query).as_str();
+                query += format!(" ({}) ", collection.query).as_str();
+            }  else {
+                // TODO add custom filter logic
+            }
         }
 
         query += "       \nORDER BY po.position) t \
-                  WHERE t.position > $1 \
-                  ORDER BY t.position \
-                  LIMIT $2";
+                  \nWHERE t.position > $1 \
+                  \nORDER BY t.position \
+                  \nLIMIT $2";
 
         println!("{}", &query);
 
