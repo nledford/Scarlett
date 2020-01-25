@@ -18,11 +18,7 @@ pub struct GetPhotosRequest {
 
 impl GetPhotosRequest {
     pub fn get_page(&self) -> i64 {
-        if self.page.is_none() {
-            return 1
-        }
-
-        let page = self.page.unwrap();
+        let page = self.page.unwrap_or(1);
         if page <= 0 {
             1
         } else {
@@ -31,12 +27,7 @@ impl GetPhotosRequest {
     }
 
     pub fn get_page_size(&self) -> i64 {
-        if self.page_size.is_none() {
-            return 100
-        }
-
-        let size = self.page_size.unwrap();
-
+        let size = self.page_size.unwrap_or(100);
         if size <= 0 {
             100
         } else {
@@ -75,6 +66,8 @@ impl GetPhotosRequest {
         if self.collection_id.is_some() {
             return true
         }
+
+        // TODO add filter flags
 
         false
     }
