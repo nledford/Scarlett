@@ -18,29 +18,29 @@ pub struct GetPhotosRequest {
 
 impl GetPhotosRequest {
     pub fn get_page(&self) -> i64 {
-        if self.page.is_some() {
-            let page = self.page.unwrap();
-            if page < 0 {
-                0
-            } else {
-                page
-            }
+        if self.page.is_none() {
+            return 1
+        }
+
+        let page = self.page.unwrap();
+        if page <= 0 {
+            1
         } else {
-            0
+            page
         }
     }
 
     pub fn get_page_size(&self) -> i64 {
-        if self.page_size.is_some() {
-            let size = self.page_size.unwrap();
+        if self.page_size.is_none() {
+            return 100
+        }
 
-            if size <= 0 {
-                100
-            } else {
-                size
-            }
-        } else {
+        let size = self.page_size.unwrap();
+
+        if size <= 0 {
             100
+        } else {
+            size
         }
     }
 
@@ -73,7 +73,7 @@ impl GetPhotosRequest {
 
     pub fn has_collection_or_filters(&self) -> bool {
         if self.collection_id.is_some() {
-            return true;
+            return true
         }
 
         false
