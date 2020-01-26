@@ -21,6 +21,9 @@ select id,
        rotation,
        ineligible_for_wallpaper,
        anonymous_entities,
+       case
+           when file_path like '%/Entities/%' then (regexp_split_to_array(file_path, '/'))[6]
+           else 'Anonymous' end          suggested_entity_name,
        e.entities,
        t.tags,
        w.wallpapers
