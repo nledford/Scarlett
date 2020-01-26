@@ -40,7 +40,7 @@ impl DbTable for WallpaperSize {
         let result = client.query_one(&stmt, &[&id]).await?;
         let size = WallpaperSize::from_row(result);
 
-        Ok(Size)
+        Ok(size)
     }
 }
 
@@ -81,11 +81,11 @@ impl WallpaperSize {
         let _ = client
             .execute(
                 &stmt,
-                &[&ize.name, &size.width, &size.height, &size.id],
+                &[&size.name, &size.width, &size.height, &size.id],
             )
             .await?;
 
-        let result = WallpaperSize::get_by_id(collection.id, pool).await?;
+        let result = WallpaperSize::get_by_id(size.id, pool).await?;
 
         Ok(result)
     }
