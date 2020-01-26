@@ -39,7 +39,7 @@ impl GetPhotosRequest {
         let valid_sort_options = vec!["id", "date_created", "date_updated", "file_name", "folder"];
 
         if self.sort_by.is_none() {
-            return None
+            return None;
         }
 
         let temp = self
@@ -64,7 +64,7 @@ impl GetPhotosRequest {
 
     pub fn has_collection_or_filters(&self) -> bool {
         if self.collection_id.is_some() {
-            return true
+            return true;
         }
 
         // TODO add filter flags
