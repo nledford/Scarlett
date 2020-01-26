@@ -1,12 +1,19 @@
+-- instagram username regex source: https://regexr.com/3cg7r
+-- twitter username regex source: https://stackoverflow.com/a/8650024
+
 -- Add entity table
-create table entity
+create table if not exists entity
 (
     id                 serial             not null
         constraint entity_pk primary key,
     entity_name        varchar(250)       not null,
     alternate_names    text[],
-    instagram_username varchar(30),
-    twitter_username   varchar(30),
+    instagram_username varchar(30)
+        constraint proper_instagram_username
+            check (instagram_username ~* '/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/igm'),
+    twitter_username   varchar(30)
+        constraint proper_twitter_username
+            check (twitter_username ~* '/^@?(\w){1,15}$/igm' ),
     favorite           bool default false not null,
     -- just in case...
     profile_photo_id   int
