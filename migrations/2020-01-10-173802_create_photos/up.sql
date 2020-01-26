@@ -17,7 +17,8 @@ create table if not exists photos
     date_updated             timestamp    default CURRENT_TIMESTAMP      not null,
     original_width           integer      default 0                      not null,
     original_height          integer      default 0                      not null,
-    rotation                 integer      default 0                      not null,
+    rotation                 integer      default 0                      not null
+        check ( rotation = 0 or rotation = 90 or rotation = 180 or rotation = 270 ),
     ineligible_for_wallpaper bool         default false                  not null,
     anonymous_entities       bool         default false                  not null
 );
