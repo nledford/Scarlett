@@ -10,6 +10,7 @@ pub mod new_photo;
 pub mod photo;
 pub mod photo_full;
 pub mod tags;
+pub mod wallpaper_sizes;
 
 // TRAITS ******************************************************************************************
 

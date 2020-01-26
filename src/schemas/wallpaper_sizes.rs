@@ -1,0 +1,127 @@
+use deadpool_postgres::{Pool, PoolError};
+use tokio_postgres::Row;
+
+use async_trait::async_trait;
+
+use crate::schemas::DbTable;
+
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
+pub struct WallpaperSize {
+    pub id: i32,
+    pub name: String,
+    pub width: i32,
+    pub height: i32,
+}
+
+#[async_trait]
+impl DbTable for WallpaperSize {
+    fn from_row(row: Row) -> Self {
+        WallpaperSize {
+            id: row.get(0),
+            name: row.get(1),
+            width: row.get(2),
+            height: row.get(3),
+        }
+    }
+
+    async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
+        let client = pool.get().await?;
+        let stmt = client.prepare("select * from wallpaper_sizes order by (width, height)").await?;
+        let results = client.query(&stmt, &[]).await?;
+
+        let sizes: Vec<WallpaperSize> = results.into_iter().map(WallpaperSize::from_row).collect();
+
+        Ok(sizes)
+    }
+
+    async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
+        let client = pool.get().await?;
+        let stmt = client.prepare("select * from wallpaper_sizes where id = $1").await?;
+        let result = client.query_one(&stmt, &[&id]).await?;
+        let size = WallpaperSize::from_row(result);
+
+        Ok(Size)
+    }
+}
+
+impl WallpaperSize {
+    pub async fn create(name: &str, width: i32, height: i32, pool: &Pool) -> Result<Self, PoolError> {
+        // first check if a collection already exists with the provided name
+        let exists = WallpaperSize::check_if_exists(name, pool).await?;
+
+        if exists {
+            let collection = WallpaperSize::get_by_name(name, pool).await?;
+            return Ok(collection);
+        }
+
+        // Assume collection does not exist
+
+        let client = pool.get().await?;
+        let stmt = client
+            .prepare("insert into wallpaper_sizes (name, width, height) values ($1, $2, $3)")
+            .await?;
+        let _ = client.execute(&stmt, &[&name, &width, &height]).await?;
+
+        let collection = WallpaperSize::get_by_name(name, pool).await?;
+
+        Ok(collection)
+    }
+
+    pub async fn update(size: WallpaperSize, pool: &Pool) -> Result<Self, PoolError> {
+        let client = pool.get().await?;
+
+        let stmt = client
+            .prepare(
+                "update wallpaper_sizes \
+                 set name = $1, width = $2, height = $3 \
+                 where id = $4",
+            )
+            .await?;
+
+        let _ = client
+            .execute(
+                &stmt,
+                &[&ize.name, &size.width, &size.height, &size.id],
+            )
+            .await?;
+
+        let result = WallpaperSize::get_by_id(collection.id, pool).await?;
+
+        Ok(result)
+    }
+
+    pub async fn delete(id: i32, pool: &Pool) -> Result<String, PoolError> {
+        let collection = WallpaperSize::get_by_id(id, pool).await?;
+
+        let client = pool.get().await?;
+        let stmt = client
+            .prepare("delete from wallpaper_sizes where id = $1")
+            .await?;
+        let _ = client.execute(&stmt, &[&collection.id]).await?;
+
+        Ok("Wallpaper Size deleted successfully".to_string())
+    }
+
+    pub async fn get_by_name(name: &str, pool: &Pool) -> Result<Self, PoolError> {
+        let client = pool.get().await?;
+        let stmt = client
+            .prepare("select * from wallpaper_sizes where name = $1")
+            .await?;
+        let result = client.query_one(&stmt, &[&name]).await?;
+        let collection = WallpaperSize::from_row(result);
+
+        Ok(collection)
+    }
+
+    pub async fn check_if_exists(name: &str, pool: &Pool) -> Result<bool, PoolError> {
+        let client = pool.get().await?;
+        let stmt = client
+            .prepare("select count(*) from wallpaper_sizes where name = $1")
+            .await?;
+        let result = client.query_one(&stmt, &[&name]).await?;
+
+        let count: i64 = result.get(0);
+
+        Ok(count > 0)
+    }
+}

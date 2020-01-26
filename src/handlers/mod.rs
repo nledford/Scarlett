@@ -12,6 +12,7 @@ pub mod photos;
 pub mod scan_photos;
 pub mod stats;
 pub mod tags;
+pub mod wallpapers;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Route {
