@@ -15,7 +15,7 @@ anyhow = "1.0.26"
 async-trait = "0.1.22"
 chrono = { version = "0.4.10", features = ["serde"] }
 deadpool = "0.5.0"
-deadpool-postgres = "0.5.0"
+deadpool-postgres = "0.5.4"
 derive_more = "0.99.2"
 dotenv = "0.15.0"
 env_logger = "0.7.1"
