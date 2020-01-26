@@ -11,7 +11,7 @@ create table if not exists entity
     instagram_username varchar(30)
         constraint proper_instagram_username
             check (instagram_username ~* '/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/igm'),
-    twitter_username   varchar(30)
+    twitter_username   varchar(15)
         constraint proper_twitter_username
             check (twitter_username ~* '/^@?(\w){1,15}$/igm' ),
     favorite           bool default false not null,
