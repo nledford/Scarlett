@@ -1,10 +1,8 @@
-use actix_web::{delete, get, patch, post, web, HttpResponse};
+use actix_web::{delete, get, HttpResponse, patch, post, web};
 use deadpool_postgres::Pool;
-use serde::{Deserialize, Serialize};
 
 use crate::errors::errors;
 use crate::responses::api_response::ApiResponse;
-use crate::schemas::tags::Tag;
 use crate::schemas::DbTable;
 use crate::schemas::wallpaper_sizes::WallpaperSize;
 
