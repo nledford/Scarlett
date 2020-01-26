@@ -56,7 +56,7 @@ impl GetPhotosRequest {
             .collect::<Vec<String>>();
 
         if temp.len() > 0 {
-            return Some(temp);
+            Some(temp)
         } else {
             None
         }
