@@ -7,10 +7,10 @@ use tokio_postgres::Row;
 
 use async_trait::async_trait;
 
-use crate::schemas::DbTable;
 use crate::schemas::entity::Entity;
 use crate::schemas::tags::Tag;
 use crate::schemas::wallpaper_sizes::WallpaperSize;
+use crate::schemas::DbTable;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Photo {
@@ -222,20 +222,38 @@ impl Photo {
 
     // WALLPAPERS **********************************************************************************
 
-    pub async fn add_wallpaper_to_photo(photo_id: i32, wallpaper_size_id: i32, file_path: String, pool: &Pool) -> Result<String, PoolError> {
+    pub async fn add_wallpaper_to_photo(
+        photo_id: i32,
+        wallpaper_size_id: i32,
+        file_path: String,
+        pool: &Pool,
+    ) -> Result<String, PoolError> {
         let client = pool.get().await?;
         let stmt = client.prepare("insert into photo_wallpaper (photo_id, wallpaper_size_id, file_path) values ($1, $2, $3)").await?;
-        let _ = client.execute(&stmt, &[&photo_id, &wallpaper_size_id, &file_path]).await?;
+        let _ = client
+            .execute(&stmt, &[&photo_id, &wallpaper_size_id, &file_path])
+            .await?;
 
         let size = WallpaperSize::get_by_id(wallpaper_size_id, &pool).await?;
 
-        Ok(format!("Wallpaper size `{}` added to photo successfully", size.name))
+        Ok(format!(
+            "Wallpaper size `{}` added to photo successfully",
+            size.name
+        ))
     }
 
-    pub async fn remove_wallpaper_from_photo(photo_id: i32, wallpaper_size_id: i32, pool: &Pool) -> Result<String, PoolError> {
+    pub async fn remove_wallpaper_from_photo(
+        photo_id: i32,
+        wallpaper_size_id: i32,
+        pool: &Pool,
+    ) -> Result<String, PoolError> {
         let client = pool.get().await?;
-        let stmt = client.prepare("delete from photo_wallpaper where photo_id = $1 and wallpaper_size_id = $2").await?;
-        let _ = client.execute(&stmt, &[&photo_id, &wallpaper_size_id]).await?;
+        let stmt = client
+            .prepare("delete from photo_wallpaper where photo_id = $1 and wallpaper_size_id = $2")
+            .await?;
+        let _ = client
+            .execute(&stmt, &[&photo_id, &wallpaper_size_id])
+            .await?;
 
         let size = WallpaperSize::get_by_id(wallpaper_size_id, &pool).await?;
 

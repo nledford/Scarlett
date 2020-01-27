@@ -2,10 +2,10 @@ use std::env;
 
 use chrono::NaiveDateTime;
 use deadpool_postgres::{Client, Pool, PoolError};
-use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
+use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use serde::{Deserialize, Serialize};
-use tokio_postgres::Row;
 use tokio_postgres::types::ToSql;
+use tokio_postgres::Row;
 
 use async_trait::async_trait;
 
@@ -13,8 +13,8 @@ use crate::pagination::links::Links;
 use crate::pagination::page::Page;
 use crate::pagination::page_metadata::PageMetadata;
 use crate::requests::get_photos_request::GetPhotosRequest;
-use crate::schemas::{DbTable, DbView, Paginated};
 use crate::schemas::collections::Collection;
+use crate::schemas::{DbTable, DbView, Paginated};
 use crate::types::PaginatedPhotos;
 use crate::utils::strings;
 
