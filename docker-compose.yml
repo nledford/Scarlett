@@ -21,6 +21,7 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - scarlett-data:/var/lib/postgresql/data/pgdata
+      - ./db/data:/data
     ports:
       - 5432:5432
     restart: unless-stopped
