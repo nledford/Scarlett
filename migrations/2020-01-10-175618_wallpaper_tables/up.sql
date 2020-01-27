@@ -10,6 +10,10 @@ create table wallpaper_sizes
     height int         not null
 );
 
+-- ensure there cannot be duplicate wallpapers
+create unique index idx_unique_wallpaper_sizes
+    on wallpaper_sizes (name, width, height);
+
 -- Add 'photo_wallpaper` junction table
 create table photo_wallpaper
 (
@@ -21,6 +25,10 @@ create table photo_wallpaper
     constraint photo_wallpaper_photos_fk foreign key (photo_id) references photos (id),
     constraint photo_wallpaper_wallpaper_sizes_fk foreign key (wallpaper_size_id) references wallpaper_sizes (id)
 );
+
+-- ensure there cannot be duplicate photo/wallpaper combinations
+create unique index idx_unique_photo_wallpaper_combo
+    on photo_wallpaper (photo_id, wallpaper_size_id);
 
 -- Add initial values for `wallpaper_sizes` table
 INSERT INTO wallpaper_sizes (name, width, height)
@@ -46,4 +54,4 @@ select id,
            || ' x '
            || height
            || ']' display_name
-from wallpaper_sizes
+from wallpaper_sizes;
