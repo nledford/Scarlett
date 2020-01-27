@@ -21,6 +21,7 @@ use std::env;
 // `photos_all` view *******************************************************************************
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct PhotoFull {
     pub id: i32,
     pub file_path: String,
