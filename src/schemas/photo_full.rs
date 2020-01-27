@@ -133,7 +133,7 @@ impl Paginated for PhotoFull {
             media_url: PhotoFull::build_photo_url(file_path),
         };
 
-        let count = row.get(17);
+        let count = row.get(18);
 
         (photo, count)
     }
