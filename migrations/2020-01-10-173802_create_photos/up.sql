@@ -14,7 +14,9 @@ create table if not exists photos
         constraint rating_range
             check ((rating >= 0) AND (rating <= 5)),
     date_created             timestamp    default CURRENT_TIMESTAMP      not null,
-    date_updated             timestamp    default CURRENT_TIMESTAMP      not null,
+    date_updated             timestamp    default CURRENT_TIMESTAMP      not null
+        constraint valid_update_time
+            check ( date_updated >= current_timestamp::date - interval '10 seconds' ),
     original_width           integer      default 0                      not null
         constraint valid_photo_width
             check ( original_width >= 0 ),
@@ -23,7 +25,10 @@ create table if not exists photos
             check ( original_height >= 0 ),
     rotation                 integer      default 0                      not null
         constraint rotation_values
-            check ( rotation = 0 or rotation = 90 or rotation = 180 or rotation = 270 ),
+            check ( rotation = 0
+                or rotation = 90
+                or rotation = 180
+                or rotation = 270 ),
     ineligible_for_wallpaper bool         default false                  not null,
     anonymous_entities       bool         default false                  not null
 );
