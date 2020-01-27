@@ -162,6 +162,7 @@ impl PhotoFull {
                                           rotation,
                                           ineligible_for_wallpaper,
                                           anonymous_entities,
+                                          suggested_entity_name,
                                           entities,
                                           tags,
                                           wallpapers, \
