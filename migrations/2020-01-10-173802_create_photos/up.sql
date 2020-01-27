@@ -15,8 +15,12 @@ create table if not exists photos
             check ((rating >= 0) AND (rating <= 5)),
     date_created             timestamp    default CURRENT_TIMESTAMP      not null,
     date_updated             timestamp    default CURRENT_TIMESTAMP      not null,
-    original_width           integer      default 0                      not null,
-    original_height          integer      default 0                      not null,
+    original_width           integer      default 0                      not null
+        constraint valid_photo_width
+            check ( original_width >= 0 ),
+    original_height          integer      default 0                      not null
+        constraint valid_photo_height
+            check ( original_height >= 0 ),
     rotation                 integer      default 0                      not null
         constraint rotation_values
             check ( rotation = 0 or rotation = 90 or rotation = 180 or rotation = 270 ),
