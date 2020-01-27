@@ -5,7 +5,7 @@
 # Cargo build stage
 #------------------------------------------------------------------------------
 
-FROM rust:1.40 as cargo-build
+FROM rust:latest as cargo-build
 
 RUN apt-get update
 RUN apt-get install musl-tools -y
