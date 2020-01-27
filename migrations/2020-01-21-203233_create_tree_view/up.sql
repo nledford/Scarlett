@@ -59,5 +59,3 @@ with data as (
 )
 select get_tree(data) directory_tree
 from data;
-
-select * from directory_tree;
