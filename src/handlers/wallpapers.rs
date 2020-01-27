@@ -1,10 +1,10 @@
-use actix_web::{delete, get, HttpResponse, patch, post, web};
+use actix_web::{delete, get, patch, post, web, HttpResponse};
 use deadpool_postgres::Pool;
 
 use crate::errors::errors;
 use crate::responses::api_response::ApiResponse;
-use crate::schemas::DbTable;
 use crate::schemas::wallpaper_sizes::WallpaperSize;
+use crate::schemas::DbTable;
 
 // ALL WALLPAPER SIZES *****************************************************************************
 

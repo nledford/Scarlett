@@ -1,0 +1,1 @@
+drop function if exists calculate_aspect_ratio(width integer, height integer);

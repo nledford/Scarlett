@@ -1,21 +1,22 @@
-use async_trait::async_trait;
+use std::env;
+
 use chrono::NaiveDateTime;
 use deadpool_postgres::{Client, Pool, PoolError};
+use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
 use serde::{Deserialize, Serialize};
-use tokio_postgres::types::ToSql;
 use tokio_postgres::Row;
+use tokio_postgres::types::ToSql;
+
+use async_trait::async_trait;
 
 use crate::pagination::links::Links;
 use crate::pagination::page::Page;
 use crate::pagination::page_metadata::PageMetadata;
 use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::schemas::{DbTable, DbView, Paginated};
-use crate::types::PaginatedPhotos;
-
 use crate::schemas::collections::Collection;
-use crate::utils::{images, strings};
-use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
-use std::env;
+use crate::types::PaginatedPhotos;
+use crate::utils::strings;
 
 // TODO generate recommended wallpaper name
 // `photos_all` view *******************************************************************************
@@ -33,8 +34,8 @@ pub struct PhotoFull {
     pub date_updated: NaiveDateTime,
     pub original_width: i32,
     pub original_height: i32,
-    pub orientation: String,
     pub aspect_ratio: String,
+    pub orientation: String,
     pub rotation: i32,
     pub ineligible_for_wallpaper: bool,
     pub anonymous_entities: bool,
@@ -49,8 +50,6 @@ pub struct PhotoFull {
 #[async_trait]
 impl DbView for PhotoFull {
     fn from_row(row: Row) -> Self {
-        let w = row.get(8);
-        let h = row.get(9);
         let file_path: String = row.get(1);
 
         PhotoFull {
@@ -62,18 +61,18 @@ impl DbView for PhotoFull {
             rating: row.get(5),
             date_created: row.get(6),
             date_updated: row.get(7),
-            original_width: w,
-            original_height: h,
-            orientation: row.get(10),
-            rotation: row.get(11),
-            ineligible_for_wallpaper: row.get(12),
-            anonymous_entities: row.get(13),
-            suggested_entity_name: row.get(14),
-            entities: row.get(15),
-            tags: row.get(16),
-            wallpapers: row.get(17),
+            original_width: row.get(8),
+            original_height: row.get(9),
+            aspect_ratio: row.get(10),
+            orientation: row.get(11),
+            rotation: row.get(12),
+            ineligible_for_wallpaper: row.get(13),
+            anonymous_entities: row.get(14),
+            suggested_entity_name: row.get(15),
+            entities: row.get(16),
+            tags: row.get(17),
+            wallpapers: row.get(18),
 
-            aspect_ratio: images::extract_ratio(w, h).to_string(),
             media_url: PhotoFull::build_photo_url(file_path),
         }
     }
@@ -106,8 +105,6 @@ impl DbView for PhotoFull {
 
 impl Paginated for PhotoFull {
     fn from_paginated_row(row: Row) -> (Self, i64) {
-        let w = row.get(8);
-        let h = row.get(9);
         let file_path: String = row.get(1);
 
         let photo = PhotoFull {
@@ -119,22 +116,22 @@ impl Paginated for PhotoFull {
             rating: row.get(5),
             date_created: row.get(6),
             date_updated: row.get(7),
-            original_width: w,
-            original_height: h,
-            orientation: row.get(10),
-            rotation: row.get(11),
-            ineligible_for_wallpaper: row.get(12),
-            anonymous_entities: row.get(13),
-            suggested_entity_name: row.get(14),
-            entities: row.get(15),
-            tags: row.get(16),
-            wallpapers: row.get(17),
+            original_width: row.get(8),
+            original_height: row.get(9),
+            aspect_ratio: row.get(10),
+            orientation: row.get(11),
+            rotation: row.get(12),
+            ineligible_for_wallpaper: row.get(13),
+            anonymous_entities: row.get(14),
+            suggested_entity_name: row.get(15),
+            entities: row.get(16),
+            tags: row.get(17),
+            wallpapers: row.get(18),
 
-            aspect_ratio: images::extract_ratio(w, h).to_string(),
             media_url: PhotoFull::build_photo_url(file_path),
         };
 
-        let count = row.get(18);
+        let count = row.get(19);
 
         (photo, count)
     }
@@ -159,6 +156,7 @@ impl PhotoFull {
                                           date_updated,
                                           original_width,
                                           original_height,
+                                          aspect_ratio,
                                           orientation,
                                           rotation,
                                           ineligible_for_wallpaper,

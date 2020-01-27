@@ -26,7 +26,9 @@ impl DbTable for WallpaperSize {
 
     async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
         let client = pool.get().await?;
-        let stmt = client.prepare("select * from wallpaper_sizes order by (width, height)").await?;
+        let stmt = client
+            .prepare("select * from wallpaper_sizes order by (width, height)")
+            .await?;
         let results = client.query(&stmt, &[]).await?;
 
         let sizes: Vec<WallpaperSize> = results.into_iter().map(WallpaperSize::from_row).collect();
@@ -36,7 +38,9 @@ impl DbTable for WallpaperSize {
 
     async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
         let client = pool.get().await?;
-        let stmt = client.prepare("select * from wallpaper_sizes where id = $1").await?;
+        let stmt = client
+            .prepare("select * from wallpaper_sizes where id = $1")
+            .await?;
         let result = client.query_one(&stmt, &[&id]).await?;
         let size = WallpaperSize::from_row(result);
 
@@ -45,7 +49,12 @@ impl DbTable for WallpaperSize {
 }
 
 impl WallpaperSize {
-    pub async fn create(name: &str, width: i32, height: i32, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn create(
+        name: &str,
+        width: i32,
+        height: i32,
+        pool: &Pool,
+    ) -> Result<Self, PoolError> {
         // first check if a collection already exists with the provided name
         let exists = WallpaperSize::check_if_exists(name, pool).await?;
 
@@ -79,10 +88,7 @@ impl WallpaperSize {
             .await?;
 
         let _ = client
-            .execute(
-                &stmt,
-                &[&size.name, &size.width, &size.height, &size.id],
-            )
+            .execute(&stmt, &[&size.name, &size.width, &size.height, &size.id])
             .await?;
 
         let result = WallpaperSize::get_by_id(size.id, pool).await?;

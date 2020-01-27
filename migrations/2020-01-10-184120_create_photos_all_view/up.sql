@@ -5,7 +5,7 @@
 create or replace view photos_all as
 select id,
        file_path,
-       replace(file_path, file_name, '') folder,
+       replace(file_path, file_name, '')                       folder,
        file_name,
        file_hash,
        rating,
@@ -13,17 +13,18 @@ select id,
        date_updated,
        original_width,
        original_height,
+       calculate_aspect_ratio(original_width, original_height) aspect_ratio,
        case
            when original_width::decimal / original_height::decimal < 1.0 then 'Portrait'
            when original_width::decimal / original_height::decimal > 1.0 then 'Landscape'
            else 'Square'
-           end                           orientation,
+           end                                                 orientation,
        rotation,
        ineligible_for_wallpaper,
        anonymous_entities,
        case
            when file_path like '%/Entities/%' then (regexp_split_to_array(file_path, '/'))[6]
-           else 'Anonymous' end          suggested_entity_name,
+           else 'Anonymous' end                                suggested_entity_name,
        e.entities,
        t.tags,
        w.wallpapers
