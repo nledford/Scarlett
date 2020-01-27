@@ -19,6 +19,10 @@ create table if not exists entity
     profile_photo_id   int
 );
 
+-- ensure there cannot be any duplicate entities
+create unique index idx_unique_entities
+    on entity (lower(entity_name));
+
 -- add `photo_entity` junction table
 create table photo_entity
 (
@@ -29,3 +33,7 @@ create table photo_entity
     constraint photo_entity_photos_fk foreign key (photo_id) references photos (id),
     constraint photo_entity_entity_fk foreign key (entity_id) references entity (id)
 );
+
+-- ensure there cannot be any photo/entity duplicates
+create unique index idx_unique_photo_entity_combo
+    on photo_entity (photo_id, entity_id);
