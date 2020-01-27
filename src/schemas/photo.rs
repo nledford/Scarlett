@@ -138,37 +138,13 @@ impl Photo {
         Ok("File deleted successfully!".to_string())
     }
 
-    async fn check_if_photo_has_entity(
-        photo_id: i32,
-        entity_id: i32,
-        pool: &Pool,
-    ) -> Result<bool, PoolError> {
-        let client = pool.get().await?;
-        let stmt = client
-            .prepare(
-                "select count(*) \
-                 from photo_entity \
-                 where photo_id = $1 and entity_id = $2",
-            )
-            .await?;
-        let result = client.query_one(&stmt, &[&photo_id, &entity_id]).await?;
-        let count: i64 = result.get(0);
-
-        Ok(count > 0)
-    }
+    // ENTITIES ************************************************************************************
 
     pub async fn add_entity_to_photo(
         photo_id: i32,
         entity_id: i32,
         pool: &Pool,
     ) -> Result<String, PoolError> {
-        // check if photo is already associated with photo to prevent duplicates
-        let exists = Photo::check_if_photo_has_entity(photo_id, entity_id, pool).await?;
-
-        if exists {
-            return Ok("Entity is already associated with photo".to_string());
-        }
-
         let client = pool.get().await?;
         let stmt = client
             .prepare("insert into photo_entity (photo_id, entity_id) values ($1, $2)")
@@ -188,12 +164,6 @@ impl Photo {
         entity_id: i32,
         pool: &Pool,
     ) -> Result<String, PoolError> {
-        // check if photo has entity to prevent redundant removal
-        let exists = Photo::check_if_photo_has_entity(photo_id, entity_id, pool).await?;
-        if !exists {
-            return Ok("Entity is not associated with photo".to_string());
-        }
-
         let client = pool.get().await?;
         let stmt = client
             .prepare("delete from photo_entity where photo_id = $1 and entity_id = $2")
@@ -208,36 +178,13 @@ impl Photo {
         ))
     }
 
-    async fn check_if_photo_has_tag(
-        photo_id: i32,
-        tag_id: i32,
-        pool: &Pool,
-    ) -> Result<bool, PoolError> {
-        let client = pool.get().await?;
-        let stmt = client
-            .prepare(
-                "select count(*) \
-                 from photo_tag \
-                 where photo_id = $1 and tag_id = $2",
-            )
-            .await?;
-        let result = client.query_one(&stmt, &[&photo_id, &tag_id]).await?;
-        let count: i64 = result.get(0);
-
-        Ok(count > 0)
-    }
+    // TAGS ****************************************************************************************
 
     pub async fn add_tag_to_photo(
         photo_id: i32,
         tag_id: i32,
         pool: &Pool,
     ) -> Result<String, PoolError> {
-        // check for existing tag to prevent duplicates
-        let exists = Photo::check_if_photo_has_tag(photo_id, tag_id, pool).await?;
-        if exists {
-            return Ok("Photo is already associated with tag".to_string());
-        }
-
         let client = pool.get().await?;
         let stmt = client
             .prepare("insert into photo_tag (photo_id, tag_id) VALUES ($1, $2)")
@@ -257,12 +204,6 @@ impl Photo {
         tag_id: i32,
         pool: &Pool,
     ) -> Result<String, PoolError> {
-        // check if photo has tag to prevent redundant removal
-        let exists = Photo::check_if_photo_has_tag(photo_id, tag_id, pool).await?;
-        if !exists {
-            return Ok("Tag is not associated with photo".to_string());
-        }
-
         let client = pool.get().await?;
         let stmt = client
             .prepare("delete from photo_tag where photo_id = $1 and tag_id = $2")
@@ -276,4 +217,6 @@ impl Photo {
             tag.tag_name
         ))
     }
+
+    // WALLPAPERS **********************************************************************************
 }
