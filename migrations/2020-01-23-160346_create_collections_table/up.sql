@@ -7,9 +7,21 @@
 
 create table collections
 (
-    id    serial     not null
+    id    serial        not null
         constraint collections_pk
             primary key,
     name  varchar(50)   not null,
     query varchar(1000) not null
 );
+
+-- ensure each collection has a unique name
+create unique index idx_unique_collection_names
+    on collections (lower(name));
+
+-- ensure each collection has a unique query
+create unique index idx_unique_collection_queries
+    on collections (lower(query));
+
+-- ensure there cannot be any duplicate collections
+create unique index idx_unique_collections
+    on collections (name, query);
