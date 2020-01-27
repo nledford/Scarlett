@@ -1,13 +1,13 @@
-use actix_web::{delete, get, patch, post, web, HttpResponse};
+use actix_web::{delete, get, HttpResponse, patch, post, web};
 use deadpool_postgres::Pool;
 
 use crate::errors::errors;
 use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas;
+use crate::schemas::DbView;
 use crate::schemas::photo::Photo;
 use crate::schemas::photo_full::PhotoFull;
-use crate::schemas::DbView;
 
 // ALL PHOTOS **************************************************************************************
 
@@ -128,6 +128,38 @@ pub async fn remove_tag_from_photo(
     let (photo_id, tag_id) = info.into_inner();
 
     let res = Photo::remove_tag_from_photo(photo_id, tag_id, &pool).await;
+
+    match res {
+        Ok(message) => Ok(ApiResponse::success(message)),
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
+    }
+}
+
+// PHOTO WALLPAPERS ********************************************************************************
+
+#[derive(serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NewWallpaper {
+    pub file_path: String,
+}
+
+#[post("/photos/{photo_id}/wallpaper/{wallpaper_size_id}")]
+pub async fn add_wallpaper_to_photo(params: web::Path<(i32, i32)>, info: web::Json<NewWallpaper>, pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+    let (photo_id, wallpaper_size_id) = params.into_inner();
+
+    let res = Photo::add_wallpaper_to_photo(photo_id, wallpaper_size_id, info.into_inner().file_path, &pool).await;
+
+    match res {
+        Ok(message) => Ok(ApiResponse::success(message)),
+        Err(err) => Ok(ApiResponse::error(err.to_string())),
+    }
+}
+
+#[delete("/photos/{photo_id}/wallpaper/{wallpaper_size_id}")]
+pub async fn remove_wallpaper_from_photo(params: web::Path<(i32, i32)>, pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+    let (photo_id, wallpaper_size_id) = params.into_inner();
+
+    let res = Photo::remove_wallpaper_from_photo(photo_id, wallpaper_size_id, &pool).await;
 
     match res {
         Ok(message) => Ok(ApiResponse::success(message)),

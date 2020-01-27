@@ -67,6 +67,8 @@ async fn main() -> std::io::Result<()> {
             .service(handlers::photos::remove_entity_from_photo)
             .service(handlers::photos::add_tag_to_photo)
             .service(handlers::photos::remove_tag_from_photo)
+            .service(handlers::photos::add_wallpaper_to_photo)
+            .service(handlers::photos::remove_wallpaper_from_photo)
             // SCAN PHOTOS *************************************************************************
             .service(handlers::scan_photos::run_scan)
             // STATS *******************************************************************************
