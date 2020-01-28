@@ -47,7 +47,6 @@ impl GetPhotosRequest {
             .clone()
             .unwrap()
             .split(',')
-            .into_iter()
             .filter(|item| {
                 valid_sort_options
                     .contains(&strings::get_category_from_sort((*item).to_string()).as_str())
