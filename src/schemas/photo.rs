@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 use tokio_pg_mapper::FromTokioPostgresRow;
 use tokio_pg_mapper_derive::PostgresMapper;
 
-use crate::schemas::DbTable;
 use crate::schemas::entity::Entity;
 use crate::schemas::tags::Tag;
 use crate::schemas::wallpaper_sizes::WallpaperSize;

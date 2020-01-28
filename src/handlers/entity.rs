@@ -3,7 +3,6 @@ use deadpool_postgres::Pool;
 
 use crate::errors;
 use crate::responses::api_response::ApiResponse;
-use crate::schemas::DbTable;
 use crate::schemas::entity::Entity;
 
 // ALL ENTITIES ************************************************************************************

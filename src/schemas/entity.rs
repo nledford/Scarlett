@@ -1,11 +1,10 @@
-use async_trait::async_trait;
 use deadpool_postgres::{Pool, PoolError};
 use serde::{Deserialize, Serialize};
-use tokio_postgres::Row;
+use tokio_pg_mapper::FromTokioPostgresRow;
+use tokio_pg_mapper_derive::PostgresMapper;
 
-use crate::schemas::DbTable;
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PostgresMapper)]
+#[pg_mapper(table = "entity")]
 pub struct Entity {
     pub id: i32,
     pub entity_name: String,
@@ -16,31 +15,20 @@ pub struct Entity {
     pub profile_photo_id: Option<i32>,
 }
 
-#[async_trait]
-impl DbTable for Entity {
-    fn from_row(row: Row) -> Self {
-        Entity {
-            id: row.get(0),
-            entity_name: row.get(1),
-            alternate_names: row.get(2),
-            instagram_username: row.get(3),
-            twitter_username: row.get(4),
-            favorite: row.get(5),
-            profile_photo_id: row.get(6),
-        }
-    }
-
-    async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
+impl Entity {
+    pub async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM entity").await?;
         let results = client.query(&stmt, &[]).await?;
 
-        let entities: Vec<Entity> = results.into_iter().map(Entity::from_row).collect();
+        let entities: Vec<Entity> = results.into_iter().map(|result| {
+            Entity::from_row(result).unwrap()
+        }).collect();
 
         Ok(entities)
     }
 
-    async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare(
@@ -51,13 +39,11 @@ impl DbTable for Entity {
             .await?;
         let result = client.query_one(&stmt, &[&id]).await?;
 
-        let entity = Entity::from_row(result);
+        let entity = Entity::from_row(result).unwrap();
 
         Ok(entity)
     }
-}
 
-impl Entity {
     pub async fn create_simple(entity_name: &str, pool: &Pool) -> Result<Entity, PoolError> {
         // First check if entity already exists in database
         let exists = Entity::check_if_exists(entity_name, pool).await?;
@@ -86,9 +72,9 @@ impl Entity {
             .prepare("SELECT * FROM entity WHERE entity_name = $1")
             .await?;
         let result = client.query_one(&stmt, &[&entity_name]).await?;
-        let entitiy = Entity::from_row(result);
+        let entity = Entity::from_row(result).unwrap();
 
-        Ok(entitiy)
+        Ok(entity)
     }
 
     pub async fn update(entity: Entity, pool: &Pool) -> Result<Entity, PoolError> {
