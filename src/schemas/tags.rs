@@ -1,44 +1,36 @@
-use crate::schemas::DbTable;
-use async_trait::async_trait;
 use deadpool_postgres::{Pool, PoolError};
 use serde::{Deserialize, Serialize};
-use tokio_postgres::Row;
+use tokio_pg_mapper::FromTokioPostgresRow;
+use tokio_pg_mapper_derive::PostgresMapper;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PostgresMapper)]
+#[pg_mapper(table = "tags")]
 pub struct Tag {
     pub id: i32,
     pub tag_name: String,
 }
 
-#[async_trait]
-impl DbTable for Tag {
-    fn from_row(row: Row) -> Self {
-        Tag {
-            id: row.get(0),
-            tag_name: row.get(1),
-        }
-    }
-
-    async fn get_all(pool: &Pool) -> Result<Vec<Tag>, PoolError> {
+impl Tag {
+    pub async fn get_all(pool: &Pool) -> Result<Vec<Tag>, PoolError> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM tags").await?;
         let results = client.query(&stmt, &[]).await?;
-        let tags: Vec<Tag> = results.into_iter().map(Tag::from_row).collect();
+        let tags: Vec<Tag> = results.into_iter().map(|result| {
+            Tag::from_row(result).unwrap()
+        }).collect();
 
         Ok(tags)
     }
 
-    async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM tags WHERE id = $1").await?;
         let result = client.query_one(&stmt, &[&id]).await?;
-        let tag = Tag::from_row(result);
+        let tag = Tag::from_row(result).unwrap();
 
         Ok(tag)
     }
-}
 
-impl Tag {
     pub async fn create(tag_name: &str, pool: &Pool) -> Result<Tag, PoolError> {
         let client = pool.get().await?;
         let stmt = client
@@ -57,7 +49,7 @@ impl Tag {
             .prepare("SELECT * FROM tags WHERE tag_name = $1")
             .await?;
         let result = client.query_one(&stmt, &[&tag_name]).await?;
-        let tag = Tag::from_row(result);
+        let tag = Tag::from_row(result).unwrap();
 
         Ok(tag)
     }

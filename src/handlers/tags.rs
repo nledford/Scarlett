@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::errors;
 use crate::responses::api_response::ApiResponse;
-use crate::schemas::DbTable;
 use crate::schemas::tags::Tag;
 
 // ALL TAGS ****************************************************************************************
