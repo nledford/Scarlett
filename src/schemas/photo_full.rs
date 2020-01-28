@@ -193,12 +193,9 @@ impl PhotoFull {
         if req.get_sort_by().is_some() {
             let sortings = PhotoFull::determine_sorting(req.clone().get_sort_by().unwrap());
 
-            let mut index = 0;
             let length = sortings.len();
-            for (category, direction) in sortings {
+            for (index, (category, direction)) in sortings.into_iter().enumerate() {
                 query += format!("{} {}", category, direction).as_str();
-
-                index += 1;
 
                 if index < length {
                     query += ", "
