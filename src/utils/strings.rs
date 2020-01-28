@@ -1,5 +1,7 @@
 /// Does exactly what it says on the tin.
 ///
+/// # Example
+///
 /// ```
 /// use scarlett_server::utils::strings::get_first_char_of_str;
 ///
