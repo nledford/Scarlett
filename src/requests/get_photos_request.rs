@@ -49,7 +49,7 @@ impl GetPhotosRequest {
             .split(',')
             .filter(|item| {
                 valid_sort_options
-                    .contains(&strings::get_category_from_sort((*item).to_string()).as_str())
+                    .contains(&strings::get_category_from_sort(*item))
             })
             .map(String::from)
             .collect::<Vec<String>>();

@@ -272,7 +272,7 @@ impl PhotoFull {
                     "ASC"
                 };
 
-                let sort_by = strings::get_category_from_sort(&item);
+                let sort_by = strings::get_category_from_sort(&item).to_string();
 
                 (sort_by, direction.to_string())
             })
