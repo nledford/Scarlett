@@ -3,16 +3,16 @@ use std::fs;
 use chrono::{NaiveDateTime, Utc};
 use deadpool_postgres::{Pool, PoolError};
 use serde::{Deserialize, Serialize};
-use tokio_postgres::Row;
+use tokio_pg_mapper::FromTokioPostgresRow;
+use tokio_pg_mapper_derive::PostgresMapper;
 
-use async_trait::async_trait;
-
+use crate::schemas::DbTable;
 use crate::schemas::entity::Entity;
 use crate::schemas::tags::Tag;
 use crate::schemas::wallpaper_sizes::WallpaperSize;
-use crate::schemas::DbTable;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PostgresMapper)]
+#[pg_mapper(table = "photos")]
 pub struct Photo {
     pub id: i32,
     pub file_path: String,
@@ -28,46 +28,27 @@ pub struct Photo {
     pub anonymous_entities: bool,
 }
 
-#[async_trait]
-impl DbTable for Photo {
-    fn from_row(row: Row) -> Self {
-        Photo {
-            id: row.get(0),
-            file_path: row.get(1),
-            file_name: row.get(2),
-            file_hash: row.get(3),
-            rating: row.get(4),
-            date_created: row.get(5),
-            date_updated: row.get(6),
-            original_width: row.get(7),
-            original_height: row.get(8),
-            rotation: row.get(9),
-            ineligible_for_wallpaper: row.get(10),
-            anonymous_entities: row.get(11),
-        }
-    }
-
-    async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
+impl Photo {
+    pub async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM photos").await?;
         let results = client.query(&stmt, &[]).await?;
-        let photos: Vec<Photo> = results.into_iter().map(Photo::from_row).collect();
+        let photos: Vec<Photo> = results.into_iter().map(|result| {
+            Photo::from_row(result).unwrap()
+        }).collect();
 
         Ok(photos)
     }
 
-    async fn get_by_id(photo_id: i32, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn get_by_id(photo_id: i32, pool: &Pool) -> Result<Self, PoolError> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM photos WHERE id = $1").await?;
         let result = client.query_one(&stmt, &[&photo_id]).await?;
 
-        let photo = Photo::from_row(result);
+        let photo = Photo::from_row(result).unwrap();
 
         Ok(photo)
     }
-}
-
-impl Photo {
     pub async fn update_photo(updated_photo: Photo, pool: &Pool) -> Result<Self, PoolError> {
         let mut updated = updated_photo.clone();
         updated.date_updated = Utc::now().naive_utc();
@@ -122,7 +103,7 @@ impl Photo {
             .await?;
         let result = client.query_one(&stmt, &[&name, &hash]).await?;
 
-        let photo = Photo::from_row(result);
+        let photo = Photo::from_row(result).unwrap();
 
         Ok(photo)
     }

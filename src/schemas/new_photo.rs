@@ -8,7 +8,6 @@ use deadpool_postgres::{Pool, PoolError};
 use sha3::{Digest, Sha3_256};
 
 use crate::schemas::photo::Photo;
-use crate::schemas::DbTable;
 
 #[derive(Clone)]
 pub struct NewPhoto {
