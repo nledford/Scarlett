@@ -4,7 +4,6 @@ use deadpool_postgres::Pool;
 use crate::errors;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::collections::Collection;
-use crate::schemas::DbTable;
 
 // ALL COLLECTIONS *********************************************************************************
 
