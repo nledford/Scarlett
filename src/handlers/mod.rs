@@ -1,7 +1,7 @@
 use actix_web::{get, HttpResponse};
 use serde::{Deserialize, Serialize};
 
-use crate::errors::errors;
+use crate::errors;
 use crate::responses::api_response::ApiResponse;
 
 pub mod collections;
