@@ -214,7 +214,7 @@ impl PhotoFull {
         println!("\n{}\n", &query);
 
         let page_size = &req.get_page_size();
-        let page = req.get_page() - 1 * req.get_page_size();
+        let page = (req.get_page() - 1) * req.get_page_size();
         params.push(&page);
         params.push(page_size);
 
