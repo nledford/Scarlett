@@ -38,10 +38,6 @@ FROM alpine:3
 RUN addgroup -g 1000 scarlett-server
 RUN adduser -D -s /bin/sh -u 1000 -G scarlett-server scarlett-server
 
-# Install postgresql
-RUN apk update
-RUN apk add postgresql postgresql-contrib
-
 # Copy from cargo builder
 WORKDIR /home/scarlett-server/bin
 
