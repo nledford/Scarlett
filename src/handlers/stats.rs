@@ -1,7 +1,7 @@
-use actix_web::{get, web, HttpResponse};
+use actix_web::{get, HttpResponse, web};
 use deadpool_postgres::Pool;
 
-use crate::errors::errors;
+use crate::errors;
 use crate::responses::api_response::ApiResponse;
 use crate::stats::entities::EntityStats;
 use crate::stats::photos::PhotosStats;

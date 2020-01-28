@@ -1,13 +1,12 @@
-use actix_web::{delete, get, patch, post, web, HttpResponse};
+use actix_web::{delete, get, HttpResponse, patch, post, web};
 use deadpool_postgres::Pool;
 
-use crate::errors::errors;
+use crate::{errors, schemas};
 use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::responses::api_response::ApiResponse;
-use crate::schemas;
+use crate::schemas::DbView;
 use crate::schemas::photo::Photo;
 use crate::schemas::photo_full::PhotoFull;
-use crate::schemas::DbView;
 
 // ALL PHOTOS **************************************************************************************
 
@@ -157,7 +156,7 @@ pub async fn add_wallpaper_to_photo(
         info.into_inner().file_path,
         &pool,
     )
-    .await;
+        .await;
 
     match res {
         Ok(message) => Ok(ApiResponse::success(message)),

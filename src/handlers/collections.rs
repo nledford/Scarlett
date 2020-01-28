@@ -1,9 +1,10 @@
-use crate::errors::errors;
+use actix_web::{delete, get, HttpResponse, patch, post, web};
+use deadpool_postgres::Pool;
+
+use crate::errors;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::collections::Collection;
 use crate::schemas::DbTable;
-use actix_web::{delete, get, patch, post, web, HttpResponse};
-use deadpool_postgres::Pool;
 
 // ALL COLLECTIONS *********************************************************************************
 
