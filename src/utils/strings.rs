@@ -1,3 +1,12 @@
+/// Does exactly what it says on the tin.
+///
+/// ```
+/// use scarlett_server::utils::strings::get_first_char_of_str;
+///
+/// let test_str = "Test string";
+/// let first_char = get_first_char_of_str(test_str);
+/// assert_eq!(first_char, 'T')
+/// ```
 pub fn get_first_char_of_str(string: &str) -> Option<char> {
     string.chars().next()
 }
