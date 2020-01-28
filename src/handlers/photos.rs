@@ -4,7 +4,6 @@ use deadpool_postgres::Pool;
 use crate::{errors, schemas};
 use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::responses::api_response::ApiResponse;
-use crate::schemas::DbView;
 use crate::schemas::photo::Photo;
 use crate::schemas::photo_full::PhotoFull;
 

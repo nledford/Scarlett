@@ -2,19 +2,16 @@ use std::env;
 
 use chrono::NaiveDateTime;
 use deadpool_postgres::{Client, Pool, PoolError};
-use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
+use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
 use serde::{Deserialize, Serialize};
-use tokio_postgres::types::ToSql;
 use tokio_postgres::Row;
-
-use async_trait::async_trait;
+use tokio_postgres::types::ToSql;
 
 use crate::pagination::links::Links;
 use crate::pagination::page::Page;
 use crate::pagination::page_metadata::PageMetadata;
 use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::schemas::collections::Collection;
-use crate::schemas::{DbView, Paginated};
 use crate::types::PaginatedPhotos;
 use crate::utils::strings;
 
@@ -47,9 +44,8 @@ pub struct PhotoFull {
     pub media_url: String,
 }
 
-#[async_trait]
-impl DbView for PhotoFull {
-    fn from_row(row: Row) -> Self {
+impl PhotoFull {
+    pub fn from_row(row: Row) -> Self {
         let file_path: String = row.get(1);
 
         PhotoFull {
@@ -77,33 +73,6 @@ impl DbView for PhotoFull {
         }
     }
 
-    async fn get_all(pool: &Pool) -> Result<Vec<PhotoFull>, PoolError> {
-        let client: Client = pool.get().await?;
-        let stmt = client.prepare("SELECT * FROM photos_all").await?;
-        let rows = client.query(&stmt, &[]).await?;
-
-        let photos = rows
-            .into_iter()
-            .map(PhotoFull::from_row)
-            .collect::<Vec<PhotoFull>>();
-
-        Ok(photos)
-    }
-
-    async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
-        let client = pool.get().await?;
-        let stmt = client
-            .prepare("select * from photos_all where id = $1")
-            .await?;
-        let result = client.query_one(&stmt, &[&id]).await?;
-
-        let photo = PhotoFull::from_row(result);
-
-        Ok(photo)
-    }
-}
-
-impl Paginated for PhotoFull {
     fn from_paginated_row(row: Row) -> (Self, i64) {
         let file_path: String = row.get(1);
 
@@ -135,9 +104,32 @@ impl Paginated for PhotoFull {
 
         (photo, count)
     }
-}
 
-impl PhotoFull {
+    pub async fn get_all(pool: &Pool) -> Result<Vec<PhotoFull>, PoolError> {
+        let client: Client = pool.get().await?;
+        let stmt = client.prepare("SELECT * FROM photos_all").await?;
+        let rows = client.query(&stmt, &[]).await?;
+
+        let photos = rows
+            .into_iter()
+            .map(PhotoFull::from_row)
+            .collect::<Vec<PhotoFull>>();
+
+        Ok(photos)
+    }
+
+    pub async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
+        let client = pool.get().await?;
+        let stmt = client
+            .prepare("select * from photos_all where id = $1")
+            .await?;
+        let result = client.query_one(&stmt, &[&id]).await?;
+
+        let photo = PhotoFull::from_row(result);
+
+        Ok(photo)
+    }
+
     pub async fn get_page(
         req: GetPhotosRequest,
         pool: &Pool,
