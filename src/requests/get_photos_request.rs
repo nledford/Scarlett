@@ -55,10 +55,10 @@ impl GetPhotosRequest {
             .map(String::from)
             .collect::<Vec<String>>();
 
-        if temp.len() > 0 {
-            Some(temp)
-        } else {
+        if temp.is_empty() {
             None
+        } else {
+            Some(temp)
         }
     }
 
