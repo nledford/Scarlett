@@ -1,14 +1,14 @@
-use actix_web::{delete, get, patch, post, web, HttpResponse};
+use actix_web::{delete, get, HttpResponse, patch, post, web};
 use deadpool_postgres::Pool;
 
-use crate::errors;
+use crate::errors::ServiceError;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::collections::Collection;
 
 // ALL COLLECTIONS *********************************************************************************
 
 #[get("/collections")]
-pub async fn get_collections(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+pub async fn get_collections(pool: web::Data<Pool>) -> Result<HttpResponse, ServiceError> {
     let res = Collection::get_all(&pool).await;
 
     match res {
@@ -23,7 +23,7 @@ pub async fn get_collections(pool: web::Data<Pool>) -> Result<HttpResponse, erro
 pub async fn get_collection(
     info: web::Path<i32>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let res = Collection::get_by_id(info.into_inner(), &pool).await;
 
     match res {
@@ -44,7 +44,7 @@ pub struct NewCollection {
 pub async fn create_collection(
     params: web::Json<NewCollection>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let collection = params.into_inner();
 
     let res = Collection::create(&collection.name, &collection.query, &pool).await;
@@ -62,7 +62,7 @@ pub async fn update_collection(
     _: web::Path<i32>,
     params: web::Json<Collection>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let res = Collection::update(params.into_inner(), &pool).await;
 
     match res {
@@ -77,7 +77,7 @@ pub async fn update_collection(
 pub async fn delete_collection(
     info: web::Path<i32>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let res = Collection::delete(info.into_inner(), &pool).await;
 
     match res {

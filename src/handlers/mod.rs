@@ -1,7 +1,7 @@
 use actix_web::{get, HttpResponse};
 use serde::{Deserialize, Serialize};
 
-use crate::errors;
+use crate::errors::ServiceError;
 use crate::responses::api_response::ApiResponse;
 
 pub mod collections;
@@ -42,7 +42,7 @@ fn build_list_of_routes() -> Vec<Route> {
 // INDEX *******************************************************************************************
 
 #[get("/")]
-pub async fn index() -> Result<HttpResponse, errors::Error> {
+pub async fn index() -> Result<HttpResponse, ServiceError> {
     let routes = build_list_of_routes();
 
     let res = ApiResponse::success(routes);
@@ -68,7 +68,7 @@ impl AppStatus {
 }
 
 #[get("/status")]
-pub async fn status() -> Result<HttpResponse, errors::Error> {
+pub async fn status() -> Result<HttpResponse, ServiceError> {
     // TODO figure out a way to get application uptime
     let status = AppStatus::new(0, "The service is healthy");
 

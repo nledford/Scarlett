@@ -1,15 +1,15 @@
-use actix_web::{delete, get, patch, post, web, HttpResponse};
+use actix_web::{delete, get, HttpResponse, patch, post, web};
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
-use crate::errors;
+use crate::errors::ServiceError;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::tags::Tag;
 
 // ALL TAGS ****************************************************************************************
 
 #[get("/tags")]
-pub async fn get_tags(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+pub async fn get_tags(pool: web::Data<Pool>) -> Result<HttpResponse, ServiceError> {
     let res = Tag::get_all(&pool).await;
 
     match res {
@@ -30,7 +30,7 @@ pub struct NewTag {
 pub async fn create_tag(
     params: web::Json<NewTag>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let res = Tag::create(params.into_inner().tag_name.as_str(), &pool).await;
 
     match res {
@@ -46,7 +46,7 @@ pub async fn update_tag(
     _: web::Path<i32>,
     params: web::Json<Tag>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let res = Tag::update(params.into_inner(), &pool).await;
 
     match res {
@@ -61,7 +61,7 @@ pub async fn update_tag(
 pub async fn delete_tag(
     info: web::Path<i32>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let res = Tag::delete(info.into_inner(), &pool).await;
 
     match res {

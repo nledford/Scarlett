@@ -1,10 +1,11 @@
-use actix_web::{get, web, HttpResponse};
+use actix_web::{get, HttpResponse, web};
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
+use crate::errors::ServiceError;
+use crate::files;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::new_photo::NewPhoto;
-use crate::{errors, files};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -55,7 +56,7 @@ impl ScanPhotosRequest {
 pub async fn run_scan(
     info: web::Query<ScanPhotosRequest>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let folder = info.get_folder();
     let pool = pool.get_ref();
 

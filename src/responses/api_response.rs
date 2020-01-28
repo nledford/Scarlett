@@ -44,6 +44,15 @@ impl<T: Serialize> ApiResponse<T> {
         }
     }
 
+    pub fn bad_request(data: T) -> HttpResponse {
+        HttpResponse::BadRequest().json(ApiResponse::new(
+            "Bad Request",
+            400,
+            "An error has occurred",
+            data
+        ))
+    }
+
     pub fn error(data: T) -> HttpResponse {
         HttpResponse::InternalServerError().json(ApiResponse::new(
             "Internal Server Error",

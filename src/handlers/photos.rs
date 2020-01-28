@@ -1,11 +1,12 @@
-use actix_web::{delete, get, patch, post, web, HttpResponse};
+use actix_web::{delete, get, HttpResponse, patch, post, web};
 use deadpool_postgres::Pool;
 
+use crate::errors::ServiceError;
 use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::responses::api_response::ApiResponse;
+use crate::schemas;
 use crate::schemas::photo::Photo;
 use crate::schemas::photo_full::PhotoFull;
-use crate::{errors, schemas};
 
 // ALL PHOTOS **************************************************************************************
 
@@ -13,7 +14,7 @@ use crate::{errors, schemas};
 pub async fn get_photos(
     info: web::Query<GetPhotosRequest>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let res = PhotoFull::get_page(info.into_inner(), &pool).await;
 
     match res {
@@ -28,7 +29,7 @@ pub async fn get_photos(
 pub async fn get_photo(
     info: web::Path<i32>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let photo_id: i32 = info.into_inner();
 
     let res = PhotoFull::get_by_id(photo_id, &pool).await;
@@ -46,7 +47,7 @@ pub async fn update_photo(
     _: web::Path<i32>,
     info: web::Json<Photo>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let res = Photo::update_photo(info.into_inner(), &pool).await;
 
     match res {
@@ -61,7 +62,7 @@ pub async fn update_photo(
 pub async fn delete_photo(
     info: web::Path<i32>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let res = Photo::delete_photo(info.into_inner(), &pool).await;
 
     match res {
@@ -76,7 +77,7 @@ pub async fn delete_photo(
 pub async fn add_entity_to_photo(
     info: web::Path<(i32, i32)>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let (photo_id, entity_id) = info.into_inner();
     let res = Photo::add_entity_to_photo(photo_id, entity_id, &pool).await;
 
@@ -90,7 +91,7 @@ pub async fn add_entity_to_photo(
 pub async fn remove_entity_from_photo(
     info: web::Path<(i32, i32)>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let (photo_id, entity_id) = info.into_inner();
 
     let res = Photo::remove_entity_from_photo(photo_id, entity_id, &pool).await;
@@ -107,7 +108,7 @@ pub async fn remove_entity_from_photo(
 pub async fn add_tag_to_photo(
     info: web::Path<(i32, i32)>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let (photo_id, tag_id) = info.into_inner();
 
     let res = Photo::add_tag_to_photo(photo_id, tag_id, &pool).await;
@@ -122,7 +123,7 @@ pub async fn add_tag_to_photo(
 pub async fn remove_tag_from_photo(
     info: web::Path<(i32, i32)>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let (photo_id, tag_id) = info.into_inner();
 
     let res = Photo::remove_tag_from_photo(photo_id, tag_id, &pool).await;
@@ -146,7 +147,7 @@ pub async fn add_wallpaper_to_photo(
     params: web::Path<(i32, i32)>,
     info: web::Json<NewWallpaper>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let (photo_id, wallpaper_size_id) = params.into_inner();
 
     let res = Photo::add_wallpaper_to_photo(
@@ -155,7 +156,7 @@ pub async fn add_wallpaper_to_photo(
         info.into_inner().file_path,
         &pool,
     )
-    .await;
+        .await;
 
     match res {
         Ok(message) => Ok(ApiResponse::success(message)),
@@ -167,7 +168,7 @@ pub async fn add_wallpaper_to_photo(
 pub async fn remove_wallpaper_from_photo(
     params: web::Path<(i32, i32)>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, errors::Error> {
+) -> Result<HttpResponse, ServiceError> {
     let (photo_id, wallpaper_size_id) = params.into_inner();
 
     let res = Photo::remove_wallpaper_from_photo(photo_id, wallpaper_size_id, &pool).await;
@@ -181,7 +182,7 @@ pub async fn remove_wallpaper_from_photo(
 // RESET RANDOM SEED *******************************************************************************
 
 #[get("/resetseed")]
-pub async fn reset_seed(pool: web::Data<Pool>) -> Result<HttpResponse, errors::Error> {
+pub async fn reset_seed(pool: web::Data<Pool>) -> Result<HttpResponse, ServiceError> {
     let res = schemas::reset_seed(&pool).await;
 
     match res {

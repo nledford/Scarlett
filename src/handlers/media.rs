@@ -6,8 +6,8 @@ use std::path::Path;
 use actix_files as fs;
 use actix_web::{get, http::header, web, Error, HttpRequest, HttpResponse, Result};
 
-use crate::errors;
 use crate::responses::api_response::ApiResponse;
+use crate::errors::ServiceError;
 
 #[get("/media/{tail:.*}")]
 pub async fn static_files(req: HttpRequest) -> Result<HttpResponse, Error> {
@@ -18,7 +18,7 @@ pub async fn static_files(req: HttpRequest) -> Result<HttpResponse, Error> {
     let file_mime = fs::file_extension_to_mime(&file_ext);
     let content_type = format!("{}/{}", file_mime.type_(), file_mime.subtype());
 
-    let res = web::block(move || -> Result<String, errors::Error> {
+    let res = web::block(move || -> Result<String, ServiceError> {
         let mut f = File::open(file_path_str)?;
         let mut buffer = String::new();
         f.read_to_string(&mut buffer)?;
