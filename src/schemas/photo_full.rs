@@ -277,7 +277,7 @@ impl PhotoFull {
 
                 let sort_by = strings::get_category_from_sort(&item);
 
-                (sort_by.to_string(), direction.to_string())
+                (sort_by, direction.to_string())
             })
             .collect::<Vec<(String, String)>>()
     }
