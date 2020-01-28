@@ -31,7 +31,7 @@ pub fn contains_sort_order(item: &str) -> bool {
     let first_char = get_first_char_of_str(item);
 
     if first_char.is_none() {
-        return false
+        return false;
     }
 
     match first_char.unwrap() {

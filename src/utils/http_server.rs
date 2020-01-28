@@ -3,6 +3,9 @@ use std::env;
 use deadpool_postgres::{Manager, Pool};
 use tokio_postgres::Config;
 
+/// Builds a Postgresql data pool using environment variables.
+///
+/// The environment variables are `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, and `POSTGRES_HOST`.
 pub fn create_pool() -> Pool {
     let mut cfg = Config::new();
     cfg.user(&env::var("POSTGRES_USER").expect("POSTGRES_USER environment variable not set"));
@@ -16,6 +19,8 @@ pub fn create_pool() -> Pool {
     Pool::new(mgr, 16)
 }
 
+/// Builds an address string from the `SERVER_HOST` environment variable if it is set.
+/// Otherwise returns a default value of `0.0.0.0:8000`.
 pub fn get_addr() -> String {
     let addr = match env::var("SERVER_HOST") {
         Ok(host) => host,
