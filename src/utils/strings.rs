@@ -1,7 +1,15 @@
-pub fn contains_sort_order(item: &str) -> bool {
-    let first_char = item.chars().next().unwrap();
+pub fn get_first_char_of_str(string: &str) -> Option<char> {
+    string.chars().next()
+}
 
-    match first_char {
+pub fn contains_sort_order(item: &str) -> bool {
+    let first_char = get_first_char_of_str(item);
+
+    if first_char.is_none() {
+        return false
+    }
+
+    match first_char.unwrap() {
         '+' | '-' => true,
         _ => false,
     }
