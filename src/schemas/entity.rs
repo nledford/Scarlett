@@ -21,9 +21,10 @@ impl Entity {
         let stmt = client.prepare("SELECT * FROM entity").await?;
         let results = client.query(&stmt, &[]).await?;
 
-        let entities: Vec<Entity> = results.into_iter().map(|result| {
-            Entity::from_row(result).unwrap()
-        }).collect();
+        let entities: Vec<Entity> = results
+            .into_iter()
+            .map(|result| Entity::from_row(result).unwrap())
+            .collect();
 
         Ok(entities)
     }

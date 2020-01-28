@@ -1,10 +1,10 @@
-use actix_web::{get, HttpResponse, web};
+use actix_web::{get, web, HttpResponse};
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
-use crate::{errors, files};
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::new_photo::NewPhoto;
+use crate::{errors, files};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]

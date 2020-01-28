@@ -15,9 +15,10 @@ impl Tag {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM tags").await?;
         let results = client.query(&stmt, &[]).await?;
-        let tags: Vec<Tag> = results.into_iter().map(|result| {
-            Tag::from_row(result).unwrap()
-        }).collect();
+        let tags: Vec<Tag> = results
+            .into_iter()
+            .map(|result| Tag::from_row(result).unwrap())
+            .collect();
 
         Ok(tags)
     }

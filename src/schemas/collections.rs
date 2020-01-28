@@ -18,9 +18,10 @@ impl Collection {
             .await?;
         let results = client.query(&stmt, &[]).await?;
 
-        let collections: Vec<Collection> = results.into_iter().map(|result| {
-            Collection::from_row(result).unwrap()
-        }).collect();
+        let collections: Vec<Collection> = results
+            .into_iter()
+            .map(|result| Collection::from_row(result).unwrap())
+            .collect();
 
         Ok(collections)
     }

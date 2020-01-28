@@ -53,10 +53,7 @@ pub fn contains_sort_order(item: &str) -> bool {
 /// ```
 pub fn get_category_from_sort(item: &str) -> &str {
     if contains_sort_order(item) {
-        item.chars()
-            .next()
-            .map(|c| &item[c.len_utf8()..])
-            .unwrap()
+        item.chars().next().map(|c| &item[c.len_utf8()..]).unwrap()
     } else {
         item
     }

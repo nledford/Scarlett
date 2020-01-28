@@ -19,9 +19,10 @@ impl WallpaperSize {
             .await?;
         let results = client.query(&stmt, &[]).await?;
 
-        let sizes: Vec<WallpaperSize> = results.into_iter().map(|result| {
-            WallpaperSize::from_row(result).unwrap()
-        }).collect();
+        let sizes: Vec<WallpaperSize> = results
+            .into_iter()
+            .map(|result| WallpaperSize::from_row(result).unwrap())
+            .collect();
 
         Ok(sizes)
     }

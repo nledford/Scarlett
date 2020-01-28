@@ -32,9 +32,10 @@ impl Photo {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM photos").await?;
         let results = client.query(&stmt, &[]).await?;
-        let photos: Vec<Photo> = results.into_iter().map(|result| {
-            Photo::from_row(result).unwrap()
-        }).collect();
+        let photos: Vec<Photo> = results
+            .into_iter()
+            .map(|result| Photo::from_row(result).unwrap())
+            .collect();
 
         Ok(photos)
     }
