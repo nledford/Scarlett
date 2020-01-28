@@ -1,11 +1,9 @@
 use deadpool_postgres::{Pool, PoolError};
-use tokio_postgres::Row;
+use tokio_pg_mapper::FromTokioPostgresRow;
+use tokio_pg_mapper_derive::PostgresMapper;
 
-use async_trait::async_trait;
-
-use crate::schemas::DbTable;
-
-#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug, PostgresMapper)]
+#[pg_mapper(table = "wallpaper_sizes")]
 pub struct WallpaperSize {
     pub id: i32,
     pub name: String,
@@ -13,42 +11,32 @@ pub struct WallpaperSize {
     pub height: i32,
 }
 
-#[async_trait]
-impl DbTable for WallpaperSize {
-    fn from_row(row: Row) -> Self {
-        WallpaperSize {
-            id: row.get(0),
-            name: row.get(1),
-            width: row.get(2),
-            height: row.get(3),
-        }
-    }
-
-    async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
+impl WallpaperSize {
+    pub async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("select * from wallpaper_sizes order by (width, height)")
             .await?;
         let results = client.query(&stmt, &[]).await?;
 
-        let sizes: Vec<WallpaperSize> = results.into_iter().map(WallpaperSize::from_row).collect();
+        let sizes: Vec<WallpaperSize> = results.into_iter().map(|result| {
+            WallpaperSize::from_row(result).unwrap()
+        }).collect();
 
         Ok(sizes)
     }
 
-    async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("select * from wallpaper_sizes where id = $1")
             .await?;
         let result = client.query_one(&stmt, &[&id]).await?;
-        let size = WallpaperSize::from_row(result);
+        let size = WallpaperSize::from_row(result).unwrap();
 
         Ok(size)
     }
-}
 
-impl WallpaperSize {
     pub async fn create(
         name: &str,
         width: i32,
@@ -114,7 +102,7 @@ impl WallpaperSize {
             .prepare("select * from wallpaper_sizes where name = $1")
             .await?;
         let result = client.query_one(&stmt, &[&name]).await?;
-        let collection = WallpaperSize::from_row(result);
+        let collection = WallpaperSize::from_row(result).unwrap();
 
         Ok(collection)
     }
