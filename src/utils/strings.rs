@@ -1,4 +1,4 @@
-pub fn contains_sort_order(item: &String) -> bool {
+pub fn contains_sort_order(item: &str) -> bool {
     let first_char = item.chars().next().unwrap();
 
     match first_char {
@@ -7,7 +7,7 @@ pub fn contains_sort_order(item: &String) -> bool {
     }
 }
 
-pub fn get_category_from_sort(item: &String) -> String {
+pub fn get_category_from_sort(item: &str) -> String {
     if contains_sort_order(item) {
         item.chars()
             .next()
