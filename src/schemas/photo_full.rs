@@ -37,6 +37,7 @@ pub struct PhotoFull {
     pub ineligible_for_wallpaper: bool,
     pub anonymous_entities: bool,
     pub suggested_entity_name: String,
+    pub wallpaper_file_name: String,
     pub entities: Option<Vec<String>>,
     pub tags: Option<Vec<String>>,
     pub wallpapers: Option<Vec<String>>,
@@ -65,9 +66,10 @@ impl PhotoFull {
             ineligible_for_wallpaper: row.get(13),
             anonymous_entities: row.get(14),
             suggested_entity_name: row.get(15),
-            entities: row.get(16),
-            tags: row.get(17),
-            wallpapers: row.get(18),
+            wallpaper_file_name: row.get(16),
+            entities: row.get(17),
+            tags: row.get(18),
+            wallpapers: row.get(19),
 
             media_url: PhotoFull::build_photo_url(file_path),
         }
@@ -93,14 +95,15 @@ impl PhotoFull {
             ineligible_for_wallpaper: row.get(13),
             anonymous_entities: row.get(14),
             suggested_entity_name: row.get(15),
-            entities: row.get(16),
-            tags: row.get(17),
-            wallpapers: row.get(18),
+            wallpaper_file_name: row.get(16),
+            entities: row.get(17),
+            tags: row.get(18),
+            wallpapers: row.get(19),
 
             media_url: PhotoFull::build_photo_url(file_path),
         };
 
-        let count = row.get(19);
+        let count = row.get(20);
 
         (photo, count)
     }
