@@ -2,7 +2,7 @@
 create or replace view tag_stats as
 select tag_name,
        photos_with_tag,
-       (photos_with_tag::decimal / photos_with_tags::decimal) * 100                  percentage_with_tag,
+       (photos_with_tag::decimal / greatest(photos_with_tags::decimal, 1)) * 100     percentage_with_tag,
        (photos_with_tag::decimal / (select count(*)::decimal from photos_all)) * 100 percentage_total
 from (select t.tag_name,
              (select count(pt.photo_id)
