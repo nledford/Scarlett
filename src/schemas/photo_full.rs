@@ -157,6 +157,7 @@ impl PhotoFull {
                                           ineligible_for_wallpaper,
                                           anonymous_entities,
                                           suggested_entity_name,
+                                          wallpaper_file_name,
                                           entities,
                                           tags,
                                           wallpapers, \
