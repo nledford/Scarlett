@@ -2,8 +2,8 @@ use actix_web::{get, HttpResponse, web};
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
+use crate::{files, schemas};
 use crate::errors::ServiceError;
-use crate::files;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::new_photo::NewPhoto;
 
@@ -74,6 +74,9 @@ pub async fn run_scan(
     let files = file_scan_result.new_photos;
 
     let new_photos = NewPhoto::bulk_insert(files, pool).await?;
+
+    // refresh random order view
+    let _ = schemas::reset_seed(&pool).await?;
 
     let result = ScanPhotosResult::new(
         new_photos as i32,
