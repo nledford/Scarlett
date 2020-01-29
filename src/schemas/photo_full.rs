@@ -2,10 +2,10 @@ use std::env;
 
 use chrono::NaiveDateTime;
 use deadpool_postgres::{Client, Pool, PoolError};
-use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
+use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
 use serde::{Deserialize, Serialize};
-use tokio_postgres::types::ToSql;
 use tokio_postgres::Row;
+use tokio_postgres::types::ToSql;
 
 use crate::pagination::links::Links;
 use crate::pagination::page::Page;
@@ -141,30 +141,35 @@ impl PhotoFull {
         let mut params: Vec<&(dyn ToSql + Sync)> = vec![];
 
         // pre-emptive TODO: cleanup and optimize this procedurally built query
-        let mut query = "SELECT    id,
-                                          file_path,
-                                          folder,
-                                          file_name,
-                                          file_hash,
-                                          rating,
-                                          date_created,
-                                          date_updated,
-                                          original_width,
-                                          original_height,
-                                          aspect_ratio,
-                                          orientation,
-                                          rotation,
-                                          ineligible_for_wallpaper,
-                                          anonymous_entities,
-                                          suggested_entity_name,
-                                          wallpaper_file_name,
-                                          entities,
-                                          tags,
-                                          wallpapers, \
-                                          COUNT(*) OVER () \
-                                   \nFROM (SELECT row_number() OVER () as position, pa.* \
-                                         \t\nFROM photos_all pa \
-                                                   \t\t\nINNER JOIN photo_ordering po ON pa.id = po.photo_id".to_string();
+        let mut query = "select id,
+                               file_path,
+                               folder,
+                               file_name,
+                               file_hash,
+                               rating,
+                               date_created,
+                               date_updated,
+                               original_width,
+                               original_height,
+                               aspect_ratio,
+                               orientation,
+                               rotation,
+                               ineligible_for_wallpaper,
+                               anonymous_entities,
+                               suggested_entity_name,
+                               wallpaper_file_name,
+                               entities,
+                               tags,
+                               wallpapers,
+                               count(*) over ()
+                        from (
+                                 select row_number() over () as position, photos.*
+                                 from (
+                                          select pa.*
+                                          from photos_all pa
+                                                   inner join photo_ordering po
+                                                              on pa.id = po.photo_id ".to_string();
+
         if req.has_collection_or_filters() {
             query += " \nWHERE ";
 
@@ -180,8 +185,11 @@ impl PhotoFull {
             }
         }
 
-        query += " ORDER BY po.position) t
-                  WHERE t.position > $1";
+        query += " order by po.position \n
+              ) photos \n
+     ) random";
+
+        query += " WHERE random.position > $1 ";
 
         // sorting
         query += " ORDER BY ";
@@ -193,13 +201,13 @@ impl PhotoFull {
             for (index, (category, direction)) in sortings.into_iter().enumerate() {
                 query += format!("{} {}", category, direction).as_str();
 
-                if index < length {
+                if index >= length {
                     query += ", "
                 }
             }
         } else {
             // aka random sorting
-            query += " t.position "
+            query += " random.position "
         }
 
         query += " LIMIT $2";
