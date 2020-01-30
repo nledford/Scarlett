@@ -6,8 +6,8 @@ use std::path::Path;
 use actix_files as fs;
 use actix_web::{get, http::header, web, Error, HttpRequest, HttpResponse, Result};
 
-use crate::responses::api_response::ApiResponse;
 use crate::errors::ServiceError;
+use crate::responses::api_response::ApiResponse;
 
 #[get("/media/{tail:.*}")]
 pub async fn static_files(req: HttpRequest) -> Result<HttpResponse, Error> {

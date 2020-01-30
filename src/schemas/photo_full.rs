@@ -2,10 +2,10 @@ use std::env;
 
 use chrono::NaiveDateTime;
 use deadpool_postgres::{Client, Pool, PoolError};
-use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
+use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use serde::{Deserialize, Serialize};
-use tokio_postgres::Row;
 use tokio_postgres::types::ToSql;
+use tokio_postgres::Row;
 
 use crate::pagination::links::Links;
 use crate::pagination::page::Page;
@@ -168,7 +168,8 @@ impl PhotoFull {
                                           select pa.*
                                           from photos_all pa
                                                    inner join photo_ordering po
-                                                              on pa.id = po.photo_id ".to_string();
+                                                              on pa.id = po.photo_id "
+            .to_string();
 
         if req.has_collection_or_filters() {
             query += " \nWHERE ";

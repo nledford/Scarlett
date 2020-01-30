@@ -37,11 +37,15 @@ impl From<PoolError> for ServiceError {
 impl ResponseError for ServiceError {
     fn error_response(&self) -> HttpResponse {
         match self {
-            ServiceError::InternalServerError => { ApiResponse::error("Internal server error. Please try again later") }
-            ServiceError::BadRequest(ref message) => { ApiResponse::bad_request(message) }
-            ServiceError::IOError(ref error) => { ApiResponse::error(error.description()) }
-            ServiceError::PoolError(ref error) => { ApiResponse::error(format!("Unable to connect to the database: {}", error.description())) }
+            ServiceError::InternalServerError => {
+                ApiResponse::error("Internal server error. Please try again later")
+            }
+            ServiceError::BadRequest(ref message) => ApiResponse::bad_request(message),
+            ServiceError::IOError(ref error) => ApiResponse::error(error.description()),
+            ServiceError::PoolError(ref error) => ApiResponse::error(format!(
+                "Unable to connect to the database: {}",
+                error.description()
+            )),
         }
     }
 }
-

@@ -49,7 +49,7 @@ impl<T: Serialize> ApiResponse<T> {
             "Bad Request",
             400,
             "An error has occurred",
-            data
+            data,
         ))
     }
 
