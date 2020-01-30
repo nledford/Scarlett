@@ -80,6 +80,7 @@ async fn main() -> std::io::Result<()> {
             .service(handlers::tags::create_tag)
             .service(handlers::tags::update_tag)
             .service(handlers::tags::delete_tag)
+            .service(handlers::tags::search_tags)
             // WALLPAPER SIZES *********************************************************************
             .service(handlers::wallpapers::get_wallpaper_sizes)
             // RESET SEED **************************************************************************

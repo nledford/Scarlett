@@ -76,4 +76,19 @@ impl Tag {
 
         Ok("Tag deleted successfully".to_string())
     }
+
+    pub async fn perform_search(q: String, pool: &Pool) -> Result<Vec<Self>, PoolError> {
+        let client = pool.get().await?;
+        let stmt = client.prepare("select * \
+                                                    from tags \
+                                                    order by similarity(tag_name, $1) desc \
+                                                    limit 5").await?;
+        let result = client.query(&stmt, &[&q]).await?;
+
+        let search_results: Vec<Tag> = result.into_iter().map(|result| {
+            Tag::from_row(result).unwrap()
+        }).collect();
+
+        Ok(search_results)
+    }
 }

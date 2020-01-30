@@ -69,3 +69,12 @@ pub async fn delete_tag(
         Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
 }
+
+// PERFORM SEARCH **********************************************************************************
+
+#[get("/tags/search")]
+pub async fn search_tags(params: web::Query<String>, pool: web::Data<Pool>) -> Result<HttpResponse, ServiceError> {
+    let res = Tag::perform_search(params.into_inner(), &pool).await?;
+
+    Ok(ApiResponse::success(res))
+}
