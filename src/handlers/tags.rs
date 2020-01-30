@@ -3,6 +3,7 @@ use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
 use crate::errors::ServiceError;
+use crate::requests::search_request::SearchRequest;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::tags::Tag;
 
@@ -73,8 +74,8 @@ pub async fn delete_tag(
 // PERFORM SEARCH **********************************************************************************
 
 #[get("/tags/search")]
-pub async fn search_tags(params: web::Query<String>, pool: web::Data<Pool>) -> Result<HttpResponse, ServiceError> {
-    let res = Tag::perform_search(params.into_inner(), &pool).await?;
+pub async fn search_tags(params: web::Query<SearchRequest>, pool: web::Data<Pool>) -> Result<HttpResponse, ServiceError> {
+    let res = Tag::perform_search(params.into_inner().q, &pool).await?;
 
     Ok(ApiResponse::success(res))
 }
