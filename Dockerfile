@@ -5,7 +5,7 @@
 # Cargo build stage
 #------------------------------------------------------------------------------
 
-FROM rust:1.40 as cargo-build
+FROM rust:1.41 as cargo-build
 
 RUN apt-get update
 RUN apt-get install musl-tools -y
@@ -32,7 +32,7 @@ RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-li
 # Final Stage
 #------------------------------------------------------------------------------
 
-FROM alpine:3.11.3
+FROM alpine:3
 
 # Create 'scarlett-server' user
 RUN addgroup -g 1000 scarlett-server
