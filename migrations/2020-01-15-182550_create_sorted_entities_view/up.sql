@@ -18,7 +18,7 @@ from (select e.*,
              case
                  when entity_name like '%[%]%' then string_to_array(trim(split_part(entity_name, '[', 1)), ' ')
                  when entity_name like '%(%)%' then string_to_array(trim(split_part(entity_name, '(', 1)), ' ')
-                 when entity_name ~ '[A-Za-z]+[ ][A-Za-z]+[ ]\d'
+                 when entity_name ~ '[A-Za-z]+[ ]?[A-Za-z]*[ ]\d'
                      then string_to_array(trim(regexp_replace(entity_name, '[ ]\d+', '')), ' ')
                  else string_to_array(trim(entity_name), ' ') end name_arr
       from entity e) v
