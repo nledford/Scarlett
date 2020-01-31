@@ -32,3 +32,18 @@ create table if not exists photos
     ineligible_for_wallpaper bool         default false                  not null,
     anonymous_entities       bool         default false                  not null
 );
+
+-- create indexes on date columns
+create index idx_photos_date_created on photos (date_created);
+create index idx_photos_date_updated on photos (date_updated);
+
+-- create index for file name and file path
+create index idx_photos_file_name on photos (file_name);
+create index idx_photos_file_path on photos (file_path);
+
+-- create index for rating
+create index if not exists idx_photos_rating on photos (rating);
+
+-- create text searching indexes
+create index idx_photos_file_name_search on photos using gin (file_name gin_trgm_ops);
+create index idx_photos_file_path_search on photos using gin (file_path gin_trgm_ops);

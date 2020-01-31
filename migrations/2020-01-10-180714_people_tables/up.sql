@@ -23,6 +23,9 @@ create table if not exists entity
 create unique index idx_unique_entities
     on entity (lower(entity_name));
 
+-- create trigram index for text searching
+create index idx_entity_name_search on entity using gin (entity_name gin_trgm_ops);
+
 -- add `photo_entity` junction table
 create table photo_entity
 (
@@ -33,6 +36,9 @@ create table photo_entity
     constraint photo_entity_photos_fk foreign key (photo_id) references photos (id),
     constraint photo_entity_entity_fk foreign key (entity_id) references entity (id)
 );
+
+create index idx_photo_id_entity_id on photo_entity (photo_id, entity_id);
+create index idx_entity_id_photo_id on photo_entity (entity_id, photo_id);
 
 -- ensure there cannot be any photo/entity duplicates
 create unique index idx_unique_photo_entity_combo

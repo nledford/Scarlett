@@ -14,6 +14,11 @@ create table collections
     query varchar(1000) not null
 );
 
+create index idx_collections_name on collections (name);
+create index idx_collections_name_query on collections (name, query);
+create index idx_collections_name_search on collections using gin (name gin_trgm_ops);
+create index idx_collections_query_search on collections using gin (query gin_trgm_ops);
+
 -- ensure each collection has a unique name
 create unique index idx_unique_collection_names
     on collections (lower(name));

@@ -10,6 +10,12 @@ create table wallpaper_sizes
     height int         not null
 );
 
+create index idx_wallpaper_size_name on wallpaper_sizes (name);
+create index idx_wallpaper_dim on wallpaper_sizes (width, height);
+
+-- create text searching index
+create index idx_wallpaper_size_name_search on wallpaper_sizes using gin (name gin_trgm_ops);
+
 -- ensure there cannot be duplicate wallpapers
 create unique index idx_unique_wallpaper_sizes
     on wallpaper_sizes (name, width, height);
@@ -25,6 +31,10 @@ create table photo_wallpaper
     constraint photo_wallpaper_photos_fk foreign key (photo_id) references photos (id),
     constraint photo_wallpaper_wallpaper_sizes_fk foreign key (wallpaper_size_id) references wallpaper_sizes (id)
 );
+
+create index idx_wallpaper_file_path on photo_wallpaper (file_path);
+create index idx_photo_id_wallpaper_id on photo_wallpaper (photo_id, wallpaper_size_id);
+create index idx_wallpaper_id_photo_id on photo_wallpaper (wallpaper_size_id, photo_id);
 
 -- ensure there cannot be duplicate photo/wallpaper combinations
 create unique index idx_unique_photo_wallpaper_combo
