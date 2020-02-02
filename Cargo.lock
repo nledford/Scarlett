@@ -1520,9 +1520,9 @@ dependencies = [
 
 [[package]]
 name = "postgres"
-version = "0.17.0"
+version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96dd5c8eddec65a5497798ebde2e5c74a93ef8b66782c1b09eeab9bb8538aebc"
+checksum = "47cb5f148a31d981d6a5f88f82c6fcc9b5aeb1b6c626d56568f9e007308acfbf"
 dependencies = [
  "bytes",
  "fallible-iterator",
@@ -2116,10 +2116,11 @@ dependencies = [
 
 [[package]]
 name = "tokio-postgres"
-version = "0.5.1"
+version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c03cb0c66092269a9b280e9e4956cb23ce00b8a6b1b393f7700f7732ac4bf133"
+checksum = "b4794270a16f0095a02a752e6cbe9618ef440397af5eb409fa9eb826650ccbdb"
 dependencies = [
+ "async-trait",
  "byteorder",
  "bytes",
  "fallible-iterator",
