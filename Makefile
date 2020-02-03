@@ -17,6 +17,7 @@ run_dev:
 
 run_win:
 	docker run -it -p 8765:8765 \
+		--name scarlett-windows \
 		--env-file=.env \
 		--mount type=bind,source=//c/Users/nledford/Pictures/Vault,target=/photos \
 		--mount type=bind,source=//c/Users/nledford/Pictures/Wallpaper,target=/wallpaper \
