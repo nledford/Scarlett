@@ -43,7 +43,7 @@ impl GetPhotosRequest {
             None => return None,
         };
 
-       let temp = temp
+        let temp = temp
             .split(',')
             .filter(|item| valid_sort_options.contains(&strings::get_category_from_sort(*item)))
             .map(String::from)
