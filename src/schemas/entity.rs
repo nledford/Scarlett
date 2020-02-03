@@ -46,16 +46,6 @@ impl Entity {
     }
 
     pub async fn create_simple(entity_name: &str, pool: &Pool) -> Result<Entity, PoolError> {
-        // First check if entity already exists in database
-        let exists = Entity::check_if_exists(entity_name, pool).await?;
-
-        if exists {
-            let entity = Entity::get_by_name(entity_name, pool).await?;
-            return Ok(entity);
-        }
-
-        // Assume entity does not exist
-
         let client = pool.get().await?;
         let stmt = client
             .prepare("INSERT INTO entity (entity_name) VALUES ($1)")
@@ -122,16 +112,5 @@ impl Entity {
         let _ = client.execute(&stmt, &[&entity.id]).await?;
 
         Ok("Entity deleted successfully".to_string())
-    }
-
-    pub async fn check_if_exists(entity_name: &str, pool: &Pool) -> Result<bool, PoolError> {
-        let client = pool.get().await?;
-        let stmt = client
-            .prepare("SELECT COUNT(*) FROM entity WHERE entity_name = $1")
-            .await?;
-        let result = client.query_one(&stmt, &[&entity_name]).await?;
-        let count: i64 = result.get(0);
-
-        Ok(count > 0)
     }
 }
