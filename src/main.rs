@@ -55,6 +55,7 @@ async fn main() -> std::io::Result<()> {
             .service(handlers::entity::create_entity_simple)
             .service(handlers::entity::update_entity)
             .service(handlers::entity::delete_entity)
+            .service(handlers::entity::search_entities)
             // MEDIA *******************************************************************************
             .service(actix_files::Files::new("/media", "/photos").show_files_listing())
             .service(handlers::media::static_files)

@@ -4,6 +4,7 @@ use deadpool_postgres::Pool;
 use crate::errors::ServiceError;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::entity::Entity;
+use crate::requests::search_request::SearchRequest;
 
 // ALL ENTITIES ************************************************************************************
 
@@ -67,4 +68,13 @@ pub async fn delete_entity(
         Ok(message) => Ok(ApiResponse::success(message)),
         Err(err) => Ok(ApiResponse::error(err.to_string())),
     }
+}
+
+// SEARCH ******************************************************************************************
+
+#[get("/entities/search")]
+pub async fn search_entities(params: web::Query<SearchRequest>, pool: web::Data<Pool>) -> Result<HttpResponse, ServiceError> {
+    let res = Entity::perform_search(params.into_inner().q, &pool).await?;
+
+    Ok(ApiResponse::success(res))
 }
