@@ -76,7 +76,7 @@ pub async fn run_scan(
     let new_photos = NewPhoto::bulk_insert(files, pool).await?;
 
     // refresh random order view
-    let _ = schemas::reset_seed(&pool).await?;
+    schemas::reset_seed(&pool).await?;
 
     let result = ScanPhotosResult::new(
         new_photos as i32,
