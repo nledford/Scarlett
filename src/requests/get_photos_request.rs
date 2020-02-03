@@ -44,13 +44,12 @@ impl GetPhotosRequest {
         };
 
        let temp = temp
-            .unwrap()
             .split(',')
             .filter(|item| valid_sort_options.contains(&strings::get_category_from_sort(*item)))
             .map(String::from)
             .collect::<Vec<String>>();
 
-        temp
+        Some(temp)
     }
 
     pub fn has_collection_or_filters(&self) -> bool {
