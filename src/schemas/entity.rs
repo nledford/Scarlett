@@ -116,13 +116,18 @@ impl Entity {
 
     pub async fn perform_search(q: String, pool: &Pool) -> Result<Vec<Self>, PoolError> {
         let client = pool.get().await?;
-        let stmt = client.prepare("select * \
+        let stmt = client
+            .prepare(
+                "select * \
             from sorted_entity \
             order by similarity(entity_name, $1) desc, sort_name \
-            limit 5").await?;
+            limit 5",
+            )
+            .await?;
         let results = client.query(&stmt, &[&q]).await?;
 
-        let search_results: Vec<Entity> = results.into_iter()
+        let search_results: Vec<Entity> = results
+            .into_iter()
             .map(|result| Entity::from_row(result).unwrap())
             .collect();
 
