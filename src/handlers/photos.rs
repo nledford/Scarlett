@@ -1,4 +1,4 @@
-use actix_web::{delete, Error, get, HttpResponse, patch, post, web};
+use actix_web::{delete, get, patch, post, web, Error, HttpResponse};
 use deadpool_postgres::Pool;
 
 use crate::requests::get_photos_request::GetPhotosRequest;
@@ -22,10 +22,7 @@ pub async fn get_photos(
 // SINGLE PHOTO ************************************************************************************
 
 #[get("/photos/{photo_id}")]
-pub async fn get_photo(
-    info: web::Path<i32>,
-    pool: web::Data<Pool>,
-) -> Result<HttpResponse, Error> {
+pub async fn get_photo(info: web::Path<i32>, pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
     let photo_id: i32 = info.into_inner();
 
     let photo = PhotoFull::get_by_id(photo_id, &pool).await?;
@@ -131,7 +128,7 @@ pub async fn add_wallpaper_to_photo(
         info.into_inner().file_path,
         &pool,
     )
-        .await?;
+    .await?;
 
     Ok(ApiResponse::success(message))
 }

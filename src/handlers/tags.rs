@@ -1,4 +1,4 @@
-use actix_web::{delete, get, patch, post, web, HttpResponse, Error};
+use actix_web::{delete, get, patch, post, web, Error, HttpResponse};
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
@@ -28,7 +28,7 @@ pub async fn create_tag(
     params: web::Json<NewTag>,
     pool: web::Data<Pool>,
 ) -> Result<HttpResponse, Error> {
-    let new_tag= Tag::create(params.into_inner().tag_name.as_str(), &pool).await?;
+    let new_tag = Tag::create(params.into_inner().tag_name.as_str(), &pool).await?;
 
     Ok(ApiResponse::success(new_tag))
 }

@@ -6,9 +6,9 @@ use deadpool_postgres::{Pool, PoolError};
 use rayon::prelude::*;
 use walkdir::{DirEntry, WalkDir};
 
+use crate::errors::ServiceError;
 use crate::schemas::new_photo::NewPhoto;
 use crate::schemas::photo::Photo;
-use crate::errors::ServiceError;
 
 // FILE SCAN RESULT ********************************************************************************
 
@@ -67,7 +67,10 @@ pub async fn scan_all_photos(pool: &Pool) -> Result<FileScanResult, ServiceError
     scan_all_photos_from_dir(photos_dir, pool).await
 }
 
-pub async fn scan_all_photos_from_dir(dir: &str, pool: &Pool) -> Result<FileScanResult, ServiceError> {
+pub async fn scan_all_photos_from_dir(
+    dir: &str,
+    pool: &Pool,
+) -> Result<FileScanResult, ServiceError> {
     let mut result: FileScanResult = Default::default();
 
     let files = collect_files_from_directory(&dir, pool).await?;
@@ -119,7 +122,10 @@ pub async fn scan_all_photos_from_dir(dir: &str, pool: &Pool) -> Result<FileScan
     Ok(result)
 }
 
-async fn collect_files_from_directory(dir: &str, pool: &Pool) -> Result<Vec<FileInfo>, ServiceError> {
+async fn collect_files_from_directory(
+    dir: &str,
+    pool: &Pool,
+) -> Result<Vec<FileInfo>, ServiceError> {
     let mut files = Vec::new();
 
     let image_file_extensions = vec![

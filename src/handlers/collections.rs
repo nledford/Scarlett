@@ -1,4 +1,4 @@
-use actix_web::{delete, Error, get, HttpResponse, patch, post, web};
+use actix_web::{delete, get, patch, post, web, Error, HttpResponse};
 use deadpool_postgres::Pool;
 
 use crate::responses::api_response::ApiResponse;

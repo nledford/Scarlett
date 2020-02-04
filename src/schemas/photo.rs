@@ -97,7 +97,11 @@ impl Photo {
         Ok(result)
     }
 
-    pub async fn get_photo_by_name(name: &str, hash: &str, pool: &Pool) -> Result<Self, ServiceError> {
+    pub async fn get_photo_by_name(
+        name: &str,
+        hash: &str,
+        pool: &Pool,
+    ) -> Result<Self, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("SELECT * FROM photos WHERE file_name = $1 AND file_path = $2")

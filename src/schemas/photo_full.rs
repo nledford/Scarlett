@@ -2,10 +2,10 @@ use std::env;
 
 use chrono::NaiveDateTime;
 use deadpool_postgres::{Client, Pool};
-use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
+use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use serde::{Deserialize, Serialize};
-use tokio_postgres::Row;
 use tokio_postgres::types::ToSql;
+use tokio_postgres::Row;
 
 use crate::errors::ServiceError;
 use crate::pagination::links::Links;
