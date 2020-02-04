@@ -1,4 +1,4 @@
-use actix_web::{delete, get, patch, post, web, HttpResponse};
+use actix_web::{get, HttpResponse, web};
 use deadpool_postgres::Pool;
 
 use crate::errors::ServiceError;
@@ -9,10 +9,7 @@ use crate::schemas::wallpaper_sizes::WallpaperSize;
 
 #[get("/wallpaper_sizes")]
 pub async fn get_wallpaper_sizes(pool: web::Data<Pool>) -> Result<HttpResponse, ServiceError> {
-    let res = WallpaperSize::get_all(&pool).await;
+    let sizes = WallpaperSize::get_all(&pool).await?;
 
-    match res {
-        Ok(sizes) => Ok(ApiResponse::success(sizes)),
-        Err(err) => Ok(ApiResponse::error(err.to_string())),
-    }
+    Ok(ApiResponse::success(sizes))
 }
