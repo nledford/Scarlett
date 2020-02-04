@@ -1,6 +1,8 @@
-use deadpool_postgres::{Pool, PoolError};
+use deadpool_postgres::Pool;
 use tokio_pg_mapper::FromTokioPostgresRow;
 use tokio_pg_mapper_derive::PostgresMapper;
+
+use crate::errors::ServiceError;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug, PostgresMapper)]
 #[pg_mapper(table = "collections")]
@@ -11,7 +13,7 @@ pub struct Collection {
 }
 
 impl Collection {
-    pub async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
+    pub async fn get_all(pool: &Pool) -> Result<Vec<Self>, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("select * from collections order by name")
@@ -26,7 +28,7 @@ impl Collection {
         Ok(collections)
     }
 
-    pub async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("select * from collections where id = $1")
@@ -38,7 +40,7 @@ impl Collection {
         Ok(collection)
     }
 
-    pub async fn create(name: &str, query: &str, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn create(name: &str, query: &str, pool: &Pool) -> Result<Self, ServiceError> {
         // first check if a collection already exists with the provided name
         let exists = Collection::check_if_exists(name, pool).await?;
 
@@ -60,7 +62,7 @@ impl Collection {
         Ok(collection)
     }
 
-    pub async fn update(collection: Collection, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn update(collection: Collection, pool: &Pool) -> Result<Self, ServiceError> {
         let client = pool.get().await?;
 
         let stmt = client
@@ -83,7 +85,7 @@ impl Collection {
         Ok(result)
     }
 
-    pub async fn delete(id: i32, pool: &Pool) -> Result<String, PoolError> {
+    pub async fn delete(id: i32, pool: &Pool) -> Result<String, ServiceError> {
         let collection = Collection::get_by_id(id, pool).await?;
 
         let client = pool.get().await?;
@@ -95,7 +97,7 @@ impl Collection {
         Ok("Collection deleted successfully".to_string())
     }
 
-    pub async fn get_by_name(name: &str, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn get_by_name(name: &str, pool: &Pool) -> Result<Self, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("select * from collections where name = $1")
@@ -106,7 +108,7 @@ impl Collection {
         Ok(collection)
     }
 
-    pub async fn check_if_exists(name: &str, pool: &Pool) -> Result<bool, PoolError> {
+    pub async fn check_if_exists(name: &str, pool: &Pool) -> Result<bool, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("select count(*) from collections where name = $1")

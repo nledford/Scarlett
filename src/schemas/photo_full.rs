@@ -14,6 +14,7 @@ use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::schemas::collections::Collection;
 use crate::types::PaginatedPhotos;
 use crate::utils::strings;
+use crate::errors::ServiceError;
 
 // TODO generate recommended wallpaper name
 // `photos_all` view *******************************************************************************
@@ -136,7 +137,7 @@ impl PhotoFull {
     pub async fn get_page(
         req: GetPhotosRequest,
         pool: &Pool,
-    ) -> Result<PaginatedPhotos, PoolError> {
+    ) -> Result<PaginatedPhotos, ServiceError> {
         let client = pool.get().await?;
         let mut params: Vec<&(dyn ToSql + Sync)> = vec![];
 

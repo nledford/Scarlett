@@ -14,13 +14,10 @@ use crate::schemas::photo_full::PhotoFull;
 pub async fn get_photos(
     info: web::Query<GetPhotosRequest>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, ServiceError> {
-    let res = PhotoFull::get_page(info.into_inner(), &pool).await;
+) -> Result<HttpResponse, Error> {
+    let page = PhotoFull::get_page(info.into_inner(), &pool).await?;
 
-    match res {
-        Ok(page) => Ok(ApiResponse::success(page)),
-        Err(err) => Ok(ApiResponse::error(err.to_string())),
-    }
+    Ok(ApiResponse::success(page))
 }
 
 // SINGLE PHOTO ************************************************************************************
