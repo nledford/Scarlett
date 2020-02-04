@@ -1,6 +1,8 @@
-use deadpool_postgres::{Pool, PoolError};
+use deadpool_postgres::Pool;
 use serde_json::Value as JSON;
 use tokio_postgres::Row;
+
+use crate::errors::ServiceError;
 
 #[derive(serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -28,7 +30,7 @@ impl DirectoryTree {
     }
 }
 
-pub async fn get_directory_tree(pool: &Pool) -> Result<DirectoryTree, PoolError> {
+pub async fn get_directory_tree(pool: &Pool) -> Result<DirectoryTree, ServiceError> {
     let client = pool.get().await?;
     let stmt = client.prepare("SELECT * FROM directory_tree").await?;
     let result = client.query_one(&stmt, &[]).await?;
