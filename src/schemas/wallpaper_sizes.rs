@@ -44,16 +44,6 @@ impl WallpaperSize {
         height: i32,
         pool: &Pool,
     ) -> Result<Self, PoolError> {
-        // first check if a collection already exists with the provided name
-        let exists = WallpaperSize::check_if_exists(name, pool).await?;
-
-        if exists {
-            let collection = WallpaperSize::get_by_name(name, pool).await?;
-            return Ok(collection);
-        }
-
-        // Assume collection does not exist
-
         let client = pool.get().await?;
         let stmt = client
             .prepare("insert into wallpaper_sizes (name, width, height) values ($1, $2, $3)")
@@ -106,17 +96,5 @@ impl WallpaperSize {
         let collection = WallpaperSize::from_row(result).unwrap();
 
         Ok(collection)
-    }
-
-    pub async fn check_if_exists(name: &str, pool: &Pool) -> Result<bool, PoolError> {
-        let client = pool.get().await?;
-        let stmt = client
-            .prepare("select count(*) from wallpaper_sizes where name = $1")
-            .await?;
-        let result = client.query_one(&stmt, &[&name]).await?;
-
-        let count: i64 = result.get(0);
-
-        Ok(count > 0)
     }
 }
