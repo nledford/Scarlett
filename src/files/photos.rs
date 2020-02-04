@@ -8,6 +8,7 @@ use walkdir::{DirEntry, WalkDir};
 
 use crate::schemas::new_photo::NewPhoto;
 use crate::schemas::photo::Photo;
+use crate::errors::ServiceError;
 
 // FILE SCAN RESULT ********************************************************************************
 
@@ -60,13 +61,13 @@ fn get_file_extension(entry: &DirEntry) -> String {
 
 // SCAN FILES **************************************************************************************
 
-pub async fn scan_all_photos(pool: &Pool) -> Result<FileScanResult, PoolError> {
+pub async fn scan_all_photos(pool: &Pool) -> Result<FileScanResult, ServiceError> {
     let photos_dir = "/photos";
 
     scan_all_photos_from_dir(photos_dir, pool).await
 }
 
-pub async fn scan_all_photos_from_dir(dir: &str, pool: &Pool) -> Result<FileScanResult, PoolError> {
+pub async fn scan_all_photos_from_dir(dir: &str, pool: &Pool) -> Result<FileScanResult, ServiceError> {
     let mut result: FileScanResult = Default::default();
 
     let files = collect_files_from_directory(&dir, pool).await?;
@@ -118,7 +119,7 @@ pub async fn scan_all_photos_from_dir(dir: &str, pool: &Pool) -> Result<FileScan
     Ok(result)
 }
 
-async fn collect_files_from_directory(dir: &str, pool: &Pool) -> Result<Vec<FileInfo>, PoolError> {
+async fn collect_files_from_directory(dir: &str, pool: &Pool) -> Result<Vec<FileInfo>, ServiceError> {
     let mut files = Vec::new();
 
     let image_file_extensions = vec![
@@ -201,7 +202,7 @@ async fn check_if_photo_exists_by_file(
     Ok(count > 0)
 }
 
-async fn check_for_deleted_files_in_dir(dir: &str, pool: &Pool) -> Result<usize, PoolError> {
+async fn check_for_deleted_files_in_dir(dir: &str, pool: &Pool) -> Result<usize, ServiceError> {
     let mut deleted_files: Vec<String> = Vec::new();
 
     let client = pool.get().await?;

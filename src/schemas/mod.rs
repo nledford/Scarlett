@@ -1,4 +1,6 @@
-use deadpool_postgres::{Pool, PoolError};
+use deadpool_postgres::Pool;
+
+use crate::errors::ServiceError;
 
 pub mod collections;
 pub mod directory_tree;
@@ -11,7 +13,7 @@ pub mod wallpaper_sizes;
 
 // REFRESH `photo_order` MATERIALIZED VIEW *********************************************************
 
-pub async fn reset_seed(pool: &Pool) -> Result<(), PoolError> {
+pub async fn reset_seed(pool: &Pool) -> Result<(), ServiceError> {
     let client = pool.get().await?;
 
     let stmt = client

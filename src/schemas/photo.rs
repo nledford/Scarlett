@@ -1,7 +1,7 @@
 use std::fs;
 
 use chrono::{NaiveDateTime, Utc};
-use deadpool_postgres::{Pool, PoolError};
+use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 use tokio_pg_mapper::FromTokioPostgresRow;
 use tokio_pg_mapper_derive::PostgresMapper;
@@ -29,7 +29,7 @@ pub struct Photo {
 }
 
 impl Photo {
-    pub async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
+    pub async fn get_all(pool: &Pool) -> Result<Vec<Self>, ServiceError> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM photos").await?;
         let results = client.query(&stmt, &[]).await?;
@@ -41,7 +41,7 @@ impl Photo {
         Ok(photos)
     }
 
-    pub async fn get_by_id(photo_id: i32, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn get_by_id(photo_id: i32, pool: &Pool) -> Result<Self, ServiceError> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM photos WHERE id = $1").await?;
         let result = client.query_one(&stmt, &[&photo_id]).await?;
@@ -50,7 +50,7 @@ impl Photo {
 
         Ok(photo)
     }
-    pub async fn update_photo(updated_photo: Photo, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn update_photo(updated_photo: Photo, pool: &Pool) -> Result<Self, ServiceError> {
         let mut updated = updated_photo.clone();
         updated.date_updated = Utc::now().naive_utc();
 
@@ -97,7 +97,7 @@ impl Photo {
         Ok(result)
     }
 
-    pub async fn get_photo_by_name(name: &str, hash: &str, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn get_photo_by_name(name: &str, hash: &str, pool: &Pool) -> Result<Self, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("SELECT * FROM photos WHERE file_name = $1 AND file_path = $2")
@@ -109,7 +109,7 @@ impl Photo {
         Ok(photo)
     }
 
-    pub async fn delete_photo(photo_id: i32, pool: &Pool) -> Result<String, PoolError> {
+    pub async fn delete_photo(photo_id: i32, pool: &Pool) -> Result<String, ServiceError> {
         let photo = Photo::get_by_id(photo_id, &pool).await?;
 
         // attempt to delete photo
@@ -168,7 +168,7 @@ impl Photo {
         photo_id: i32,
         tag_id: i32,
         pool: &Pool,
-    ) -> Result<String, PoolError> {
+    ) -> Result<String, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("insert into photo_tag (photo_id, tag_id) VALUES ($1, $2)")
@@ -187,7 +187,7 @@ impl Photo {
         photo_id: i32,
         tag_id: i32,
         pool: &Pool,
-    ) -> Result<String, PoolError> {
+    ) -> Result<String, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("delete from photo_tag where photo_id = $1 and tag_id = $2")
