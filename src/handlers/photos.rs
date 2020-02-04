@@ -149,7 +149,7 @@ pub async fn remove_wallpaper_from_photo(
 
 #[get("/resetseed")]
 pub async fn reset_seed(pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
-    let _ = schemas::reset_seed(&pool).await?;
+    schemas::reset_seed(&pool).await?;
 
     Ok(ApiResponse::success(
         "`photo_ordering` materialized view was refreshed successfully",
