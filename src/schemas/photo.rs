@@ -128,7 +128,7 @@ impl Photo {
         photo_id: i32,
         entity_id: i32,
         pool: &Pool,
-    ) -> Result<String, PoolError> {
+    ) -> Result<String, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("insert into photo_entity (photo_id, entity_id) values ($1, $2)")
@@ -147,7 +147,7 @@ impl Photo {
         photo_id: i32,
         entity_id: i32,
         pool: &Pool,
-    ) -> Result<String, PoolError> {
+    ) -> Result<String, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("delete from photo_entity where photo_id = $1 and entity_id = $2")
