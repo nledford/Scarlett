@@ -1,8 +1,7 @@
-use actix_web::{delete, get, patch, post, web, HttpResponse};
+use actix_web::{delete, get, patch, post, web, HttpResponse, Error};
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
-use crate::errors::ServiceError;
 use crate::requests::search_request::SearchRequest;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::tags::Tag;
@@ -10,13 +9,10 @@ use crate::schemas::tags::Tag;
 // ALL TAGS ****************************************************************************************
 
 #[get("/tags")]
-pub async fn get_tags(pool: web::Data<Pool>) -> Result<HttpResponse, ServiceError> {
-    let res = Tag::get_all(&pool).await;
+pub async fn get_tags(pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
+    let tags = Tag::get_all(&pool).await?;
 
-    match res {
-        Ok(tags) => Ok(ApiResponse::success(tags)),
-        Err(err) => Ok(ApiResponse::error(err.to_string())),
-    }
+    Ok(ApiResponse::success(tags))
 }
 
 // CREATE TAG **************************************************************************************
@@ -31,13 +27,10 @@ pub struct NewTag {
 pub async fn create_tag(
     params: web::Json<NewTag>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, ServiceError> {
-    let res = Tag::create(params.into_inner().tag_name.as_str(), &pool).await;
+) -> Result<HttpResponse, Error> {
+    let new_tag= Tag::create(params.into_inner().tag_name.as_str(), &pool).await?;
 
-    match res {
-        Ok(new_tag) => Ok(ApiResponse::success(new_tag)),
-        Err(err) => Ok(ApiResponse::error(err.to_string())),
-    }
+    Ok(ApiResponse::success(new_tag))
 }
 
 // UPDATE TAG **************************************************************************************
@@ -47,13 +40,10 @@ pub async fn update_tag(
     _: web::Path<i32>,
     params: web::Json<Tag>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, ServiceError> {
-    let res = Tag::update(params.into_inner(), &pool).await;
+) -> Result<HttpResponse, Error> {
+    let updated_tag = Tag::update(params.into_inner(), &pool).await?;
 
-    match res {
-        Ok(updated_tag) => Ok(ApiResponse::success(updated_tag)),
-        Err(err) => Ok(ApiResponse::error(err.to_string())),
-    }
+    Ok(ApiResponse::success(updated_tag))
 }
 
 // DELETE TAG **************************************************************************************
@@ -62,13 +52,10 @@ pub async fn update_tag(
 pub async fn delete_tag(
     info: web::Path<i32>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, ServiceError> {
-    let res = Tag::delete(info.into_inner(), &pool).await;
+) -> Result<HttpResponse, Error> {
+    let message = Tag::delete(info.into_inner(), &pool).await?;
 
-    match res {
-        Ok(message) => Ok(ApiResponse::success(message)),
-        Err(err) => Ok(ApiResponse::error(err.to_string())),
-    }
+    Ok(ApiResponse::success(message))
 }
 
 // PERFORM SEARCH **********************************************************************************
@@ -77,7 +64,7 @@ pub async fn delete_tag(
 pub async fn search_tags(
     params: web::Query<SearchRequest>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, ServiceError> {
+) -> Result<HttpResponse, Error> {
     let res = Tag::perform_search(params.into_inner().q, &pool).await?;
 
     Ok(ApiResponse::success(res))
