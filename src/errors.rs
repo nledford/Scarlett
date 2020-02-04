@@ -3,6 +3,7 @@ use std::error::Error;
 use actix_web::{error::ResponseError, HttpResponse};
 use deadpool_postgres::PoolError;
 use thiserror::Error;
+use tokio_postgres::error::Error as TpgError;
 
 use crate::responses::api_response::ApiResponse;
 
@@ -20,6 +21,9 @@ pub enum ServiceError {
 
     #[error("Unable to connect to the database")]
     PoolError(PoolError),
+
+    #[error("A database error has occurred: {0}")]
+    TpgError(TpgError),
 }
 
 impl From<std::io::Error> for ServiceError {
@@ -31,6 +35,12 @@ impl From<std::io::Error> for ServiceError {
 impl From<PoolError> for ServiceError {
     fn from(error: PoolError) -> Self {
         Self::PoolError(error)
+    }
+}
+
+impl From<TpgError> for ServiceError {
+    fn from(error: TpgError) -> Self {
+        Self::TpgError(error)
     }
 }
 
@@ -46,6 +56,7 @@ impl ResponseError for ServiceError {
                 "Unable to connect to the database: {}",
                 error.description()
             )),
+            ServiceError::TpgError(ref error) => ApiResponse::error(error.description()),
         }
     }
 }

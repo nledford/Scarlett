@@ -1,4 +1,4 @@
-use actix_web::{delete, get, patch, post, web, HttpResponse};
+use actix_web::{delete, Error, get, HttpResponse, patch, post, web};
 use deadpool_postgres::Pool;
 
 use crate::errors::ServiceError;
@@ -147,7 +147,7 @@ pub async fn add_wallpaper_to_photo(
     params: web::Path<(i32, i32)>,
     info: web::Json<NewWallpaper>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, ServiceError> {
+) -> Result<HttpResponse, Error> {
     let (photo_id, wallpaper_size_id) = params.into_inner();
 
     let res = Photo::add_wallpaper_to_photo(
@@ -156,7 +156,7 @@ pub async fn add_wallpaper_to_photo(
         info.into_inner().file_path,
         &pool,
     )
-    .await;
+        .await;
 
     match res {
         Ok(message) => Ok(ApiResponse::success(message)),
@@ -168,7 +168,7 @@ pub async fn add_wallpaper_to_photo(
 pub async fn remove_wallpaper_from_photo(
     params: web::Path<(i32, i32)>,
     pool: web::Data<Pool>,
-) -> Result<HttpResponse, ServiceError> {
+) -> Result<HttpResponse, Error> {
     let (photo_id, wallpaper_size_id) = params.into_inner();
 
     let res = Photo::remove_wallpaper_from_photo(photo_id, wallpaper_size_id, &pool).await;

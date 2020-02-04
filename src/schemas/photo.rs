@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use tokio_pg_mapper::FromTokioPostgresRow;
 use tokio_pg_mapper_derive::PostgresMapper;
 
+use crate::errors::ServiceError;
 use crate::schemas::entity::Entity;
 use crate::schemas::tags::Tag;
 use crate::schemas::wallpaper_sizes::WallpaperSize;
@@ -208,7 +209,7 @@ impl Photo {
         wallpaper_size_id: i32,
         file_path: String,
         pool: &Pool,
-    ) -> Result<String, PoolError> {
+    ) -> Result<String, ServiceError> {
         let client = pool.get().await?;
         let stmt = client.prepare("insert into photo_wallpaper (photo_id, wallpaper_size_id, file_path) values ($1, $2, $3)").await?;
         let _ = client
@@ -227,7 +228,7 @@ impl Photo {
         photo_id: i32,
         wallpaper_size_id: i32,
         pool: &Pool,
-    ) -> Result<String, PoolError> {
+    ) -> Result<String, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("delete from photo_wallpaper where photo_id = $1 and wallpaper_size_id = $2")

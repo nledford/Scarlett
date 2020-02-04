@@ -1,6 +1,8 @@
-use deadpool_postgres::{Pool, PoolError};
+use deadpool_postgres::Pool;
 use tokio_pg_mapper::FromTokioPostgresRow;
 use tokio_pg_mapper_derive::PostgresMapper;
+
+use crate::errors::ServiceError;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug, PostgresMapper)]
 #[pg_mapper(table = "wallpaper_sizes")]
@@ -12,7 +14,7 @@ pub struct WallpaperSize {
 }
 
 impl WallpaperSize {
-    pub async fn get_all(pool: &Pool) -> Result<Vec<Self>, PoolError> {
+    pub async fn get_all(pool: &Pool) -> Result<Vec<Self>, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("select * from wallpaper_sizes order by (width, height)")
@@ -27,7 +29,7 @@ impl WallpaperSize {
         Ok(sizes)
     }
 
-    pub async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("select * from wallpaper_sizes where id = $1")
@@ -43,7 +45,7 @@ impl WallpaperSize {
         width: i32,
         height: i32,
         pool: &Pool,
-    ) -> Result<Self, PoolError> {
+    ) -> Result<Self, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("insert into wallpaper_sizes (name, width, height) values ($1, $2, $3)")
@@ -55,7 +57,7 @@ impl WallpaperSize {
         Ok(collection)
     }
 
-    pub async fn update(size: WallpaperSize, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn update(size: WallpaperSize, pool: &Pool) -> Result<Self, ServiceError> {
         let client = pool.get().await?;
 
         let stmt = client
@@ -75,7 +77,7 @@ impl WallpaperSize {
         Ok(result)
     }
 
-    pub async fn delete(id: i32, pool: &Pool) -> Result<String, PoolError> {
+    pub async fn delete(id: i32, pool: &Pool) -> Result<String, ServiceError> {
         let collection = WallpaperSize::get_by_id(id, pool).await?;
 
         let client = pool.get().await?;
@@ -87,7 +89,7 @@ impl WallpaperSize {
         Ok("Wallpaper Size deleted successfully".to_string())
     }
 
-    pub async fn get_by_name(name: &str, pool: &Pool) -> Result<Self, PoolError> {
+    pub async fn get_by_name(name: &str, pool: &Pool) -> Result<Self, ServiceError> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("select * from wallpaper_sizes where name = $1")
