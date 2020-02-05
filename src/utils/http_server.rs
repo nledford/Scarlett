@@ -37,10 +37,10 @@ pub fn get_addr() -> String {
 pub fn load_ssl_keys() -> SslAcceptorBuilder {
     let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
     builder
-        .set_private_key_file("ssl/key.pem", SslFiletype::PEM)
+        .set_private_key_file("/ssl/key.pem", SslFiletype::PEM)
         .unwrap();
 
-    builder.set_certificate_chain_file("ssl/cert.pem").unwrap();
+    builder.set_certificate_chain_file("/ssl/cert.pem").unwrap();
 
     builder
 }

@@ -11,3 +11,4 @@ docker-compose.prod.yml
 docker-compose.yml
 Makefile
 README.md
+diesel.toml

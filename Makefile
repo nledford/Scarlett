@@ -8,11 +8,12 @@ push:
 # run
 
 run_dev:
-	docker run -it -p 8765:8765 \
+	docker run --rm -it -p 8765:8765 \
 		--name scarlett \
 		--env-file=.env \
 		--mount type=bind,source=/Volumes/wd-beta/vault/Photos,target=/photos \
 		--mount type=bind,source=/Users/nledford/Documents/Wallpaper,target=/wallpaper \
+		--mount type=bind,source=$(PWD)/ssl,target=/ssl \
 		nledford/scarlett-server
 
 run_win:

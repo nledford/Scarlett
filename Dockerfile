@@ -1,50 +1,27 @@
-# Dockerfile based on this tutorial:
-# https://shaneutt.com/blog/rust-fast-small-docker-image-builds/
-
-#------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
 # Cargo build stage
-#------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
 
-FROM rust:1.41 as cargo-build
+ARG BASE_IMAGE=ekidd/rust-musl-builder:latest
 
-RUN apt-get update
-RUN apt-get install musl-tools -y
+FROM ${BASE_IMAGE} AS builder
 
-RUN rustup target add x86_64-unknown-linux-musl
+# Add source code
+ADD --chown=rust:rust . ./
 
-WORKDIR /usr/src/scarlett-server
+# build release version of application
+RUN cargo build --release
 
-COPY Cargo.toml Cargo.toml
-
-RUN mkdir src/
-
-RUN echo "fn main() {println!(\"if you see this, the build broke\")}" > src/main.rs
-
-RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
-
-RUN rm -f target/x86_64-unknown-linux-musl/release/deps/scarlett-server*
-
-COPY . .
-
-RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
-
-#------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
 # Final Stage
-#------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
 
-FROM alpine:3
+FROM alpine:latest
 
-# Create 'scarlett-server' user
-RUN addgroup -g 1000 scarlett-server
-RUN adduser -D -s /bin/sh -u 1000 -G scarlett-server scarlett-server
+RUN apk --no-cache add ca-certificates
 
-# Copy from cargo builder
-WORKDIR /home/scarlett-server/bin
+COPY --from=builder \
+        /home/rust/src/target/x86_64-unknown-linux-musl/release/scarlett-server \
+        /usr/local/bin
 
-COPY --from=cargo-build /usr/src/scarlett-server/target/x86_64-unknown-linux-musl/release/scarlett-server .
-
-RUN chown scarlett-server:scarlett-server scarlett-server
-
-USER scarlett-server
-
-CMD ["./scarlett-server"]
+CMD /usr/local/bin/scarlett-server
