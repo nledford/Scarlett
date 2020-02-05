@@ -88,7 +88,7 @@ async fn main() -> std::io::Result<()> {
             // RESET SEED **************************************************************************
             .service(handlers::photos::reset_seed)
     })
-        .bind_rustls(&addr, config)?
+        .bind_rustls(&addr, config.clone())?
         .run()
         .await
 }

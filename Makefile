@@ -34,4 +34,5 @@ cargo_sort:
 	cargo-sort-ck -w
 
 generate_certs:
-	openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout ssl/key.pem -out ssl/cert.pem
+	openssl genrsa 2048 > key.pem && \
+		openssl req -x509 -days 1000 -new -key key.pem -out cert.pem
