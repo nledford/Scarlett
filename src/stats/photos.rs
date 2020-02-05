@@ -40,52 +40,85 @@ pub struct PhotosStats {
 
 impl PhotosStats {
     pub fn from_row(row: Row) -> Self {
+        let total: i64 = row.try_get(20).unwrap_or(0);
+
+        let unrated: i64 = row.try_get(0).unwrap_or(0);
+        let unrated_percent = divide(unrated, total);
+
+        let hidden = row.try_get(2).unwrap_or(0);
+        let hidden_percent = divide(hidden, total);
+
+        let neutral = row.try_get(4).unwrap_or(0);
+        let neutral_percent = divide(neutral, total);
+
+        let wallpaper_candidates = row.try_get(6).unwrap_or(0);
+        let wc_percent = divide(wallpaper_candidates, total);
+
+        let favorites = row.try_get(8).unwrap_or(0);
+        let favorites_percent = divide(favorites, total);
+
+        let with_entities = row.try_get(10).unwrap_or(0);
+        let with_entities_percent = divide(with_entities, total);
+
+        let with_tags = row.try_get(12).unwrap_or(0);
+        let with_tags_percent = divide(with_tags, total);
+
+        let with_wallpaper = row.try_get(14).unwrap_or(0);
+        let with_wallpaper_percent = divide(with_wallpaper, total);
+
+        let total_kept = row.try_get(16).unwrap_or(0);
+        let kept_percent = divide(total_kept, total);
+
+        let pending_delete = row.try_get(18).unwrap_or(0);
+        let pending_delete_percent = divide(pending_delete, total);
+
         PhotosStats {
-            unrated: row.try_get(0).unwrap_or(0),
-            unrated_percent: row.try_get(1).unwrap_or(Decimal::default()),
+            unrated,
+            unrated_percent,
 
-            hidden: row.try_get(2).unwrap_or(0),
-            hidden_percent: row.try_get(3).unwrap_or(Decimal::default()),
+            hidden,
+            hidden_percent,
 
-            neutral: row.try_get(4).unwrap_or(0),
-            neutral_percent: row.try_get(5).unwrap_or(Decimal::default()),
+            neutral,
+            neutral_percent,
 
-            wallpaper_candidates: row.try_get(6).unwrap_or(0),
-            wc_percent: row.try_get(7).unwrap_or(Decimal::default()),
+            wallpaper_candidates,
+            wc_percent,
 
-            favorites: row.try_get(8).unwrap_or(0),
-            favorites_percent: row.try_get(9).unwrap_or(Decimal::default()),
+            favorites,
+            favorites_percent,
 
-            with_entities: row.try_get(10).unwrap_or(0),
-            with_entities_percent: row.try_get(11).unwrap_or(Decimal::default()),
+            with_entities,
+            with_entities_percent,
 
-            with_tags: row.try_get(12).unwrap_or(0),
-            with_tags_percent: row.try_get(13).unwrap_or(Decimal::default()),
+            with_tags,
+            with_tags_percent,
 
-            with_wallpaper: row.try_get(14).unwrap_or(0),
-            with_wallpaper_percent: row.try_get(15).unwrap_or(Decimal::default()),
+            with_wallpaper,
+            with_wallpaper_percent,
 
-            total_kept: row.try_get(16).unwrap_or(0),
-            kept_percent: row.try_get(17).unwrap_or(Decimal::default()),
+            total_kept,
+            kept_percent,
 
-            pending_delete: row.try_get(18).unwrap_or(0),
-            pending_delete_percent: row.try_get(19).unwrap_or(Decimal::default()),
+            pending_delete,
+            pending_delete_percent,
 
-            total: row.try_get(20).unwrap_or(0),
+            total,
         }
     }
 
     pub async fn get_photos_stats(pool: &Pool) -> Result<PhotosStats, PoolError> {
         let client = pool.get().await?;
-        let stmt = client
-            .prepare(
-                "SELECT * FROM photos_stats",
-            )
-            .await?;
+        let stmt = client.prepare("SELECT * FROM photos_stats").await?;
         let result = client.query_one(&stmt, &[]).await?;
 
         let stats = PhotosStats::from_row(result);
 
         Ok(stats)
     }
+}
+
+fn divide(a: i64, b: i64) -> Decimal {
+    let scale = 0;
+    (Decimal::new(a, scale) / Decimal::new(b, scale)) * Decimal::new(100, scale)
 }
