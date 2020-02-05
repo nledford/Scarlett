@@ -71,7 +71,7 @@ impl PhotosStats {
             pending_delete: row.try_get(18).unwrap_or(0),
             pending_delete_percent: row.try_get(19).unwrap_or(Decimal::default()),
 
-            total: row.try_get(10).unwrap_or(0),
+            total: row.try_get(20).unwrap_or(0),
         }
     }
 
