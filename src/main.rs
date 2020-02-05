@@ -1,8 +1,8 @@
 use std::env;
 
 use actix_cors::Cors;
+use actix_web::{App, HttpServer, middleware};
 use actix_web::http::header;
-use actix_web::{middleware, App, HttpServer};
 
 use scarlett_server::handlers;
 use scarlett_server::utils::http_server;
@@ -17,6 +17,7 @@ async fn main() -> std::io::Result<()> {
 
     let addr = http_server::get_addr();
     let pool = http_server::create_pool();
+    let config = http_server::load_ssl_keys();
 
     println!("Server running at {}", &addr);
     HttpServer::new(move || {
@@ -87,7 +88,7 @@ async fn main() -> std::io::Result<()> {
             // RESET SEED **************************************************************************
             .service(handlers::photos::reset_seed)
     })
-    .bind(&addr)?
-    .run()
-    .await
+        .bind_rustls(&addr, config)?
+        .run()
+        .await
 }
