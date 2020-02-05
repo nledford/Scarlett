@@ -1,8 +1,8 @@
 use std::env;
 
 use actix_cors::Cors;
-use actix_web::{App, HttpServer, middleware};
 use actix_web::http::header;
+use actix_web::{middleware, App, HttpServer};
 
 use scarlett_server::handlers;
 use scarlett_server::utils::http_server;
@@ -88,7 +88,7 @@ async fn main() -> std::io::Result<()> {
             // RESET SEED **************************************************************************
             .service(handlers::photos::reset_seed)
     })
-        .bind_openssl(&addr, config)?
-        .run()
-        .await
+    .bind_openssl(&addr, config)?
+    .run()
+    .await
 }
