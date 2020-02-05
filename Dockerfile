@@ -15,7 +15,6 @@ RUN rustup target add x86_64-unknown-linux-musl
 WORKDIR /usr/src/scarlett-server
 
 COPY Cargo.toml Cargo.toml
-COPY Cargo.lock Cargo.lock
 
 RUN mkdir src/
 
