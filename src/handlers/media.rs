@@ -4,7 +4,7 @@ use std::io::prelude::*;
 use std::path::Path;
 
 use actix_files as fs;
-use actix_web::{get, http::header, HttpRequest, HttpResponse, Result, web};
+use actix_web::{get, http::header, web, HttpRequest, HttpResponse, Result};
 
 use crate::errors::ServiceError;
 use crate::responses::api_response::ApiResponse;
@@ -25,7 +25,7 @@ pub async fn static_files(req: HttpRequest) -> HandlerResult {
         f.read_to_string(&mut buffer)?;
         Ok(buffer)
     })
-        .await;
+    .await;
 
     match res {
         Ok(resp) => Ok(HttpResponse::Ok()

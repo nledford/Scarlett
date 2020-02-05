@@ -17,10 +17,7 @@ pub async fn get_collections(pool: web::Data<Pool>) -> HandlerResult {
 // SINGLE COLLECTION *******************************************************************************
 
 #[get("/collections/{id}")]
-pub async fn get_collection(
-    info: web::Path<i32>,
-    pool: web::Data<Pool>,
-) -> HandlerResult {
+pub async fn get_collection(info: web::Path<i32>, pool: web::Data<Pool>) -> HandlerResult {
     let collection = Collection::get_by_id(info.into_inner(), &pool).await?;
 
     Ok(ApiResponse::success(collection))
@@ -62,10 +59,7 @@ pub async fn update_collection(
 // DELETE COLLECTION *******************************************************************************
 
 #[delete("/collections/{id}")]
-pub async fn delete_collection(
-    info: web::Path<i32>,
-    pool: web::Data<Pool>,
-) -> HandlerResult {
+pub async fn delete_collection(info: web::Path<i32>, pool: web::Data<Pool>) -> HandlerResult {
     let message = Collection::delete(info.into_inner(), &pool).await?;
 
     Ok(ApiResponse::success(message))

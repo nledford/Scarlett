@@ -47,10 +47,7 @@ pub async fn update_photo(
 // DELETE PHOTO ************************************************************************************
 
 #[delete("/photos/{id}")]
-pub async fn delete_photo(
-    info: web::Path<i32>,
-    pool: web::Data<Pool>,
-) -> HandlerResult {
+pub async fn delete_photo(info: web::Path<i32>, pool: web::Data<Pool>) -> HandlerResult {
     let message = Photo::delete_photo(info.into_inner(), &pool).await?;
 
     Ok(ApiResponse::success(message))
@@ -84,10 +81,7 @@ pub async fn remove_entity_from_photo(
 // PHOTO TAGS **************************************************************************************
 
 #[post("/photos/{photo_id}/tags/{tag_id}")]
-pub async fn add_tag_to_photo(
-    info: web::Path<(i32, i32)>,
-    pool: web::Data<Pool>,
-) -> HandlerResult {
+pub async fn add_tag_to_photo(info: web::Path<(i32, i32)>, pool: web::Data<Pool>) -> HandlerResult {
     let (photo_id, tag_id) = info.into_inner();
 
     let message = Photo::add_tag_to_photo(photo_id, tag_id, &pool).await?;
@@ -129,7 +123,7 @@ pub async fn add_wallpaper_to_photo(
         info.into_inner().file_path,
         &pool,
     )
-        .await?;
+    .await?;
 
     Ok(ApiResponse::success(message))
 }

@@ -25,10 +25,7 @@ pub struct NewTag {
 }
 
 #[post("/tags")]
-pub async fn create_tag(
-    params: web::Json<NewTag>,
-    pool: web::Data<Pool>,
-) -> HandlerResult {
+pub async fn create_tag(params: web::Json<NewTag>, pool: web::Data<Pool>) -> HandlerResult {
     let new_tag = Tag::create(params.into_inner().tag_name.as_str(), &pool).await?;
 
     Ok(ApiResponse::success(new_tag))
@@ -50,10 +47,7 @@ pub async fn update_tag(
 // DELETE TAG **************************************************************************************
 
 #[delete("/tags/{id}")]
-pub async fn delete_tag(
-    info: web::Path<i32>,
-    pool: web::Data<Pool>,
-) -> HandlerResult {
+pub async fn delete_tag(info: web::Path<i32>, pool: web::Data<Pool>) -> HandlerResult {
     let message = Tag::delete(info.into_inner(), &pool).await?;
 
     Ok(ApiResponse::success(message))

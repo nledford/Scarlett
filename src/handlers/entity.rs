@@ -49,10 +49,7 @@ pub async fn update_entity(
 // DELETE ENTITY ***********************************************************************************
 
 #[delete("/entities/{id}")]
-pub async fn delete_entity(
-    info: web::Path<i32>,
-    pool: web::Data<Pool>,
-) -> HandlerResult {
+pub async fn delete_entity(info: web::Path<i32>, pool: web::Data<Pool>) -> HandlerResult {
     let message = Entity::delete(info.into_inner(), &pool).await?;
 
     Ok(ApiResponse::success(message))
