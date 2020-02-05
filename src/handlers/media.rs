@@ -4,13 +4,14 @@ use std::io::prelude::*;
 use std::path::Path;
 
 use actix_files as fs;
-use actix_web::{get, http::header, web, Error, HttpRequest, HttpResponse, Result};
+use actix_web::{get, http::header, HttpRequest, HttpResponse, Result, web};
 
 use crate::errors::ServiceError;
 use crate::responses::api_response::ApiResponse;
+use crate::types::HandlerResult;
 
 #[get("/media/{tail:.*}")]
-pub async fn static_files(req: HttpRequest) -> Result<HttpResponse, Error> {
+pub async fn static_files(req: HttpRequest) -> HandlerResult {
     let file_path_str = format!(".{}", req.path());
     let file_path = Path::new(&file_path_str);
     let file_name = file_path.file_name().unwrap().to_str().unwrap().to_owned();
@@ -24,7 +25,7 @@ pub async fn static_files(req: HttpRequest) -> Result<HttpResponse, Error> {
         f.read_to_string(&mut buffer)?;
         Ok(buffer)
     })
-    .await;
+        .await;
 
     match res {
         Ok(resp) => Ok(HttpResponse::Ok()

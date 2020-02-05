@@ -1,3 +1,5 @@
+use actix_web::{Error, HttpResponse};
+
 use crate::pagination::page::Page;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::photo_full::PhotoFull;
@@ -9,3 +11,7 @@ pub type PaginatedPhotoResponse = ApiResponse<PaginatedPhotos>;
 // PAGINATION **************************************************************************************
 
 pub type PaginatedPhotos = Page<Vec<PhotoFull>>;
+
+// RESULTS *****************************************************************************************
+
+pub type HandlerResult = Result<HttpResponse, Error>;

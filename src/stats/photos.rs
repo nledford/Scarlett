@@ -1,7 +1,9 @@
-use deadpool_postgres::{Pool, PoolError};
+use deadpool_postgres::Pool;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use tokio_postgres::Row;
+
+use crate::errors::ServiceError;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct PhotosStats {
@@ -107,7 +109,7 @@ impl PhotosStats {
         }
     }
 
-    pub async fn get_photos_stats(pool: &Pool) -> Result<PhotosStats, PoolError> {
+    pub async fn get_photos_stats(pool: &Pool) -> Result<PhotosStats, ServiceError> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM photos_stats").await?;
         let result = client.query_one(&stmt, &[]).await?;

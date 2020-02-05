@@ -1,6 +1,8 @@
-use deadpool_postgres::{Pool, PoolError};
+use deadpool_postgres::Pool;
 use rust_decimal::Decimal;
 use tokio_postgres::Row;
+
+use crate::errors::ServiceError;
 
 #[derive(serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -21,7 +23,7 @@ impl EntityStats {
         }
     }
 
-    pub async fn get_entity_stats(pool: &Pool) -> Result<Vec<Self>, PoolError> {
+    pub async fn get_entity_stats(pool: &Pool) -> Result<Vec<Self>, ServiceError> {
         let client = pool.get().await?;
         let stmt = client.prepare("select * from entity_stats").await?;
         let results = client.query(&stmt, &[]).await?;
