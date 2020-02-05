@@ -16,8 +16,8 @@ impl EntityStats {
         EntityStats {
             entity_name: row.get(0),
             photos_with_entity: row.try_get(1).unwrap_or(0),
-            percentage_with_entity: row.try_get(2).unwrap_or(Decimal::default()),
-            percentage_total: row.try_get(3).unwrap_or(Decimal::default()),
+            percentage_with_entity: row.try_get(2).unwrap_or_default(),
+            percentage_total: row.try_get(3).unwrap_or_default(),
         }
     }
 
