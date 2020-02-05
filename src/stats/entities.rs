@@ -15,9 +15,9 @@ impl EntityStats {
     pub fn from_row(row: Row) -> Self {
         EntityStats {
             entity_name: row.get(0),
-            photos_with_entity: row.get(1),
-            percentage_with_entity: row.get(2),
-            percentage_total: row.get(3),
+            photos_with_entity: row.try_get(1).unwrap_or(0),
+            percentage_with_entity: row.try_get(2).unwrap_or(Decimal::default()),
+            percentage_total: row.try_get(3).unwrap_or(Decimal::default()),
         }
     }
 

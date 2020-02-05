@@ -4,33 +4,33 @@ use tokio_postgres::Row;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct PhotosStats {
-    pub unrated: Option<i64>,
-    pub pending_delete: Option<i64>,
-    pub hidden: Option<i64>,
-    pub neutral: Option<i64>,
-    pub wallpaper_candidates: Option<i64>,
-    pub favorites: Option<i64>,
-    pub with_entities: Option<i64>,
-    pub with_tags: Option<i64>,
-    pub with_wallpaper: Option<i64>,
-    pub total_kept: Option<i64>,
-    pub total: Option<i64>,
+    pub unrated: i64,
+    pub pending_delete: i64,
+    pub hidden: i64,
+    pub neutral: i64,
+    pub wallpaper_candidates: i64,
+    pub favorites: i64,
+    pub with_entities: i64,
+    pub with_tags: i64,
+    pub with_wallpaper: i64,
+    pub total_kept: i64,
+    pub total: i64,
 }
 
 impl PhotosStats {
     pub fn from_row(row: Row) -> Self {
         PhotosStats {
-            unrated: row.get(0),
-            pending_delete: row.get(1),
-            hidden: row.get(2),
-            neutral: row.get(3),
-            wallpaper_candidates: row.get(4),
-            favorites: row.get(5),
-            with_entities: row.get(6),
-            with_tags: row.get(7),
-            with_wallpaper: row.get(8),
-            total_kept: row.get(9),
-            total: row.get(10),
+            unrated: row.try_get(0).unwrap_or(0),
+            pending_delete: row.try_get(1).unwrap_or(0),
+            hidden: row.try_get(2).unwrap_or(0),
+            neutral: row.try_get(3).unwrap_or(0),
+            wallpaper_candidates: row.try_get(4).unwrap_or(0),
+            favorites: row.try_get(5).unwrap_or(0),
+            with_entities: row.try_get(6).unwrap_or(0),
+            with_tags: row.try_get(7).unwrap_or(0),
+            with_wallpaper: row.try_get(8).unwrap_or(0),
+            total_kept: row.try_get(9).unwrap_or(0),
+            total: row.try_get(10).unwrap_or(0),
         }
     }
 
