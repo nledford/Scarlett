@@ -16,7 +16,6 @@ RUN cargo build --release
 
 # build the real application
 COPY src ./src
-#RUN cargo install --target x86_64-unknown-linux-musl --path .
 RUN cargo build --release
 
 #-----------------------------------------------------------------------------------------------------------------------
