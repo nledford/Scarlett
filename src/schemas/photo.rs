@@ -97,11 +97,7 @@ impl Photo {
         Ok(result)
     }
 
-    pub async fn get_photo_by_name(
-        name: &str,
-        hash: &str,
-        pool: &Pool,
-    ) -> DbSingleResult<Self> {
+    pub async fn get_photo_by_name(name: &str, hash: &str, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("SELECT * FROM photos WHERE file_name = $1 AND file_path = $2")
@@ -168,11 +164,7 @@ impl Photo {
 
     // TAGS ****************************************************************************************
 
-    pub async fn add_tag_to_photo(
-        photo_id: i32,
-        tag_id: i32,
-        pool: &Pool,
-    ) -> DbMessageResult {
+    pub async fn add_tag_to_photo(photo_id: i32, tag_id: i32, pool: &Pool) -> DbMessageResult {
         let client = pool.get().await?;
         let stmt = client
             .prepare("insert into photo_tag (photo_id, tag_id) VALUES ($1, $2)")
@@ -187,11 +179,7 @@ impl Photo {
         ))
     }
 
-    pub async fn remove_tag_from_photo(
-        photo_id: i32,
-        tag_id: i32,
-        pool: &Pool,
-    ) -> DbMessageResult {
+    pub async fn remove_tag_from_photo(photo_id: i32, tag_id: i32, pool: &Pool) -> DbMessageResult {
         let client = pool.get().await?;
         let stmt = client
             .prepare("delete from photo_tag where photo_id = $1 and tag_id = $2")

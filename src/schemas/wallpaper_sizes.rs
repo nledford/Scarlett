@@ -2,7 +2,7 @@ use deadpool_postgres::Pool;
 use tokio_pg_mapper::FromTokioPostgresRow;
 use tokio_pg_mapper_derive::PostgresMapper;
 
-use crate::types::{DbVecResult, DbMessageResult, DbSingleResult};
+use crate::types::{DbMessageResult, DbSingleResult, DbVecResult};
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug, PostgresMapper)]
 #[pg_mapper(table = "wallpaper_sizes")]
@@ -40,12 +40,7 @@ impl WallpaperSize {
         Ok(size)
     }
 
-    pub async fn create(
-        name: &str,
-        width: i32,
-        height: i32,
-        pool: &Pool,
-    ) -> DbSingleResult<Self> {
+    pub async fn create(name: &str, width: i32, height: i32, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("insert into wallpaper_sizes (name, width, height) values ($1, $2, $3)")
