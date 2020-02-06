@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use tokio_pg_mapper::FromTokioPostgresRow;
 use tokio_pg_mapper_derive::PostgresMapper;
 
-use crate::errors::ServiceError;
+use crate::types::{DbMessageResult, DbSingleResult, DbVecResult};
 
 #[derive(Serialize, Deserialize, Debug, Clone, PostgresMapper)]
 #[pg_mapper(table = "tags")]
@@ -13,7 +13,7 @@ pub struct Tag {
 }
 
 impl Tag {
-    pub async fn get_all(pool: &Pool) -> Result<Vec<Tag>, ServiceError> {
+    pub async fn get_all(pool: &Pool) -> DbVecResult<Self> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM tags").await?;
         let results = client.query(&stmt, &[]).await?;
@@ -25,7 +25,7 @@ impl Tag {
         Ok(tags)
     }
 
-    pub async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, ServiceError> {
+    pub async fn get_by_id(id: i32, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM tags WHERE id = $1").await?;
         let result = client.query_one(&stmt, &[&id]).await?;
@@ -34,7 +34,7 @@ impl Tag {
         Ok(tag)
     }
 
-    pub async fn create(tag_name: &str, pool: &Pool) -> Result<Tag, ServiceError> {
+    pub async fn create(tag_name: &str, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("INSERT INTO tags (tag_name) VALUES($1)")
@@ -46,7 +46,7 @@ impl Tag {
         Ok(tag)
     }
 
-    pub async fn get_by_name(tag_name: &str, pool: &Pool) -> Result<Tag, ServiceError> {
+    pub async fn get_by_name(tag_name: &str, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("SELECT * FROM tags WHERE tag_name = $1")
@@ -57,7 +57,7 @@ impl Tag {
         Ok(tag)
     }
 
-    pub async fn update(tag: Tag, pool: &Pool) -> Result<Tag, ServiceError> {
+    pub async fn update(tag: Tag, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("UPDATE tags SET tag_name = $1 WHERE id = $2")
@@ -69,7 +69,7 @@ impl Tag {
         Ok(updated_tag)
     }
 
-    pub async fn delete(id: i32, pool: &Pool) -> Result<String, ServiceError> {
+    pub async fn delete(id: i32, pool: &Pool) -> DbMessageResult {
         let tag_to_delete = Tag::get_by_id(id, pool).await?;
 
         let client = pool.get().await?;
@@ -79,7 +79,7 @@ impl Tag {
         Ok("Tag deleted successfully".to_string())
     }
 
-    pub async fn perform_search(q: String, pool: &Pool) -> Result<Vec<Self>, ServiceError> {
+    pub async fn perform_search(q: String, pool: &Pool) -> DbVecResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare(

@@ -6,10 +6,10 @@ use serde::{Deserialize, Serialize};
 use tokio_pg_mapper::FromTokioPostgresRow;
 use tokio_pg_mapper_derive::PostgresMapper;
 
-use crate::errors::ServiceError;
 use crate::schemas::entity::Entity;
 use crate::schemas::tags::Tag;
 use crate::schemas::wallpaper_sizes::WallpaperSize;
+use crate::types::{DbMessageResult, DbSingleResult, DbVecResult};
 
 #[derive(Serialize, Deserialize, Debug, Clone, PostgresMapper)]
 #[pg_mapper(table = "photos")]
@@ -29,7 +29,7 @@ pub struct Photo {
 }
 
 impl Photo {
-    pub async fn get_all(pool: &Pool) -> Result<Vec<Self>, ServiceError> {
+    pub async fn get_all(pool: &Pool) -> DbVecResult<Self> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM photos").await?;
         let results = client.query(&stmt, &[]).await?;
@@ -41,7 +41,7 @@ impl Photo {
         Ok(photos)
     }
 
-    pub async fn get_by_id(photo_id: i32, pool: &Pool) -> Result<Self, ServiceError> {
+    pub async fn get_by_id(photo_id: i32, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM photos WHERE id = $1").await?;
         let result = client.query_one(&stmt, &[&photo_id]).await?;
@@ -50,7 +50,7 @@ impl Photo {
 
         Ok(photo)
     }
-    pub async fn update_photo(updated_photo: Photo, pool: &Pool) -> Result<Self, ServiceError> {
+    pub async fn update_photo(updated_photo: Photo, pool: &Pool) -> DbSingleResult<Self> {
         let mut updated = updated_photo.clone();
         updated.date_updated = Utc::now().naive_utc();
 
@@ -101,7 +101,7 @@ impl Photo {
         name: &str,
         hash: &str,
         pool: &Pool,
-    ) -> Result<Self, ServiceError> {
+    ) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("SELECT * FROM photos WHERE file_name = $1 AND file_path = $2")
@@ -113,7 +113,7 @@ impl Photo {
         Ok(photo)
     }
 
-    pub async fn delete_photo(photo_id: i32, pool: &Pool) -> Result<String, ServiceError> {
+    pub async fn delete_photo(photo_id: i32, pool: &Pool) -> DbMessageResult {
         let photo = Photo::get_by_id(photo_id, &pool).await?;
 
         // attempt to delete photo
@@ -132,7 +132,7 @@ impl Photo {
         photo_id: i32,
         entity_id: i32,
         pool: &Pool,
-    ) -> Result<String, ServiceError> {
+    ) -> DbMessageResult {
         let client = pool.get().await?;
         let stmt = client
             .prepare("insert into photo_entity (photo_id, entity_id) values ($1, $2)")
@@ -151,7 +151,7 @@ impl Photo {
         photo_id: i32,
         entity_id: i32,
         pool: &Pool,
-    ) -> Result<String, ServiceError> {
+    ) -> DbMessageResult {
         let client = pool.get().await?;
         let stmt = client
             .prepare("delete from photo_entity where photo_id = $1 and entity_id = $2")
@@ -172,7 +172,7 @@ impl Photo {
         photo_id: i32,
         tag_id: i32,
         pool: &Pool,
-    ) -> Result<String, ServiceError> {
+    ) -> DbMessageResult {
         let client = pool.get().await?;
         let stmt = client
             .prepare("insert into photo_tag (photo_id, tag_id) VALUES ($1, $2)")
@@ -191,7 +191,7 @@ impl Photo {
         photo_id: i32,
         tag_id: i32,
         pool: &Pool,
-    ) -> Result<String, ServiceError> {
+    ) -> DbMessageResult {
         let client = pool.get().await?;
         let stmt = client
             .prepare("delete from photo_tag where photo_id = $1 and tag_id = $2")
@@ -213,7 +213,7 @@ impl Photo {
         wallpaper_size_id: i32,
         file_path: String,
         pool: &Pool,
-    ) -> Result<String, ServiceError> {
+    ) -> DbMessageResult {
         let client = pool.get().await?;
         let stmt = client.prepare("insert into photo_wallpaper (photo_id, wallpaper_size_id, file_path) values ($1, $2, $3)").await?;
         let _ = client
@@ -232,7 +232,7 @@ impl Photo {
         photo_id: i32,
         wallpaper_size_id: i32,
         pool: &Pool,
-    ) -> Result<String, ServiceError> {
+    ) -> DbMessageResult {
         let client = pool.get().await?;
         let stmt = client
             .prepare("delete from photo_wallpaper where photo_id = $1 and wallpaper_size_id = $2")

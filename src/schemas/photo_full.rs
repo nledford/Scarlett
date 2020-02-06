@@ -2,10 +2,10 @@ use std::env;
 
 use chrono::NaiveDateTime;
 use deadpool_postgres::{Client, Pool};
-use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
+use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
 use serde::{Deserialize, Serialize};
-use tokio_postgres::types::ToSql;
 use tokio_postgres::Row;
+use tokio_postgres::types::ToSql;
 
 use crate::errors::ServiceError;
 use crate::pagination::links::Links;
@@ -13,7 +13,7 @@ use crate::pagination::page::Page;
 use crate::pagination::page_metadata::PageMetadata;
 use crate::requests::get_photos_request::GetPhotosRequest;
 use crate::schemas::collections::Collection;
-use crate::types::PaginatedPhotos;
+use crate::types::{DbSingleResult, DbVecResult, PaginatedPhotos};
 use crate::utils::strings;
 
 // `photos_all` view *******************************************************************************
@@ -108,7 +108,7 @@ impl PhotoFull {
         (photo, count)
     }
 
-    pub async fn get_all(pool: &Pool) -> Result<Vec<PhotoFull>, ServiceError> {
+    pub async fn get_all(pool: &Pool) -> DbVecResult<Self> {
         let client: Client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM photos_all").await?;
         let rows = client.query(&stmt, &[]).await?;
@@ -121,7 +121,7 @@ impl PhotoFull {
         Ok(photos)
     }
 
-    pub async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, ServiceError> {
+    pub async fn get_by_id(id: i32, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("select * from photos_all where id = $1")

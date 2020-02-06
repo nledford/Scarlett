@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use tokio_pg_mapper::FromTokioPostgresRow;
 use tokio_pg_mapper_derive::PostgresMapper;
 
-use crate::errors::ServiceError;
+use crate::types::{DbMessageResult, DbSingleResult, DbVecResult};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PostgresMapper)]
 #[pg_mapper(table = "entity")]
@@ -18,7 +18,7 @@ pub struct Entity {
 }
 
 impl Entity {
-    pub async fn get_all(pool: &Pool) -> Result<Vec<Self>, ServiceError> {
+    pub async fn get_all(pool: &Pool) -> DbVecResult<Self> {
         let client = pool.get().await?;
         let stmt = client.prepare("SELECT * FROM entity").await?;
         let results = client.query(&stmt, &[]).await?;
@@ -31,7 +31,7 @@ impl Entity {
         Ok(entities)
     }
 
-    pub async fn get_by_id(id: i32, pool: &Pool) -> Result<Self, ServiceError> {
+    pub async fn get_by_id(id: i32, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare(
@@ -47,7 +47,7 @@ impl Entity {
         Ok(entity)
     }
 
-    pub async fn create_simple(entity_name: &str, pool: &Pool) -> Result<Entity, ServiceError> {
+    pub async fn create_simple(entity_name: &str, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("INSERT INTO entity (entity_name) VALUES ($1)")
@@ -59,7 +59,7 @@ impl Entity {
         Ok(entity)
     }
 
-    pub async fn get_by_name(entity_name: &str, pool: &Pool) -> Result<Entity, ServiceError> {
+    pub async fn get_by_name(entity_name: &str, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("SELECT * FROM entity WHERE entity_name = $1")
@@ -70,7 +70,7 @@ impl Entity {
         Ok(entity)
     }
 
-    pub async fn update(entity: Entity, pool: &Pool) -> Result<Entity, ServiceError> {
+    pub async fn update(entity: Entity, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
 
         let stmt = client
@@ -106,7 +106,7 @@ impl Entity {
         Ok(result)
     }
 
-    pub async fn delete(id: i32, pool: &Pool) -> Result<String, ServiceError> {
+    pub async fn delete(id: i32, pool: &Pool) -> DbMessageResult {
         let entity = Entity::get_by_id(id, pool).await?;
 
         let client = pool.get().await?;
@@ -116,7 +116,7 @@ impl Entity {
         Ok("Entity deleted successfully".to_string())
     }
 
-    pub async fn perform_search(q: String, pool: &Pool) -> Result<Vec<Self>, ServiceError> {
+    pub async fn perform_search(q: String, pool: &Pool) -> DbVecResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare(

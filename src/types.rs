@@ -1,5 +1,6 @@
 use actix_web::{Error, HttpResponse};
 
+use crate::errors::ServiceError;
 use crate::pagination::page::Page;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::entity::Entity;
@@ -22,4 +23,7 @@ pub type PaginatedTagStats = Page<Vec<TagStats>>;
 
 // RESULTS *****************************************************************************************
 
+pub type DbSingleResult<T> = Result<T, ServiceError>;
+pub type DbVecResult<T> = Result<Vec<T>, ServiceError>;
+pub type DbMessageResult = Result<String, ServiceError>;
 pub type HandlerResult = Result<HttpResponse, Error>;

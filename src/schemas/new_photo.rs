@@ -7,8 +7,8 @@ use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use deadpool_postgres::Pool;
 use sha3::{Digest, Sha3_256};
 
-use crate::errors::ServiceError;
 use crate::schemas::photo::Photo;
+use crate::types::DbSingleResult;
 
 #[derive(Clone)]
 pub struct NewPhoto {
@@ -38,7 +38,7 @@ impl NewPhoto {
         }
     }
 
-    pub async fn insert(&self, pool: &Pool) -> Result<Photo, ServiceError> {
+    pub async fn insert(&self, pool: &Pool) -> DbSingleResult<Photo> {
         let client = pool.get().await?;
 
         let stmt = client.prepare("INSERT INTO photos (file_path, file_name, file_hash, rating, date_created, date_updated, original_width, original_height, rotation, ineligible_for_wallpaper, anonymous_entities) \
@@ -62,7 +62,7 @@ impl NewPhoto {
         Ok(result)
     }
 
-    pub async fn bulk_insert(new_photos: Vec<Self>, pool: &Pool) -> Result<u64, ServiceError> {
+    pub async fn bulk_insert(new_photos: Vec<Self>, pool: &Pool) -> DbSingleResult<u64> {
         let client = pool.get().await?;
 
         let stmt = "INSERT INTO photos (file_path, file_name, file_hash, rating, date_created, date_updated, original_width, original_height, rotation, ineligible_for_wallpaper, anonymous_entities) \
