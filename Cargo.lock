@@ -1765,9 +1765,9 @@ dependencies = [
 
 [[package]]
 name = "rust_decimal"
-version = "1.2.0"
+version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43e33d8f7b289776cbd63687e26f5f25ca4b624c8eb1c9d5ea7c2cae2097e7fb"
+checksum = "245e49555a2c6580951c6b1ec362f843c82e0696545f822292475a93752cb5e7"
 dependencies = [
  "byteorder",
  "bytes",
