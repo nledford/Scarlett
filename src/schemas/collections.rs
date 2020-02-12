@@ -9,6 +9,7 @@ use crate::types::{DbMessageResult, DbSingleResult, DbVecResult};
 pub struct Collection {
     pub id: i32,
     pub name: String,
+    pub folder: Option<String>,
     pub query: String,
 }
 
