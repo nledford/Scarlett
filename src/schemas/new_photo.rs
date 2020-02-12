@@ -41,8 +41,18 @@ impl NewPhoto {
     pub async fn insert(&self, pool: &Pool) -> DbSingleResult<Photo> {
         let client = pool.get().await?;
 
-        let stmt = client.prepare("INSERT INTO photos (file_path, file_name, file_hash, rating, date_created, date_updated, original_width, original_height, rotation, ineligible_for_wallpaper, anonymous_entities) \
-        VALUES ($1, $2, $3, 0, $4, $4, $5, $6, 0, false, false) RETURNING id").await?;
+        let stmt = client.prepare(r#"INSERT INTO photos (file_path,
+                                                                          file_name,
+                                                                          file_hash,
+                                                                          rating,
+                                                                          date_created,
+                                                                          date_updated,
+                                                                          original_width,
+                                                                          original_height,
+                                                                          rotation,
+                                                                          ineligible_for_wallpaper,
+                                                                          anonymous_entities)
+                                                      VALUES ($1, $2, $3, 0, $4, $4, $5, $6, 0, false, false) RETURNING id"#).await?;
 
         let result = client
             .query_one(

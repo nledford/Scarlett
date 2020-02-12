@@ -29,6 +29,7 @@ pub struct PhotoFull {
     pub rating: i32,
     pub date_created: NaiveDateTime,
     pub date_updated: NaiveDateTime,
+    pub last_viewed: NaiveDateTime,
     pub original_width: i32,
     pub original_height: i32,
     pub aspect_ratio: String,
@@ -46,64 +47,39 @@ pub struct PhotoFull {
 }
 
 impl PhotoFull {
-    pub fn from_row(row: Row) -> Self {
-        let file_path: String = row.get(1);
+    pub fn from_row(row: &Row) -> Self {
+        let file_path: String = row.get("file_path");
 
         PhotoFull {
-            id: row.get(0),
+            id: row.get("id"),
             file_path: file_path.clone(),
-            folder: row.get(2),
-            file_name: row.get(3),
-            file_hash: row.get(4),
-            rating: row.get(5),
-            date_created: row.get(6),
-            date_updated: row.get(7),
-            original_width: row.get(8),
-            original_height: row.get(9),
-            aspect_ratio: row.get(10),
-            orientation: row.get(11),
-            rotation: row.get(12),
-            ineligible_for_wallpaper: row.get(13),
-            anonymous_entities: row.get(14),
-            suggested_entity_name: row.get(15),
-            wallpaper_file_name: row.get(16),
-            entities: row.get(17),
-            tags: row.get(18),
-            wallpapers: row.get(19),
+            folder: row.get("folder"),
+            file_name: row.get("file_name"),
+            file_hash: row.get("file_hash"),
+            rating: row.get("rating"),
+            date_created: row.get("date_created"),
+            date_updated: row.get("date_updated"),
+            last_viewed: row.get("last_viewed"),
+            original_width: row.get("original_width"),
+            original_height: row.get("original_height"),
+            aspect_ratio: row.get("aspect_ratio"),
+            orientation: row.get("orientation"),
+            rotation: row.get("rotation"),
+            ineligible_for_wallpaper: row.get("ineligible_for_wallpaper"),
+            anonymous_entities: row.get("anonymous_entities"),
+            suggested_entity_name: row.get("suggested_entity_name"),
+            wallpaper_file_name: row.get("wallpaper_file_name"),
+            entities: row.get("entities"),
+            tags: row.get("tags"),
+            wallpapers: row.get("wallpapers"),
 
             media_url: PhotoFull::build_photo_url(file_path),
         }
     }
 
-    fn from_paginated_row(row: Row) -> (Self, i64) {
-        let file_path: String = row.get(1);
-
-        let photo = PhotoFull {
-            id: row.get(0),
-            file_path: file_path.clone(),
-            folder: row.get(2),
-            file_name: row.get(3),
-            file_hash: row.get(4),
-            rating: row.get(5),
-            date_created: row.get(6),
-            date_updated: row.get(7),
-            original_width: row.get(8),
-            original_height: row.get(9),
-            aspect_ratio: row.get(10),
-            orientation: row.get(11),
-            rotation: row.get(12),
-            ineligible_for_wallpaper: row.get(13),
-            anonymous_entities: row.get(14),
-            suggested_entity_name: row.get(15),
-            wallpaper_file_name: row.get(16),
-            entities: row.get(17),
-            tags: row.get(18),
-            wallpapers: row.get(19),
-
-            media_url: PhotoFull::build_photo_url(file_path),
-        };
-
-        let count = row.get(20);
+    pub fn from_paginated_row(row: &Row) -> (Self, i64) {
+        let photo = PhotoFull::from_row(row);
+        let count = row.get("count");
 
         (photo, count)
     }
@@ -115,7 +91,7 @@ impl PhotoFull {
 
         let photos = rows
             .into_iter()
-            .map(PhotoFull::from_row)
+            .map(|row| PhotoFull::from_row(&row))
             .collect::<Vec<PhotoFull>>();
 
         Ok(photos)
@@ -128,7 +104,7 @@ impl PhotoFull {
             .await?;
         let result = client.query_one(&stmt, &[&id]).await?;
 
-        let photo = PhotoFull::from_row(result);
+        let photo = PhotoFull::from_row(&result);
 
         Ok(photo)
     }
@@ -225,7 +201,7 @@ impl PhotoFull {
 
         let results: Vec<(PhotoFull, i64)> = rows
             .into_iter()
-            .map(PhotoFull::from_paginated_row)
+            .map(|row| PhotoFull::from_paginated_row(&row))
             .collect();
         let total = results.get(0).map(|x| x.1).unwrap_or(0);
         let photos = results.into_iter().map(|x| x.0).collect();

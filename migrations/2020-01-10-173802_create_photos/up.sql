@@ -14,9 +14,12 @@ create table if not exists photos
         constraint rating_range
             check ((rating >= 0) AND (rating <= 5)),
     date_created             timestamp    default CURRENT_TIMESTAMP      not null,
-    date_updated             timestamp    default CURRENT_TIMESTAMP      not null
-        constraint valid_update_time
-            check ( date_updated >= current_timestamp::date - interval '10 seconds' ),
+    date_updated             timestamp    default CURRENT_TIMESTAMP      not null,
+    constraint valid_update_time
+        check ( date_updated >= current_timestamp::date - interval '10 seconds' ),
+    last_viewed              timestamp    default null
+        constraint valid_last_viewed_time
+            check ( last_viewed >= current_timestamp::date - interval '10 seconds' ),
     original_width           integer      default 0                      not null
         constraint valid_photo_width
             check ( original_width >= 0 ),
@@ -36,6 +39,7 @@ create table if not exists photos
 -- create indexes on date columns
 create index idx_photos_date_created on photos (date_created);
 create index idx_photos_date_updated on photos (date_updated);
+create index idx_photos_last_viewed on photos (last_viewed);
 
 -- create index for file name and file path
 create index idx_photos_file_name on photos (file_name);

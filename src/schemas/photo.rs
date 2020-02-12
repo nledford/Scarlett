@@ -21,6 +21,7 @@ pub struct Photo {
     pub rating: i32,
     pub date_created: NaiveDateTime,
     pub date_updated: NaiveDateTime,
+    pub last_viewed: NaiveDateTime,
     pub original_width: i32,
     pub original_height: i32,
     pub rotation: i32,
