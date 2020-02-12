@@ -51,12 +51,12 @@ impl ResponseError for ServiceError {
                 ApiResponse::error("Internal server error. Please try again later")
             }
             ServiceError::BadRequest(ref message) => ApiResponse::bad_request(message),
-            ServiceError::IOError(ref error) => ApiResponse::error(error.description()),
+            ServiceError::IOError(ref error) => ApiResponse::error(error),
             ServiceError::PoolError(ref error) => ApiResponse::error(format!(
                 "Unable to connect to the database: {}",
                 error
             )),
-            ServiceError::TpgError(ref error) => ApiResponse::error(error.description()),
+            ServiceError::TpgError(ref error) => ApiResponse::error(error),
         }
     }
 }
