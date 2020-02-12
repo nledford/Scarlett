@@ -51,6 +51,7 @@ impl Photo {
 
         Ok(photo)
     }
+
     pub async fn update_photo(updated_photo: Photo, pool: &Pool) -> DbSingleResult<Self> {
         let mut updated = updated_photo.clone();
         updated.date_updated = Utc::now().naive_utc();
@@ -121,6 +122,16 @@ impl Photo {
         let _result = client.execute(&stmt, &[&photo_id]).await?;
 
         Ok("File deleted successfully!".to_string())
+    }
+
+    pub async fn update_last_viewed(photo_id: i32, pool: &Pool) -> DbSingleResult<Self> {
+        let client = pool.get().await?;
+        let stmt = client.prepare("UPDATE photos SET last_viewed = current_timestamp WHERE id = $1").await?;
+        let _ = client.execute(&stmt, &[&photo_id]).await?;
+
+        let photo = Photo::get_by_id(photo_id, pool).await?;
+
+        Ok(photo)
     }
 
     // ENTITIES ************************************************************************************
