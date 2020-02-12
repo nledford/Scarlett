@@ -10,9 +10,6 @@ pub struct PhotosStats {
     pub unrated: i64,
     pub unrated_percent: Decimal,
 
-    pub pending_delete: i64,
-    pub pending_delete_percent: Decimal,
-
     pub hidden: i64,
     pub hidden_percent: Decimal,
 
@@ -25,6 +22,14 @@ pub struct PhotosStats {
     pub favorites: i64,
     pub favorites_percent: Decimal,
 
+    pub pending_delete: i64,
+    pub pending_delete_percent: Decimal,
+
+    pub total_kept: i64,
+    pub kept_percent: Decimal,
+
+    pub total: i64,
+
     pub with_entities: i64,
     pub with_entities_percent: Decimal,
 
@@ -33,16 +38,11 @@ pub struct PhotosStats {
 
     pub with_wallpaper: i64,
     pub with_wallpaper_percent: Decimal,
-
-    pub total_kept: i64,
-    pub kept_percent: Decimal,
-
-    pub total: i64,
 }
 
 impl PhotosStats {
     pub fn from_row(row: Row) -> Self {
-        let total: i64 = row.try_get(20).unwrap_or(0);
+        let total: i64 = row.try_get("total").unwrap_or(0);
 
         let unrated: i64 = row.try_get(0).unwrap_or(0);
         let unrated_percent = divide(unrated, total);
@@ -68,11 +68,11 @@ impl PhotosStats {
         let with_wallpaper = row.try_get(14).unwrap_or(0);
         let with_wallpaper_percent = divide(with_wallpaper, total);
 
-        let total_kept = row.try_get(16).unwrap_or(0);
-        let kept_percent = divide(total_kept, total);
-
         let pending_delete = row.try_get(18).unwrap_or(0);
         let pending_delete_percent = divide(pending_delete, total);
+
+        let total_kept = row.try_get("total_kept").unwrap_or(0);
+        let kept_percent = divide(total_kept, total);
 
         PhotosStats {
             unrated,
