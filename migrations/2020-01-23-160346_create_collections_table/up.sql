@@ -59,3 +59,7 @@ insert into collections (name, folder, query)
 values ('No Tags',
         'Metadata',
         'tags is null or cardinality(tags) <= 0');
+
+-- all favorites
+insert into collections (name, folder, query)
+VALUES ('All Favorites', 'Favorites', 'rating in (4, 5)');
