@@ -54,7 +54,7 @@ impl ResponseError for ServiceError {
             ServiceError::IOError(ref error) => ApiResponse::error(error.description()),
             ServiceError::PoolError(ref error) => ApiResponse::error(format!(
                 "Unable to connect to the database: {}",
-                error.description()
+                error
             )),
             ServiceError::TpgError(ref error) => ApiResponse::error(error.description()),
         }
