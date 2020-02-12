@@ -1,0 +1,1 @@
+drop function strip_alt_names(name text);
