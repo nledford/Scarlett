@@ -50,10 +50,9 @@ impl ResponseError for ServiceError {
             }
             ServiceError::BadRequest(ref message) => ApiResponse::bad_request(message),
             ServiceError::IOError(ref error) => ApiResponse::error(format!("{}", error)),
-            ServiceError::PoolError(ref error) => ApiResponse::error(format!(
-                "Unable to connect to the database: {}",
-                error
-            )),
+            ServiceError::PoolError(ref error) => {
+                ApiResponse::error(format!("Unable to connect to the database: {}", error))
+            }
             ServiceError::TpgError(ref error) => ApiResponse::error(format!("{}", error)),
         }
     }

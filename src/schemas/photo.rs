@@ -126,7 +126,9 @@ impl Photo {
 
     pub async fn update_last_viewed(photo_id: i32, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
-        let stmt = client.prepare("UPDATE photos SET last_viewed = current_timestamp WHERE id = $1").await?;
+        let stmt = client
+            .prepare("UPDATE photos SET last_viewed = current_timestamp WHERE id = $1")
+            .await?;
         let _ = client.execute(&stmt, &[&photo_id]).await?;
 
         let photo = Photo::get_by_id(photo_id, pool).await?;

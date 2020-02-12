@@ -45,7 +45,10 @@ pub async fn update_photo(
 }
 
 #[patch("/photos/{photo_id}/viewed")]
-pub async fn updated_photo_last_viewed(info: web::Path<i32>, pool: web::Data<Pool>) -> HandlerResult {
+pub async fn updated_photo_last_viewed(
+    info: web::Path<i32>,
+    pool: web::Data<Pool>,
+) -> HandlerResult {
     let photo = Photo::update_last_viewed(info.into_inner(), &pool).await?;
 
     Ok(ApiResponse::success(photo))
