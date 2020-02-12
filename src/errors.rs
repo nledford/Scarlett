@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use actix_web::{error::ResponseError, HttpResponse};
 use deadpool_postgres::PoolError;
 use thiserror::Error;
@@ -51,12 +49,12 @@ impl ResponseError for ServiceError {
                 ApiResponse::error("Internal server error. Please try again later")
             }
             ServiceError::BadRequest(ref message) => ApiResponse::bad_request(message),
-            ServiceError::IOError(ref error) => ApiResponse::error(error),
+            ServiceError::IOError(ref error) => ApiResponse::error(format!("{}", error)),
             ServiceError::PoolError(ref error) => ApiResponse::error(format!(
                 "Unable to connect to the database: {}",
                 error
             )),
-            ServiceError::TpgError(ref error) => ApiResponse::error(error),
+            ServiceError::TpgError(ref error) => ApiResponse::error(format!("{}", error)),
         }
     }
 }
