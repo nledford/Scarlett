@@ -125,6 +125,7 @@ impl PhotoFull {
                                rating,
                                date_created,
                                date_updated,
+                               last_viewed,
                                original_width,
                                original_height,
                                aspect_ratio,
