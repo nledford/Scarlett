@@ -24,7 +24,11 @@ select id,
        ineligible_for_wallpaper,
        anonymous_entities,
        case
-           when file_path like '%/Entities/%' then (regexp_split_to_array(file_path, '/'))[6]
+           when file_path like '%/Entities/%'
+               or file_path like '%/Suicide Girls/%'
+               or file_path like '%/Usernames/%'
+               or file_path like '%/XXX/%'
+               then strip_alt_names((regexp_split_to_array(file_path, '/'))[5])
            else 'Anonymous' end                                         suggested_entity_name,
        (file_hash || '.' || (regexp_matches(file_name, '\.(\w+)$'))[1]) wallpaper_file_name,
        e.entities,
