@@ -24,9 +24,16 @@ impl NewPhoto {
     pub fn new(path: String, dt_created: SystemTime) -> Self {
         let dt_created = system_time_to_date_time(dt_created).naive_utc();
 
-        let dim = image::image_dimensions(&path).unwrap();
-        let width = dim.0 as i32;
-        let height = dim.1 as i32;
+        // image crate cannot handle 'heic' files so skip them for now
+        let dim;
+        let mut width = 0;
+        let mut height = 0;
+
+        if !get_file_name(&path).ends_with(".heic") {
+            dim = image::image_dimensions(&path).unwrap();
+            width = dim.0 as i32;
+            height = dim.1 as i32;
+        }
 
         NewPhoto {
             file_name: get_file_name(&path),
