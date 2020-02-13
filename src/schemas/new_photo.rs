@@ -5,11 +5,11 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use deadpool_postgres::Pool;
+use libheif_rs::HeifContext;
 use sha3::{Digest, Sha3_256};
 
 use crate::schemas::photo::Photo;
 use crate::types::DbSingleResult;
-use libheif_rs::HeifContext;
 
 #[derive(Clone)]
 pub struct NewPhoto {
@@ -25,8 +25,8 @@ impl NewPhoto {
     pub fn new(path: String, dt_created: SystemTime) -> Self {
         let dt_created = system_time_to_date_time(dt_created).naive_utc();
 
-        let mut width = 0;
-        let mut height = 0;
+        let width;
+        let height;
 
         // check for heic files first
         if get_file_name(&path).to_lowercase().ends_with(".heic") {
@@ -35,7 +35,7 @@ impl NewPhoto {
             width = handle.width() as i32;
             height = handle.height() as i32;
         } else {
-            let dim = image::image_dimensions(&path).unwrap();
+            let dim = image::image_dimensions(&path).unwrap_or((0, 0));
             width = dim.0 as i32;
             height = dim.1 as i32;
         }
