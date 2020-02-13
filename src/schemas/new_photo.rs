@@ -28,7 +28,7 @@ impl NewPhoto {
         let mut width = 0;
         let mut height = 0;
 
-        if !get_file_name(&path).ends_with(".heic") {
+        if !get_file_name(&path).to_lowercase().ends_with(".heic") {
             let dim = image::image_dimensions(&path).unwrap();
             width = dim.0 as i32;
             height = dim.1 as i32;
