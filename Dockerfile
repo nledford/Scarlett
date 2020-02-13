@@ -7,14 +7,24 @@ ARG BASE_IMAGE=ekidd/rust-musl-builder:latest
 
 FROM ${BASE_IMAGE} AS builder
 
-# build dummy application so that dependencies won't have to be rebuilt on subsequent runs
+# Switch to root user so we can install packages
+USER root
+
+# Install libheif package for working with '.heic' images
+RUN apt-get update
+RUN apt-get install libheif-dev -y
+
+# Switch back to rust user to build application
+USER rust
+
+# Build dummy application so that dependencies won't have to be rebuilt on subsequent runs
 WORKDIR ./
 RUN USER=root cargo new scarlett-server
 WORKDIR ./scarlett-server
 COPY Cargo.toml Cargo.lock ./
 RUN cargo build --release
 
-# build the real application
+# Build the real application
 COPY src ./src
 RUN cargo build --release
 
@@ -24,7 +34,9 @@ RUN cargo build --release
 
 FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates
+# Install ca-certificates for openssl
+# and libheif for working with '.heic' images
+RUN apk --no-cache add ca-certificates libheif
 
 COPY --from=builder \
         /home/rust/src/scarlett-server/target/x86_64-unknown-linux-musl/release/scarlett-server \
