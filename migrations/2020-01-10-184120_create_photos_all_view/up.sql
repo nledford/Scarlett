@@ -16,9 +16,10 @@ select id,
        original_height,
        calculate_aspect_ratio(original_width, original_height)          aspect_ratio,
        case
-           when original_width::decimal / original_height::decimal < 1.0 then 'Portrait'
-           when original_width::decimal / original_height::decimal > 1.0 then 'Landscape'
-           else 'Square'
+           when original_width::decimal / nullif(original_height::decimal, 0) < 1.0 then 'Portrait'
+           when original_width::decimal / nullif(original_height::decimal, 0) > 1.0 then 'Landscape'
+           when original_width::decimal / nullif(original_height::decimal, 0) = 1.0 then 'Square'
+           else 'N/A'
            end                                                          orientation,
        rotation,
        ineligible_for_wallpaper,

@@ -1,6 +1,11 @@
 -- use a javascript function to determine the aspect ratio of the image
 create or replace function calculate_aspect_ratio(width integer, height integer) returns varchar as
 $$
+    // if either number is zero, immediately return
+    if (width === 0 || height === 0) {
+        return 'N/A'
+    }
+
     // store all valid aspect ratios in a dictionary
     let ratios = {
         // landscape
