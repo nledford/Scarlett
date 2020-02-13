@@ -9,6 +9,7 @@ use sha3::{Digest, Sha3_256};
 
 use crate::schemas::photo::Photo;
 use crate::types::DbSingleResult;
+use libheif_rs::HeifContext;
 
 #[derive(Clone)]
 pub struct NewPhoto {
@@ -24,11 +25,16 @@ impl NewPhoto {
     pub fn new(path: String, dt_created: SystemTime) -> Self {
         let dt_created = system_time_to_date_time(dt_created).naive_utc();
 
-        // image crate cannot handle 'heic' files so skip them for now
         let mut width = 0;
         let mut height = 0;
 
-        if !get_file_name(&path).to_lowercase().ends_with(".heic") {
+        // check for heic files first
+        if get_file_name(&path).to_lowercase().ends_with(".heic") {
+            let ctx = HeifContext::read_from_file(&path).unwrap();
+            let handle = ctx.primary_image_handle().unwrap();
+            width = handle.width() as i32;
+            height = handle.height() as i32;
+        } else {
             let dim = image::image_dimensions(&path).unwrap();
             width = dim.0 as i32;
             height = dim.1 as i32;
