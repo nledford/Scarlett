@@ -7,15 +7,9 @@ ARG BASE_IMAGE=ekidd/rust-musl-builder:latest
 
 FROM ${BASE_IMAGE} AS builder
 
-# Switch to root user so we can install packages
-USER root
-
 # Install libheif package for working with '.heic' images
-RUN apt-get update
-RUN apt-get install libheif-dev -y
-
-# Switch back to rust user to build application
-USER rust
+RUN sudo apt-get update
+RUN sudo apt-get install libheif-dev -y
 
 # Build dummy application so that dependencies won't have to be rebuilt on subsequent runs
 WORKDIR ./
