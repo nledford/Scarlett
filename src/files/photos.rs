@@ -9,10 +9,13 @@ use walkdir::{DirEntry, WalkDir};
 use crate::errors::ServiceError;
 use crate::schemas::new_photo::NewPhoto;
 use crate::schemas::photo::Photo;
+use crate::types::FileCollectionResult;
 
 // FILE SCAN RESULT ********************************************************************************
 
+#[derive(Clone)]
 pub struct FileScanResult {
+    pub existing_photos_count: i32,
     pub new_photos_count: i32,
     pub updated_photos_count: i32,
     pub deleted_photos_count: i32,
@@ -22,6 +25,7 @@ pub struct FileScanResult {
 impl Default for FileScanResult {
     fn default() -> Self {
         FileScanResult {
+            existing_photos_count: 0,
             new_photos_count: 0,
             updated_photos_count: 0,
             deleted_photos_count: 0,
@@ -71,9 +75,10 @@ pub async fn scan_all_photos_from_dir(
     dir: &str,
     pool: &Pool,
 ) -> Result<FileScanResult, ServiceError> {
-    let mut result: FileScanResult = Default::default();
+    let (files, existing_files_count) = collect_files_from_directory(&dir, pool).await?;
 
-    let files = collect_files_from_directory(&dir, pool).await?;
+    let mut result: FileScanResult = Default::default();
+    result.existing_photos_count = existing_files_count;
 
     // build list of new photo candidates
     let mut photos: Vec<NewPhoto> = files
@@ -122,16 +127,14 @@ pub async fn scan_all_photos_from_dir(
     Ok(result)
 }
 
-async fn collect_files_from_directory(
-    dir: &str,
-    pool: &Pool,
-) -> Result<Vec<FileInfo>, ServiceError> {
+async fn collect_files_from_directory(dir: &str, pool: &Pool) -> FileCollectionResult {
     let mut files = Vec::new();
 
     let image_file_extensions = vec![
         "jpg", "jpeg", "png", "gif", "bmp", "ico", "tiff", "webp", "pnm", "heic",
     ];
 
+    let mut existing_files = 0;
     let walker = WalkDir::new(dir).into_iter();
     for entry in walker.filter_entry(|e| !is_hidden(e)) {
         let entry = entry.unwrap();
@@ -150,7 +153,9 @@ async fn collect_files_from_directory(
         }
 
         // Check if the file is currently in the database
+        // if yes, increment counter
         if is_in_db(&file_info, &pool).await? {
+            existing_files += 1;
             continue;
         }
 
@@ -160,7 +165,7 @@ async fn collect_files_from_directory(
 
     files.sort_by(|a, b| a.file_path.to_lowercase().cmp(&b.file_path.to_lowercase()));
 
-    Ok(files)
+    Ok((files, existing_files))
 }
 
 fn is_dir(entry: &DirEntry) -> bool {

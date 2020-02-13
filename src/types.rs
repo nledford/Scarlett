@@ -1,6 +1,7 @@
 use actix_web::{Error, HttpResponse};
 
 use crate::errors::ServiceError;
+use crate::files::photos::FileInfo;
 use crate::pagination::page::Page;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::entity::Entity;
@@ -12,6 +13,10 @@ use crate::stats::tags::TagStats;
 // API RESPONSES ***********************************************************************************
 
 pub type PaginatedPhotoResponse = ApiResponse<PaginatedPhotos>;
+
+// FILES *******************************************************************************************
+
+pub type FileCollectionResult = Result<(Vec<FileInfo>, i32), ServiceError>;
 
 // PAGINATION **************************************************************************************
 

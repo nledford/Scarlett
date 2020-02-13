@@ -2,6 +2,7 @@ use actix_web::{get, web};
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 
+use crate::files::photos::FileScanResult;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::new_photo::NewPhoto;
 use crate::types::HandlerResult;
@@ -12,6 +13,7 @@ use crate::{files, schemas};
 pub struct ScanPhotosResult {
     pub new_photos_found: bool,
     pub new_photos: i32,
+    pub existing_photos: i32,
     pub updated_photos: i32,
     pub deleted_photos: i32,
 }
@@ -21,6 +23,7 @@ impl Default for ScanPhotosResult {
         ScanPhotosResult {
             new_photos_found: false,
             new_photos: 0,
+            existing_photos: 0,
             updated_photos: 0,
             deleted_photos: 0,
         }
@@ -28,12 +31,13 @@ impl Default for ScanPhotosResult {
 }
 
 impl ScanPhotosResult {
-    pub fn new(new_photos: i32, updated_photos: i32, deleted_photos: i32) -> Self {
+    pub fn from_file_scan_result(result: &FileScanResult) -> Self {
         ScanPhotosResult {
-            new_photos_found: new_photos > 0,
-            new_photos,
-            updated_photos,
-            deleted_photos,
+            new_photos_found: result.new_photos_count > 0,
+            new_photos: result.new_photos_count,
+            existing_photos: result.existing_photos_count,
+            updated_photos: result.updated_photos_count,
+            deleted_photos: result.deleted_photos_count,
         }
     }
 }
@@ -68,18 +72,14 @@ pub async fn run_scan(info: web::Query<ScanPhotosRequest>, pool: web::Data<Pool>
     }
     let file_scan_result = file_scan_result.unwrap();
 
-    let files = file_scan_result.new_photos;
+    let files = file_scan_result.clone().new_photos;
 
-    let new_photos = NewPhoto::bulk_insert(files, pool).await?;
+    let _ = NewPhoto::bulk_insert(files, pool).await?;
 
     // refresh random order view
     schemas::reset_seed(&pool).await?;
 
-    let result = ScanPhotosResult::new(
-        new_photos as i32,
-        file_scan_result.updated_photos_count,
-        file_scan_result.deleted_photos_count,
-    );
+    let result = ScanPhotosResult::from_file_scan_result(&file_scan_result);
 
     Ok(ApiResponse::success(result))
 }
