@@ -7,10 +7,6 @@ ARG BASE_IMAGE=ekidd/rust-musl-builder:latest
 
 FROM ${BASE_IMAGE} AS builder
 
-# Install libheif package for working with '.heic' images
-RUN sudo apt-get update
-RUN sudo apt-get install libheif-dev -y
-
 # Build dummy application so that dependencies won't have to be rebuilt on subsequent runs
 WORKDIR ./
 RUN USER=root cargo new scarlett-server
@@ -29,8 +25,7 @@ RUN cargo build --release
 FROM alpine:latest
 
 # Install ca-certificates for openssl
-# and libheif for working with '.heic' images
-RUN apk --no-cache add ca-certificates libheif
+RUN apk --no-cache add ca-certificates
 
 COPY --from=builder \
         /home/rust/src/scarlett-server/target/x86_64-unknown-linux-musl/release/scarlett-server \

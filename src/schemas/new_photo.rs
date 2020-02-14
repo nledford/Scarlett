@@ -5,7 +5,6 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use deadpool_postgres::Pool;
-use libheif_rs::HeifContext;
 use sha3::{Digest, Sha3_256};
 
 use crate::schemas::photo::Photo;
@@ -26,9 +25,7 @@ impl NewPhoto {
         let dt_created = system_time_to_date_time(dt_created).naive_utc();
 
         let (width, height) = if get_file_name(&path).to_lowercase().ends_with(".heic") {
-            let ctx = HeifContext::read_from_file(&path).unwrap();
-            let handle = ctx.primary_image_handle().unwrap();
-            (handle.width() as i32, handle.height() as i32)
+            (0, 0)
         } else {
             let dim = image::image_dimensions(&path).unwrap_or((0, 0));
             let width = dim.0 as i32;
