@@ -25,20 +25,16 @@ impl NewPhoto {
     pub fn new(path: String, dt_created: SystemTime) -> Self {
         let dt_created = system_time_to_date_time(dt_created).naive_utc();
 
-        let width;
-        let height;
-
-        // check for heic files first
-        if get_file_name(&path).to_lowercase().ends_with(".heic") {
+        let (width, height) = if get_file_name(&path).to_lowercase().ends_with(".heic") {
             let ctx = HeifContext::read_from_file(&path).unwrap();
             let handle = ctx.primary_image_handle().unwrap();
-            width = handle.width() as i32;
-            height = handle.height() as i32;
+            (handle.width() as i32, handle.height() as i32)
         } else {
             let dim = image::image_dimensions(&path).unwrap_or((0, 0));
-            width = dim.0 as i32;
-            height = dim.1 as i32;
-        }
+            let width = dim.0 as i32;
+            let height = dim.1 as i32;
+            (width, height)
+        };
 
         NewPhoto {
             file_name: get_file_name(&path),
