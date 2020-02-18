@@ -22,6 +22,7 @@ run_win:
 		--env-file=.env \
 		--mount type=bind,source=//c/Users/nledford/Pictures/Vault,target=/photos \
 		--mount type=bind,source=//c/Users/nledford/Pictures/Wallpaper,target=/wallpaper \
+		--mount type=bind,source=${CURDIR}/ssl,target=/ssl \
 		nledford/scarlett-server
 
 # back up db
