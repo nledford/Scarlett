@@ -1,19 +1,26 @@
 version: "3.7"
 services:
-#  scarlett-server:
-#    container_name: scarlett-server
-#    build: .
-#    ports:
-#      - 8765:8765
-#    env_file:
-#      - .env
-#    depends_on:
-#      - postgres-scarlett
+  scarlett-server:
+    container_name: scarlett-server
+    image: nledford/scarlett/server
+    build: .
+    ports:
+      - 8765:8765
+    env_file:
+      - .env
+    volumes:
+      - ${PHOTOS_DIR}:/photos
+      - ${WALLPAPER_DIR}:/wallpaper
+      - ./ssl:/ssl
+      # caching for rust-musl-builder
+      - cargo:/home/rust/.cargo
+      - target:/home/rust/scarlett-server/target
+    depends_on:
+      - postgres-scarlett
 
   postgres-scarlett:
     container_name: postgres-scarlett
-#    image: postgres:12
-    image: clkao/postgres-plv8:12-2
+    image: clkao/postgres-plv8:latest
     command: postgres -c listen_addresses='*'
     env_file:
       - .env
@@ -29,4 +36,6 @@ services:
 # remove all volumes attched:
 # docker-compose down -v
 volumes:
-  scarlett-data:
+  scarlett-data: {}
+  cargo: {}
+  target: {}
