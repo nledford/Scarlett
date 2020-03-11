@@ -1116,12 +1116,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "json"
-version = "0.12.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a38661a28126f8621fb246611288ae28935ddf180f5e21f2d0fbfe5e4131dbe"
-
-[[package]]
 name = "keccak"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1787,7 +1781,6 @@ dependencies = [
  "dotenv",
  "env_logger",
  "image",
- "json",
  "openssl",
  "percent-encoding",
  "rayon",
