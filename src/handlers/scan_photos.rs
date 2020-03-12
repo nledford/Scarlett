@@ -75,9 +75,7 @@ pub async fn run_scan(info: web::Query<ScanPhotosRequest>, pool: web::Data<Pool>
     }
     let file_scan_result = file_scan_result.unwrap();
 
-    let files = file_scan_result.clone().new_photos;
-
-    let _ = NewPhoto::bulk_insert(files, pool).await?;
+    let _ = NewPhoto::bulk_insert(&file_scan_result.new_photos, pool).await?;
 
     // refresh random order view
     schemas::reset_seed(&pool).await?;
