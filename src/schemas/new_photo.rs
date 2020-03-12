@@ -97,8 +97,7 @@ impl NewPhoto {
                         &photo.original_height,
                     ],
                 )
-                .await
-                .unwrap();
+                .await?;
 
             count += result;
         }
