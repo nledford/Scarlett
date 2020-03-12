@@ -229,7 +229,7 @@ impl PhotoFull {
         let mut path = image_path;
         path.replace_range(..index, "");
 
-        let url = format!("http://{}/media/{}", hostname, path);
+        let url = format!("https://{}/media/{}", hostname, path);
 
         const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'\'');
         let encoded = percent_encode(url.as_ref(), FRAGMENT);
