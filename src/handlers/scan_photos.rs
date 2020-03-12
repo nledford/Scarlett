@@ -11,6 +11,7 @@ use crate::{files, schemas};
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ScanPhotosResult {
+    pub folder_scanned: String,
     pub new_photos_found: bool,
     pub new_photos: i32,
     pub existing_photos: i32,
@@ -21,6 +22,7 @@ pub struct ScanPhotosResult {
 impl Default for ScanPhotosResult {
     fn default() -> ScanPhotosResult {
         ScanPhotosResult {
+            folder_scanned: String::default(),
             new_photos_found: false,
             new_photos: 0,
             existing_photos: 0,
@@ -31,8 +33,9 @@ impl Default for ScanPhotosResult {
 }
 
 impl ScanPhotosResult {
-    pub fn from_file_scan_result(result: &FileScanResult) -> Self {
+    pub fn from_file_scan_result(folder: String, result: &FileScanResult) -> Self {
         ScanPhotosResult {
+            folder_scanned: folder,
             new_photos_found: result.new_photos_count > 0,
             new_photos: result.new_photos_count,
             existing_photos: result.existing_photos_count,
@@ -79,7 +82,7 @@ pub async fn run_scan(info: web::Query<ScanPhotosRequest>, pool: web::Data<Pool>
     // refresh random order view
     schemas::reset_seed(&pool).await?;
 
-    let result = ScanPhotosResult::from_file_scan_result(&file_scan_result);
+    let result = ScanPhotosResult::from_file_scan_result(folder, &file_scan_result);
 
     Ok(ApiResponse::success(result))
 }
