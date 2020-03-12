@@ -77,7 +77,7 @@ impl NewPhoto {
         Ok(result)
     }
 
-    pub async fn bulk_insert(new_photos: &Vec<Self>, pool: &Pool) -> DbSingleResult<u64> {
+    pub async fn bulk_insert(new_photos: &[Self], pool: &Pool) -> DbSingleResult<u64> {
         let client = pool.get().await?;
 
         let stmt = "INSERT INTO photos (file_path, file_name, file_hash, rating, date_created, date_updated, original_width, original_height, rotation, ineligible_for_wallpaper, anonymous_entities) \

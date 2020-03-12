@@ -92,7 +92,7 @@ pub async fn scan_all_photos_from_dir(
         let name = &new_photo.file_name;
         let hash = &new_photo.file_hash;
 
-        if check_if_photo_exists_by_file(name, hash, &pool).await? {
+        if check_if_photo_exists_by_file(name, &new_photo.file_path, hash, &pool).await? {
             // Photo exists, so we can retrieve it without checking for null
             let mut photo_to_update = Photo::get_photo_by_name(name, hash, pool).await?;
 
@@ -200,15 +200,20 @@ async fn is_in_db(file_info: &FileInfo, pool: &Pool) -> Result<bool, PoolError> 
 
 async fn check_if_photo_exists_by_file(
     name: &str,
+    path: &str,
     hash: &str,
     pool: &Pool,
-) -> Result<bool, PoolError> {
+) -> Result<bool, ServiceError> {
     let client = pool.get().await?;
     let stmt = client.prepare("select count(file_hash)
                                                                 from photos
                                                                 where file_hash = $1 and file_name = $2").await?;
-    let result = client.query_one(&stmt, &[&hash, &name]).await?;
-    let count: i64 = result.get(0);
+    let result = client.query_one(&stmt, &[&hash, &name]).await;
+    if result.is_err() {
+        return Err(ServiceError::DuplicateFileError(path.to_string()));
+    }
+
+    let count: i64 = result?.get(0);
 
     Ok(count > 0)
 }

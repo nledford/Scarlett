@@ -11,6 +11,9 @@ pub enum ServiceError {
     #[error("Internal Server Error")]
     InternalServerError,
 
+    #[error("Duplicate file detected: {0}")]
+    DuplicateFileError(String),
+
     #[error("Bad request: {0}")]
     BadRequest(String),
 
@@ -48,6 +51,7 @@ impl ResponseError for ServiceError {
             ServiceError::InternalServerError => {
                 ApiResponse::error("Internal server error. Please try again later")
             }
+            ServiceError::DuplicateFileError(ref message) => ApiResponse::error(message),
             ServiceError::BadRequest(ref message) => ApiResponse::bad_request(message),
             ServiceError::IOError(ref error) => ApiResponse::error(format!("{}", error)),
             ServiceError::PoolError(ref error) => {
