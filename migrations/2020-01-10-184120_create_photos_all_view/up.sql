@@ -29,7 +29,11 @@ select id,
                or file_path like '%/Suicide Girls/%'
                or file_path like '%/Usernames/%'
                or file_path like '%/XXX/%'
-               then strip_alt_names((regexp_split_to_array(file_path, '/'))[5])
+               then
+               case
+                   when file_path like '%/_Favs/%'
+                       then strip_alt_names((regexp_split_to_array(file_path, '/'))[6])
+                   else strip_alt_names((regexp_split_to_array(file_path, '/'))[5]) end
            else 'Anonymous' end                                         suggested_entity_name,
        (file_hash || '.' || (regexp_matches(file_name, '\.(\w+)$'))[1]) wallpaper_file_name,
        e.entities,
