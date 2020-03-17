@@ -29,7 +29,7 @@ impl Collection {
         Ok(collections)
     }
 
-    pub async fn get_by_id(id: i32, pool: &Pool) -> DbSingleResult<Self> {
+    pub async fn get(id: i32, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client
             .prepare("select * from collections where id = $1")
@@ -44,11 +44,11 @@ impl Collection {
     pub async fn create(name: &str, query: &str, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client
-            .prepare("insert into collections (name, query) values ($1, $2)")
+            .prepare("insert into collections (name, query) values ($1, $2) returning id")
             .await?;
-        let _ = client.execute(&stmt, &[&name, &query]).await?;
+        let id = client.execute(&stmt, &[&name, &query]).await?;
 
-        let collection = Collection::get_by_name(name, pool).await?;
+        let collection = Collection::get(id as i32, pool).await?;
 
         Ok(collection)
     }
@@ -71,13 +71,13 @@ impl Collection {
             )
             .await?;
 
-        let result = Collection::get_by_id(collection.id, pool).await?;
+        let result = Collection::get(collection.id, pool).await?;
 
         Ok(result)
     }
 
     pub async fn delete(id: i32, pool: &Pool) -> DbMessageResult {
-        let collection = Collection::get_by_id(id, pool).await?;
+        let collection = Collection::get(id, pool).await?;
 
         let client = pool.get().await?;
         let stmt = client
@@ -86,16 +86,5 @@ impl Collection {
         let _ = client.execute(&stmt, &[&collection.id]).await?;
 
         Ok("Collection deleted successfully".to_string())
-    }
-
-    pub async fn get_by_name(name: &str, pool: &Pool) -> DbSingleResult<Self> {
-        let client = pool.get().await?;
-        let stmt = client
-            .prepare("select * from collections where name = $1")
-            .await?;
-        let result = client.query_one(&stmt, &[&name]).await?;
-        let collection = Collection::from_row(result).unwrap();
-
-        Ok(collection)
     }
 }
