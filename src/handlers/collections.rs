@@ -18,7 +18,7 @@ pub async fn get_collections(pool: web::Data<Pool>) -> HandlerResult {
 
 #[get("/collections/{id}")]
 pub async fn get_collection(info: web::Path<i32>, pool: web::Data<Pool>) -> HandlerResult {
-    let collection = Collection::get_by_id(info.into_inner(), &pool).await?;
+    let collection = Collection::get(info.into_inner(), &pool).await?;
 
     Ok(ApiResponse::success(collection))
 }

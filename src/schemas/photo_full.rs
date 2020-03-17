@@ -155,7 +155,7 @@ impl PhotoFull {
             if req.collection_id.is_some() {
                 let collection_id = &req.collection_id.unwrap();
 
-                let collection = Collection::get_by_id(collection_id.to_owned(), pool).await?;
+                let collection = Collection::get(collection_id.to_owned(), pool).await?;
 
                 query += format!(" ({}) ", collection.query).as_str();
             } else {
