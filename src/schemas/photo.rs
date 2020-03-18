@@ -10,6 +10,7 @@ use crate::schemas::entity::Entity;
 use crate::schemas::tags::Tag;
 use crate::schemas::wallpaper_sizes::WallpaperSize;
 use crate::types::{DbMessageResult, DbSingleResult, DbVecResult};
+use crate::schemas::photo_full::PhotoFull;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PostgresMapper)]
 #[pg_mapper(table = "photos")]
@@ -52,7 +53,7 @@ impl Photo {
         Ok(photo)
     }
 
-    pub async fn update_photo(updated_photo: Photo, pool: &Pool) -> DbSingleResult<Self> {
+    pub async fn update_photo(updated_photo: Photo, pool: &Pool) -> DbSingleResult<PhotoFull> {
         let mut updated = updated_photo.clone();
         updated.date_updated = Utc::now().naive_utc();
 
@@ -94,7 +95,7 @@ impl Photo {
             )
             .await?;
 
-        let result = Photo::get_by_id(updated.id, pool).await?;
+        let result = PhotoFull::get_by_id(updated.id, pool).await?;
 
         Ok(result)
     }
