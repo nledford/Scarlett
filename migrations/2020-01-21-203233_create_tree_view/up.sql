@@ -17,7 +17,7 @@ $$
 
         let currentPath = ''
         pathParts.forEach((part) => {
-            currentPath = '${currentPath}/${part}'
+            currentPath = `${currentPath}/${part}`
 
             const existingPath = currentLevel.find((o) => o.name === part)
 
@@ -32,6 +32,9 @@ $$
                     id: id,
                     parentId: currentId,
                     name: part,
+                    path: currentPath,
+                    showChildren: false,
+                    selected: false,
                     children: [],
                 }
 
