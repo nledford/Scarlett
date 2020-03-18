@@ -10,6 +10,9 @@ pub struct Node {
     pub id: String,
     pub parent_id: String,
     pub name: String,
+    pub path: String,
+    pub show_children: bool,
+    pub selected: bool,
     pub children: Option<Vec<Node>>,
 }
 
