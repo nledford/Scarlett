@@ -36,20 +36,24 @@ impl GetPhotosRequest {
     }
 
     pub fn get_sort_by(&self) -> Option<Vec<String>> {
-        let valid_sort_options = vec!["id", "date_created", "date_updated", "file_name", "folder", "random"];
+        let valid_sort_options = vec!["id", "date_created", "date_updated", "file_name", "folder"];
 
         let temp = match &self.sort_by {
             Some(val) => val,
             None => return None,
         };
 
-        let temp = temp
+        let temp: Vec<String> = temp
             .split(',')
             .filter(|item| valid_sort_options.contains(&strings::get_category_from_sort(*item)))
             .map(String::from)
-            .collect::<Vec<String>>();
+            .collect();
 
-        Some(temp)
+        if temp.is_empty() {
+            None
+        } else {
+            Some(temp)
+        }
     }
 
     pub fn has_collection_or_filters(&self) -> bool {
