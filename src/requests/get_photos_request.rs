@@ -13,7 +13,9 @@ pub struct GetPhotosRequest {
 
     // collections
     pub collection_id: Option<i32>,
+
     // filters
+    folder: Option<String>,
 }
 
 impl GetPhotosRequest {
@@ -56,13 +58,25 @@ impl GetPhotosRequest {
         }
     }
 
+    pub fn get_folder(&self) -> String {
+        self.folder
+            .to_owned()
+            .unwrap_or("/".to_string())
+    }
+
     pub fn has_collection_or_filters(&self) -> bool {
+        // collections first
         if self.collection_id.is_some() {
-            return true;
+            return true
         }
 
-        // TODO add filter flags
+        // filters second
 
+        if self.folder.is_some() {
+            return true
+        }
+
+        // default value last
         false
     }
 }

@@ -71,22 +71,20 @@ fn build_link(page: i64, req: &GetPhotosRequest) -> String {
     let mut url = build_host_url();
 
     let page_size = req.get_page_size();
-    let sort_by = &req.get_sort_by();
-    //    let random_seed = req.get_random_seed();
+    let sort_by = req.get_sort_by();
     let folder = &req.get_folder();
     //    let to_delete = &req.get_to_delete().to_string();
 
     url.query_pairs_mut()
         .append_pair("page", format!("{}", page).as_str())
-        .append_pair("page_size", format!("{}", page_size).as_str())
-        .append_pair("sort_by", &sort_by.join(","));
+        .append_pair("page_size", format!("{}", page_size).as_str());
     //        .append_pair("to_delete", to_delete);
 
-    //    if req.is_random() {
-    //        url.query_pairs_mut()
-    //            .append_pair("random_seed", format!("{}", random_seed).as_str());
-    //    }
-    //
+    if sort_by.is_some() {
+        url.query_pairs_mut()
+            .append_pair("sort_by", &sort_by.unwrap().join(","));
+    }
+
     //    if req.favorite.is_some() {
     //        url.query_pairs_mut()
     //            .append_pair("favorite", &req.favorite.unwrap().to_string());
