@@ -13,6 +13,7 @@ use crate::types::{DbMessageResult, DbSingleResult, DbVecResult};
 use crate::schemas::photo_full::PhotoFull;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PostgresMapper)]
+#[serde(rename_all = "camelCase")]
 #[pg_mapper(table = "photos")]
 pub struct Photo {
     pub id: i32,
