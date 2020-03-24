@@ -45,6 +45,16 @@ pub async fn get_photo(info: web::Path<i32>, pool: web::Data<Pool>) -> HandlerRe
 //     Ok(ApiResponse::success(photo))
 // }
 
+#[post("/photos/{photo_id}/viewed")]
+pub async fn update_photo_last_viewed(
+    info: web::Path<i32>,
+    pool: web::Data<Pool>,
+) -> HandlerResult {
+    let photo = Photo::update_last_viewed(info.into_inner(), &pool).await?;
+
+    Ok(ApiResponse::success(photo))
+}
+
 #[post("/photos/{photo_id}/rating/{rating}")]
 pub async fn update_photo_rating(info: web::Path<(i32, i32)>, pool: web::Data<Pool>) -> HandlerResult {
     let (photo_id, rating) = info.into_inner();
@@ -52,16 +62,6 @@ pub async fn update_photo_rating(info: web::Path<(i32, i32)>, pool: web::Data<Po
     photo.rating = rating;
 
     let photo = Photo::update_photo(photo, &pool).await?;
-
-    Ok(ApiResponse::success(photo))
-}
-
-#[post("/photos/{photo_id}/viewed")]
-pub async fn updated_photo_last_viewed(
-    info: web::Path<i32>,
-    pool: web::Data<Pool>,
-) -> HandlerResult {
-    let photo = Photo::update_last_viewed(info.into_inner(), &pool).await?;
 
     Ok(ApiResponse::success(photo))
 }
