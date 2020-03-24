@@ -16,6 +16,7 @@ pub struct GetPhotosRequest {
 
     // filters
     folder: Option<String>,
+    exclude_ratings: Option<String>,
 }
 
 impl GetPhotosRequest {
@@ -58,11 +59,36 @@ impl GetPhotosRequest {
         }
     }
 
+    // filters
+
     pub fn get_folder(&self) -> String {
         self.folder
             .to_owned()
             .unwrap_or("/".to_string())
     }
+
+    pub fn get_exclude_ratings(&self) -> Option<Vec<String>> {
+        let valid_ratings = vec!["0", "1", "2", "3", "4", "5"];
+
+        let temp = match &self.exclude_ratings {
+            Some(val) => val,
+            None => return None,
+        };
+
+        let temp: Vec<String> = temp
+            .split(',')
+            .filter(|item| valid_ratings.contains(item))
+            .map(String::from)
+            .collect();
+
+        if temp.is_empty() {
+            None
+        } else {
+            Some(temp)
+        }
+    }
+
+    // misc
 
     pub fn has_collection_or_filters(&self) -> bool {
         // collections first

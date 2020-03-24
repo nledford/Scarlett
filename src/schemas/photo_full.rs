@@ -161,7 +161,16 @@ impl PhotoFull {
             } else {
                 // folder
                 let folder = req.get_folder();
-                query += format!(" folder like '{}' || '%'", folder).as_str();
+                query += format!("(folder like '{}' || '%')", folder).as_str();
+
+                // ratings
+                if req.get_exclude_ratings().is_some() {
+                    let excluded = req.get_exclude_ratings()
+                        .unwrap()
+                        .join(", ");
+
+                    query += format!(" AND (rating NOT IN ({}))", excluded).as_str();
+                }
             }
         }
 
