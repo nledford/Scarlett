@@ -159,7 +159,9 @@ impl PhotoFull {
 
                 query += format!(" ({}) ", collection.query).as_str();
             } else {
-                // TODO add custom filter logic
+                // folder
+                let folder = req.get_folder();
+                query += format!(" folder like '{}' || '%'", folder).as_str();
             }
         }
 
