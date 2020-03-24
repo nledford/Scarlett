@@ -71,15 +71,15 @@ fn build_link(page: i64, req: &GetPhotosRequest) -> String {
     let mut url = build_host_url();
 
     let page_size = req.get_page_size();
-    //    let sort_by = &req.get_sort_by();
+    let sort_by = &req.get_sort_by();
     //    let random_seed = req.get_random_seed();
-    //    let folder = &req.get_folder();
+    let folder = &req.get_folder();
     //    let to_delete = &req.get_to_delete().to_string();
 
     url.query_pairs_mut()
         .append_pair("page", format!("{}", page).as_str())
-        .append_pair("page_size", format!("{}", page_size).as_str());
-    //        .append_pair("sort_by", &sort_by.join(","))
+        .append_pair("page_size", format!("{}", page_size).as_str())
+        .append_pair("sort_by", &sort_by.join(","));
     //        .append_pair("to_delete", to_delete);
 
     //    if req.is_random() {
@@ -104,7 +104,7 @@ fn build_link(page: i64, req: &GetPhotosRequest) -> String {
     //            .append_pair("hidden", &req.hidden.unwrap().to_string());
     //    }
     //
-    //    url.query_pairs_mut().append_pair("folder", folder);
+    url.query_pairs_mut().append_pair("folder", folder);
     //
     //    if req.get_raw_ignore_folders().is_some() {
     //        url.query_pairs_mut()
@@ -137,5 +137,5 @@ fn build_link(page: i64, req: &GetPhotosRequest) -> String {
 fn build_host_url() -> Url {
     let host =
         env::var("SCARLETT_HOSTNAME").expect("SCARLETT_HOSTNAME environment variable not set");
-    Url::parse(format!("http://{}", host).as_str()).unwrap()
+    Url::parse(format!("https://{}/photos", host).as_str()).unwrap()
 }
