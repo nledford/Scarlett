@@ -56,7 +56,10 @@ pub async fn update_photo_last_viewed(
 }
 
 #[post("/photos/{photo_id}/rating/{rating}")]
-pub async fn update_photo_rating(info: web::Path<(i32, i32)>, pool: web::Data<Pool>) -> HandlerResult {
+pub async fn update_photo_rating(
+    info: web::Path<(i32, i32)>,
+    pool: web::Data<Pool>,
+) -> HandlerResult {
     let (photo_id, rating) = info.into_inner();
     let mut photo = Photo::get_by_id(photo_id, &pool).await?;
     photo.rating = rating;
