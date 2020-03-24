@@ -1,4 +1,4 @@
-use actix_web::{delete, get, patch, post, web};
+use actix_web::{delete, get, post, web};
 use deadpool_postgres::Pool;
 
 use crate::requests::get_photos_request::GetPhotosRequest;
@@ -33,18 +33,30 @@ pub async fn get_photo(info: web::Path<i32>, pool: web::Data<Pool>) -> HandlerRe
 
 // UPDATE PHOTO ************************************************************************************
 
-#[patch("/photos/{photo_id}")]
-pub async fn update_photo(
-    _: web::Path<i32>,
-    info: web::Json<Photo>,
-    pool: web::Data<Pool>,
-) -> HandlerResult {
-    let photo = Photo::update_photo(info.into_inner(), &pool).await?;
+// #[post("/photos/{photo_id}")]
+// pub async fn update_photo(
+//     _: web::Path<i32>,
+//     info: web::Json<Photo>,
+//     pool: web::Data<Pool>,
+// ) -> HandlerResult {
+//     println!("{:?}", &info);
+//     let photo = Photo::update_photo(info.into_inner(), &pool).await?;
+//
+//     Ok(ApiResponse::success(photo))
+// }
+
+#[post("/photos/{photo_id}/rating/{rating}")]
+pub async fn update_photo_rating(info: web::Path<(i32, i32)>, pool: web::Data<Pool>) -> HandlerResult {
+    let (photo_id, rating) = info.into_inner();
+    let mut photo = Photo::get_by_id(photo_id, &pool).await?;
+    photo.rating = rating;
+
+    let photo = Photo::update_photo(photo, &pool).await?;
 
     Ok(ApiResponse::success(photo))
 }
 
-#[patch("/photos/{photo_id}/viewed")]
+#[post("/photos/{photo_id}/viewed")]
 pub async fn updated_photo_last_viewed(
     info: web::Path<i32>,
     pool: web::Data<Pool>,

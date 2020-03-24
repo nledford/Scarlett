@@ -63,7 +63,8 @@ async fn main() -> std::io::Result<()> {
             // PHOTOS ******************************************************************************
             .service(handlers::photos::get_photos)
             .service(handlers::photos::get_photo)
-            .service(handlers::photos::update_photo)
+            // .service(handlers::photos::update_photo)
+            .service(handlers::photos::update_photo_rating)
             .service(handlers::photos::updated_photo_last_viewed)
             .service(handlers::photos::delete_photo)
             .service(handlers::photos::add_entity_to_photo)
