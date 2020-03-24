@@ -36,7 +36,7 @@ impl GetPhotosRequest {
     }
 
     pub fn get_sort_by(&self) -> Option<Vec<String>> {
-        let valid_sort_options = vec!["id", "date_created", "date_updated", "file_name", "folder"];
+        let valid_sort_options = vec!["id", "date_created", "date_updated", "file_name", "folder", "random"];
 
         let temp = match &self.sort_by {
             Some(val) => val,
