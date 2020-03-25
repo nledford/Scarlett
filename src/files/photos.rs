@@ -1,4 +1,3 @@
-use std::fs;
 use std::path::Path;
 use std::time::SystemTime;
 
@@ -138,14 +137,15 @@ async fn collect_files_from_directory(dir: &str, pool: &Pool) -> FileCollectionR
     let walker = WalkDir::new(dir).into_iter();
     for entry in walker.filter_entry(|e| !is_hidden(e)) {
         let entry = entry.unwrap();
-
-        let file_info = FileInfo::new_from_entry(&entry);
+        let metadata = entry.metadata().unwrap();
 
         // We don't care about directories, just the files inside them
         // so we'll skip them
-        if is_dir(&entry) {
+        if metadata.is_dir() {
             continue;
         }
+
+        let file_info = FileInfo::new_from_entry(&entry);
 
         // Skip the file if we don't consider it to be an image
         if !image_file_extensions.contains(&file_info.file_extension.as_str()) {
@@ -166,12 +166,6 @@ async fn collect_files_from_directory(dir: &str, pool: &Pool) -> FileCollectionR
     files.sort_by(|a, b| a.file_path.to_lowercase().cmp(&b.file_path.to_lowercase()));
 
     Ok((files, existing_files))
-}
-
-fn is_dir(entry: &DirEntry) -> bool {
-    let path = entry.path().to_str().unwrap();
-    let md = fs::metadata(path).unwrap();
-    md.is_dir()
 }
 
 fn is_hidden(entry: &DirEntry) -> bool {
