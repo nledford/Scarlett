@@ -83,11 +83,6 @@ fn build_link(page: i64, req: &GetPhotosRequest) -> String {
             .append_pair("sort_by", &sort_by.join(","));
     }
 
-    //    if req.favorite.is_some() {
-    //        url.query_pairs_mut()
-    //            .append_pair("favorite", &req.favorite.unwrap().to_string());
-    //    }
-    //
     //    if req.ineligible_wallpaper.is_some() {
     //        url.query_pairs_mut().append_pair(
     //            "ineligible_wallpaper",
