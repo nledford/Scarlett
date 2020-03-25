@@ -165,9 +165,7 @@ impl PhotoFull {
 
                 // ratings
                 if req.get_exclude_ratings().is_some() {
-                    let excluded = req.get_exclude_ratings()
-                        .unwrap()
-                        .join(", ");
+                    let excluded = req.get_exclude_ratings().unwrap().join(", ");
 
                     query += format!(" AND (rating NOT IN ({}))", excluded).as_str();
                 }
