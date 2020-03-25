@@ -74,17 +74,20 @@ pub async fn scan_all_photos_from_dir(
     dir: &str,
     pool: &Pool,
 ) -> Result<FileScanResult, ServiceError> {
+    println!("Collecting files...");
     let (files, existing_files_count) = collect_files_from_directory(&dir, pool).await?;
 
     let mut result: FileScanResult = Default::default();
     result.existing_photos_count = existing_files_count;
 
+    println!("Build list of new photo candidates...");
     // build list of new photo candidates
     let mut photos: Vec<NewPhoto> = files
         .par_iter()
         .map(|f| NewPhoto::new(f.file_path.to_string(), f.date_created))
         .collect();
 
+    println!("Check for moved photos...");
     // check if any photos have been moved
     let mut updated_photos: Vec<NewPhoto> = Vec::new();
     for new_photo in &photos {
@@ -108,6 +111,7 @@ pub async fn scan_all_photos_from_dir(
     result.updated_photos_count = updated_photos.len() as i32;
     result.new_photos = photos.clone();
 
+    println!("Delete photos if necessary...");
     // check if any photos have been deleted in directory
     result.deleted_photos_count = check_for_deleted_files_in_dir(&dir, pool).await? as i32;
 
@@ -116,12 +120,15 @@ pub async fn scan_all_photos_from_dir(
         return Ok(result);
     }
 
+    println!("Remove updated photos from new photos collection...");
     // Remove updated photos from new photos collection
     for item in updated_photos {
         photos.retain(|p| p.file_name != item.file_name && p.file_hash != item.file_hash)
     }
 
     result.new_photos = photos;
+
+    println!("Done?");
 
     Ok(result)
 }
