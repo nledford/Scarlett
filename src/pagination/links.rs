@@ -73,16 +73,14 @@ fn build_link(page: i64, req: &GetPhotosRequest) -> String {
     let page_size = req.get_page_size();
     let sort_by = req.get_sort_by();
     let folder = &req.get_folder();
-    //    let to_delete = &req.get_to_delete().to_string();
 
     url.query_pairs_mut()
         .append_pair("page", format!("{}", page).as_str())
         .append_pair("page_size", format!("{}", page_size).as_str());
-    //        .append_pair("to_delete", to_delete);
 
-    if sort_by.is_some() {
+    if let Some(sort_by) = sort_by {
         url.query_pairs_mut()
-            .append_pair("sort_by", &sort_by.unwrap().join(","));
+            .append_pair("sort_by", &sort_by.join(","));
     }
 
     //    if req.favorite.is_some() {

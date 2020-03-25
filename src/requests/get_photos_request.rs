@@ -62,7 +62,7 @@ impl GetPhotosRequest {
     // filters
 
     pub fn get_folder(&self) -> String {
-        self.folder.to_owned().unwrap_or("/".to_string())
+        self.folder.to_owned().unwrap_or_else(|| "/".to_string())
     }
 
     pub fn get_exclude_ratings(&self) -> Option<Vec<String>> {
