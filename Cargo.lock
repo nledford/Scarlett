@@ -2075,9 +2075,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-pg-mapper"
-version = "0.1.5"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61a81a69cf680fc324b426f3c1615784b415d5215ada3a5a416191dfa2d67939"
+checksum = "eb4fa64fe6ca5a6b5f87c82bda47e7630b3c07601427c23b209836f17de1373a"
 dependencies = [
  "tokio-postgres",
 ]
