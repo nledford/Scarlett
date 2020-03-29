@@ -15,8 +15,7 @@ services:
       # caching for rust-musl-builder
       - cargo:/home/rust/.cargo
       - target:/home/rust/scarlett-server/target
-    restart:
-      - unless-stopped
+    restart:😉 unless-stopped
     depends_on:
       - postgres-scarlett
 
