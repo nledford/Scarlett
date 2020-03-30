@@ -1,8 +1,8 @@
 version: "3.7"
 services:
-  scarlett-server:
-    container_name: scarlett-server
-    image: nledford/scarlett/server
+  scarlett:
+    container_name: scarlett
+    image: nledford/scarlett
     build: .
     ports:
       - 8765:8765
