@@ -3,6 +3,7 @@ use deadpool_postgres::PoolError;
 use thiserror::Error;
 use tokio_postgres::error::Error as TpgError;
 
+use crate::files::photos::DuplicatePhoto;
 use crate::responses::api_response::ApiResponse;
 
 #[derive(Debug, Error)]
@@ -11,8 +12,8 @@ pub enum ServiceError {
     #[error("Internal Server Error")]
     InternalServerError,
 
-    #[error("Duplicate file detected: {0}")]
-    DuplicateFileError(String),
+    #[error("Duplicate files detected")]
+    DuplicateFileError(Vec<DuplicatePhoto>),
 
     #[error("Bad request: {0}")]
     BadRequest(String),
@@ -51,7 +52,9 @@ impl ResponseError for ServiceError {
             ServiceError::InternalServerError => {
                 ApiResponse::error("Internal server error. Please try again later")
             }
-            ServiceError::DuplicateFileError(ref message) => ApiResponse::error(message),
+            ServiceError::DuplicateFileError(ref duplicate_photos) => {
+                ApiResponse::error(duplicate_photos)
+            }
             ServiceError::BadRequest(ref message) => ApiResponse::bad_request(message),
             ServiceError::IOError(ref error) => ApiResponse::error(format!("{}", error)),
             ServiceError::PoolError(ref error) => {

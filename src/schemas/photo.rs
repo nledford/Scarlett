@@ -126,6 +126,16 @@ impl Photo {
         Ok("File deleted successfully!".to_string())
     }
 
+    pub async fn delete_photo_by_path(file_path: &str, pool: &Pool) -> DbMessageResult {
+        let client = pool.get().await?;
+        let stmt = client
+            .prepare("DELETE FROM photos WHERE file_path = $1")
+            .await?;
+        let _ = client.execute(&stmt, &[&file_path]).await?;
+
+        Ok("Photo removed from database successfully!".to_string())
+    }
+
     pub async fn update_last_viewed(photo_id: i32, pool: &Pool) -> DbSingleResult<Self> {
         let client = pool.get().await?;
         let stmt = client

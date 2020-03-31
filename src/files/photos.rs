@@ -6,6 +6,7 @@ use rayon::prelude::*;
 use walkdir::{DirEntry, WalkDir};
 
 use crate::errors::ServiceError;
+use crate::errors::ServiceError::DuplicateFileError;
 use crate::schemas::new_photo::NewPhoto;
 use crate::schemas::photo::Photo;
 use crate::types::FileCollectionResult;
@@ -29,6 +30,32 @@ impl Default for FileScanResult {
             updated_photos_count: 0,
             deleted_photos_count: 0,
             new_photos: Vec::new(),
+        }
+    }
+}
+
+// DUPLICATE FILES RESULT **************************************************************************
+
+#[derive(Debug, serde::Serialize)]
+pub struct DuplicatePhoto {
+    pub file_hash: String,
+    pub files: Vec<String>,
+}
+
+impl Default for DuplicatePhoto {
+    fn default() -> Self {
+        DuplicatePhoto {
+            file_hash: String::default(),
+            files: Vec::default(),
+        }
+    }
+}
+
+impl DuplicatePhoto {
+    pub fn new(file_hash: &str, files: Vec<String>) -> Self {
+        DuplicatePhoto {
+            file_hash: file_hash.to_string(),
+            files,
         }
     }
 }
@@ -87,6 +114,13 @@ pub async fn scan_all_photos_from_dir(
         .map(|f| NewPhoto::new(f.file_path.to_string(), f.date_created))
         .collect();
 
+    println!("Check for duplicate photos...");
+    let duplicate_photos: Vec<DuplicatePhoto> = check_for_duplicates(&photos, pool).await?;
+
+    if !duplicate_photos.is_empty() {
+        return Err(DuplicateFileError(duplicate_photos));
+    }
+
     println!("Check for moved photos...");
     // check if any photos have been moved
     let mut updated_photos: Vec<NewPhoto> = Vec::new();
@@ -94,7 +128,7 @@ pub async fn scan_all_photos_from_dir(
         let name = &new_photo.file_name;
         let hash = &new_photo.file_hash;
 
-        if check_if_photo_exists_by_file(name, &new_photo.file_path, hash, &pool).await? {
+        if check_if_photo_exists_by_file(name, hash, &pool).await? {
             // Photo exists, so we can retrieve it without checking for null
             let mut photo_to_update = Photo::get_photo_by_name(name, hash, pool).await?;
 
@@ -131,6 +165,63 @@ pub async fn scan_all_photos_from_dir(
     println!("Done?");
 
     Ok(result)
+}
+
+async fn check_for_duplicates(
+    new_photos: &Vec<NewPhoto>,
+    pool: &Pool,
+) -> Result<Vec<DuplicatePhoto>, ServiceError> {
+    let mut duplicate_photos = Vec::new();
+
+    for new_photo in new_photos {
+        let hash = &new_photo.file_hash;
+
+        let mut duplicates = check_for_duplicate(hash, pool).await?;
+
+        if duplicates.is_empty() {
+            continue;
+        }
+
+        // check if both duplicates haven't been deleted
+        for duplicate in duplicates {
+            let exists = Path::new(&duplicate).exists();
+
+            if !exists {
+                Photo::delete_photo_by_path(&duplicate, pool).await?;
+            }
+        }
+
+        // check again for duplicates
+        duplicates = check_for_duplicate(hash, pool).await?;
+
+        if duplicates.is_empty() {
+            continue;
+        }
+
+        // Duplicates exists
+        let duplicate = DuplicatePhoto::new(hash, duplicates);
+        duplicate_photos.push(duplicate);
+    }
+
+    Ok(duplicate_photos)
+}
+
+async fn check_for_duplicate(hash: &str, pool: &Pool) -> Result<Vec<String>, ServiceError> {
+    let client = pool.get().await?;
+    let stmt = client
+        .prepare("select file_path from photos where file_hash = $1")
+        .await?;
+    let results = client.query(&stmt, &[&hash]).await?;
+
+    let mut paths = Vec::new();
+
+    if results.is_empty() {
+        return Ok(paths);
+    }
+
+    paths = results.into_iter().map(|row| row.get(0)).collect();
+
+    Ok(paths)
 }
 
 async fn collect_files_from_directory(dir: &str, pool: &Pool) -> FileCollectionResult {
@@ -201,7 +292,6 @@ async fn is_in_db(file_info: &FileInfo, pool: &Pool) -> Result<bool, PoolError> 
 
 async fn check_if_photo_exists_by_file(
     name: &str,
-    path: &str,
     hash: &str,
     pool: &Pool,
 ) -> Result<bool, ServiceError> {
@@ -209,12 +299,8 @@ async fn check_if_photo_exists_by_file(
     let stmt = client.prepare("select count(file_hash)
                                                                 from photos
                                                                 where file_hash = $1 and file_name = $2").await?;
-    let result = client.query_one(&stmt, &[&hash, &name]).await;
-    if result.is_err() {
-        return Err(ServiceError::DuplicateFileError(path.to_string()));
-    }
-
-    let count: i64 = result?.get(0);
+    let result = client.query_one(&stmt, &[&hash, &name]).await?;
+    let count: i64 = result.get(0);
 
     Ok(count > 0)
 }
@@ -235,9 +321,6 @@ async fn check_for_deleted_files_in_dir(dir: &str, pool: &Pool) -> Result<usize,
         .collect::<Vec<String>>();
 
     // iterate through files and check if any have been deleted
-    let stmt = client
-        .prepare("DELETE FROM photos WHERE file_path = $1")
-        .await?;
     for file in &file_paths {
         let exists = Path::new(file).exists();
 
@@ -245,7 +328,7 @@ async fn check_for_deleted_files_in_dir(dir: &str, pool: &Pool) -> Result<usize,
             deleted_files.push(file.to_owned());
 
             // Remove file from database
-            client.execute(&stmt, &[&file]).await?;
+            Photo::delete_photo_by_path(file, pool).await?;
         }
     }
 
