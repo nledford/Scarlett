@@ -184,6 +184,7 @@ async fn check_for_duplicates(
 
     for new_photo in new_photos {
         let hash = &new_photo.file_hash;
+        let file_path = &new_photo.file_path;
 
         let mut duplicates = check_for_duplicate(hash, pool).await?;
 
@@ -208,7 +209,14 @@ async fn check_for_duplicates(
         }
 
         // Duplicates exists
-        let duplicate = DuplicatePhoto::new(hash, duplicates);
+
+        if !duplicates.contains(file_path) {
+            duplicates.push(file_path.to_string());
+        }
+        duplicates.sort();
+
+        let mut duplicate = DuplicatePhoto::new(hash, duplicates);
+
         duplicate_photos.push(duplicate);
     }
 
