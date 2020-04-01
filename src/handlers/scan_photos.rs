@@ -65,6 +65,8 @@ pub async fn run_scan(info: web::Query<ScanPhotosRequest>, pool: web::Data<Pool>
     let folder = info.get_folder();
     let pool = pool.get_ref();
 
+    println!("Scanning {}...", &folder);
+
     let file_scan_result = if !folder.is_empty() {
         files::photos::scan_all_photos_from_dir(&folder, pool).await
     } else {
