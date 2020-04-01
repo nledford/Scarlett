@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use actix_web::{get, web};
 use deadpool_postgres::Pool;
 use num_format::{Locale, ToFormattedString};
@@ -64,6 +66,14 @@ impl ScanPhotosRequest {
 pub async fn run_scan(info: web::Query<ScanPhotosRequest>, pool: web::Data<Pool>) -> HandlerResult {
     let folder = info.get_folder();
     let pool = pool.get_ref();
+
+    // Check if path exists before scanning
+    if !Path::new(&folder).exists() {
+        return Ok(ApiResponse::error(format!(
+            "Directory not found: {}",
+            folder
+        )));
+    }
 
     println!("Scanning {}...", &folder);
 
