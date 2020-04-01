@@ -2,6 +2,7 @@ use std::path::Path;
 use std::time::SystemTime;
 
 use deadpool_postgres::{Pool, PoolError};
+use num_format::{Locale, ToFormattedString};
 use rayon::prelude::*;
 use walkdir::{DirEntry, WalkDir};
 
@@ -109,8 +110,8 @@ pub async fn scan_all_photos_from_dir(
 
     println!(
         "Found {} new files. ({} already exist)",
-        &files.len(),
-        &existing_files_count
+        &files.len().to_formatted_string(&Locale::en),
+        &existing_files_count.to_formatted_string(&Locale::en),
     );
 
     println!("Build list of new photo candidates...");
