@@ -5,11 +5,11 @@ use deadpool_postgres::Pool;
 use num_format::{Locale, ToFormattedString};
 use serde::{Deserialize, Serialize};
 
+use crate::{files, schemas};
 use crate::files::photos::FileScanResult;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::new_photo::NewPhoto;
 use crate::types::HandlerResult;
-use crate::{files, schemas};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -88,13 +88,15 @@ pub async fn run_scan(info: web::Query<ScanPhotosRequest>, pool: web::Data<Pool>
     }
     let file_scan_result = file_scan_result.unwrap();
 
-    println!(
-        "Insert {} new photos into database...",
-        &file_scan_result
-            .new_photos_count
-            .to_formatted_string(&Locale::en)
-    );
-    let _ = NewPhoto::bulk_insert(&file_scan_result.new_photos, pool).await?;
+    if file_scan_result.new_photos_count > 0 {
+        println!(
+            "Insert {} new photos into database...",
+            &file_scan_result
+                .new_photos_count
+                .to_formatted_string(&Locale::en)
+        );
+        NewPhoto::bulk_insert(&file_scan_result.new_photos, pool).await?;
+    }
 
     // refresh random order view
     println!("Refresh random seed...");
