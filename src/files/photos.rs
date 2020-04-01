@@ -107,7 +107,11 @@ pub async fn scan_all_photos_from_dir(
     let mut result: FileScanResult = Default::default();
     result.existing_photos_count = existing_files_count;
 
-    println!("Found {} new files. ({} already exist)", &files.len(), &existing_files_count);
+    println!(
+        "Found {} new files. ({} already exist)",
+        &files.len(),
+        &existing_files_count
+    );
 
     println!("Build list of new photo candidates...");
     // build list of new photo candidates
