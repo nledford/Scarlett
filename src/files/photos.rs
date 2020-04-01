@@ -215,7 +215,7 @@ async fn check_for_duplicates(
         }
         duplicates.sort();
 
-        let mut duplicate = DuplicatePhoto::new(hash, duplicates);
+        let duplicate = DuplicatePhoto::new(hash, duplicates);
 
         duplicate_photos.push(duplicate);
     }
