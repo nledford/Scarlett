@@ -168,6 +168,7 @@ pub async fn scan_all_photos_from_dir(
 
     // If no photos have been updated, return early
     if updated_photos.is_empty() {
+        println!("Done!");
         return Ok(result);
     }
 
@@ -179,7 +180,7 @@ pub async fn scan_all_photos_from_dir(
 
     result.new_photos = photos;
 
-    println!("Done?");
+    println!("Done!");
 
     Ok(result)
 }
