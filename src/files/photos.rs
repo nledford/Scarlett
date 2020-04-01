@@ -118,6 +118,15 @@ pub async fn scan_all_photos_from_dir(
     let duplicate_photos: Vec<DuplicatePhoto> = check_for_duplicates(&photos, pool).await?;
 
     if !duplicate_photos.is_empty() {
+        println!("Number of duplicates: {}", &duplicate_photos.len());
+        for dup in &duplicate_photos {
+            println!("File Hash: {}", dup.file_hash);
+
+            println!("Files:");
+            for file in &dup.files {
+                println!("{}", file);
+            }
+        }
         return Err(DuplicateFileError(duplicate_photos));
     }
 
