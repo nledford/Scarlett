@@ -168,7 +168,7 @@ pub async fn scan_all_photos_from_dir(
 }
 
 async fn check_for_duplicates(
-    new_photos: &Vec<NewPhoto>,
+    new_photos: &[NewPhoto],
     pool: &Pool,
 ) -> Result<Vec<DuplicatePhoto>, ServiceError> {
     let mut duplicate_photos = Vec::new();
