@@ -1,14 +1,18 @@
 use actix_web::{Error, HttpResponse};
 
 use crate::errors::ServiceError;
-use crate::files::photos::FileInfo;
+use crate::files::photos::{DuplicatePhoto, FileInfo};
 use crate::pagination::page::Page;
 use crate::responses::api_response::ApiResponse;
 use crate::schemas::entity::Entity;
+use crate::schemas::new_photo::NewPhoto;
 use crate::schemas::photo_full::PhotoFull;
 use crate::schemas::tags::Tag;
 use crate::stats::entities::EntityStats;
 use crate::stats::tags::TagStats;
+
+pub type DuplicatePhotos = Vec<DuplicatePhoto>;
+pub type NewPhotos = Vec<NewPhoto>;
 
 // API RESPONSES ***********************************************************************************
 
