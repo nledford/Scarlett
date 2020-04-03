@@ -1526,9 +1526,9 @@ checksum = "05da548ad6865900e60eaba7f589cc0783590a92e940c26953ff81ddbab2d677"
 
 [[package]]
 name = "png"
-version = "0.16.1"
+version = "0.16.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46060468187c21c00ffa2a920690b29997d7fd543f5a4d400461e4a7d4fccde8"
+checksum = "910f09135b1ed14bb16be445a8c23ddf0777eca485fbfc7cee00d81fecab158a"
 dependencies = [
  "bitflags",
  "crc32fast",
