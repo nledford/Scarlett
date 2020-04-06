@@ -17,7 +17,7 @@ deadpool-postgres = "0.5.5"
 derive_more = "0.99.5"
 dotenv = "0.15.0"
 env_logger = "0.7.1"
-image = "0.23.2"
+image = "0.23.3"
 num-format = { version = "0.4.0", features = ["with-serde"] }
 openssl = { version = "0.10.28", features = ["v110"] }
 percent-encoding = "2.1.0"
