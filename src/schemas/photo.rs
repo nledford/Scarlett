@@ -7,6 +7,7 @@ use tokio_pg_mapper::FromTokioPostgresRow;
 use tokio_pg_mapper_derive::PostgresMapper;
 
 use crate::schemas::entity::Entity;
+use crate::schemas::new_photo::NewPhoto;
 use crate::schemas::photo_full::PhotoFull;
 use crate::schemas::tags::Tag;
 use crate::schemas::wallpaper_sizes::WallpaperSize;
@@ -54,7 +55,7 @@ impl Photo {
         Ok(photo)
     }
 
-    pub async fn update_photo(updated_photo: Photo, pool: &Pool) -> DbSingleResult<PhotoFull> {
+    pub async fn update_photo(updated_photo: &Photo, pool: &Pool) -> DbSingleResult<PhotoFull> {
         let mut updated = updated_photo.clone();
         updated.date_updated = Utc::now().naive_utc();
 
@@ -76,7 +77,7 @@ impl Photo {
                                     WHERE id = $12",
             )
             .await?;
-        let _result = client
+        let _ = client
             .execute(
                 &stmt,
                 &[
@@ -146,6 +147,22 @@ impl Photo {
         let photo = Photo::get_by_id(photo_id, pool).await?;
 
         Ok(photo)
+    }
+
+    pub async fn update_photo_path(new_photo: &NewPhoto, pool: &Pool) -> DbSingleResult<bool> {
+        let name = &new_photo.file_name;
+        let hash = &new_photo.file_hash;
+
+        // Photo exists, so we can retrieve it without checking for null
+        let mut photo_to_update = Photo::get_photo_by_name(name, hash, pool).await?;
+
+        // Update the file path of the existing photo with the file path of the "new" photo
+        photo_to_update.file_path = new_photo.to_owned().file_path;
+
+        // Save the changes to the database
+        Photo::update_photo(&photo_to_update, pool).await?;
+
+        Ok(true)
     }
 
     // ENTITIES ************************************************************************************
