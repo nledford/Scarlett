@@ -21,7 +21,7 @@ pub struct NewPhoto {
 }
 
 impl NewPhoto {
-    pub fn new(path: String, dt_created: SystemTime) -> Self {
+    pub fn new(path: &str, dt_created: SystemTime) -> Self {
         let dt_created = system_time_to_date_time(dt_created).naive_utc();
 
         let (width, height) = if get_file_name(&path).to_lowercase().ends_with(".heic") {
@@ -36,7 +36,7 @@ impl NewPhoto {
         NewPhoto {
             file_name: get_file_name(&path),
             file_hash: calculate_sha3_hash(&path),
-            file_path: path,
+            file_path: path.to_string(),
             date_created: dt_created,
             original_width: width,
             original_height: height,
